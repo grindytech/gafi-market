@@ -17,8 +17,19 @@ const styles = {
     ".right-arrow-btn:hover .right-arrow-icon": {
       transform: "translateX(20%)",
     },
-    ".right-arrow-icon": {
+    ".right-arrow-btn .right-arrow-icon": {
       transition: "0.2s ease-in",
+    },
+
+    ".slick-dots": {
+      bottom: "20px",
+      li: {
+        height: "7px",
+        width: "50px",
+      },
+      ".slick-active a": {
+        background: "white",
+      },
     },
   },
 };
@@ -95,6 +106,21 @@ const Tab: ComponentStyleConfig = {
     },
   },
 };
+const SliderBox: ComponentStyleConfig = {
+  baseStyle: {
+    '[data-component-name="arrow"]': {
+      transition: "all ease 0.5s",
+      visibility: "hidden",
+      opacity: 0,
+    },
+    _hover: {
+      '[data-component-name="arrow"]': {
+        visibility: "visible",
+        opacity: 1,
+      },
+    },
+  },
+};
 const components = {
   Link: {
     baseStyle: {
@@ -106,6 +132,7 @@ const components = {
       },
     },
   },
+  SliderBox,
   Tab,
   Card,
   CardBody,

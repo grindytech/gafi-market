@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonProps,
+  Icon,
   Image,
   Modal,
   ModalBody,
@@ -49,7 +50,11 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
                   await connect(Wallet.METAMASK);
                 }}
                 w="full"
-                leftIcon={<Image src={Icons.Metamask.src} w="32px" h="32px" />}
+                leftIcon={
+                  <Icon w="32px" h="32px">
+                    <Icons.Metamask />
+                  </Icon>
+                }
               >
                 Metamask
               </Button>
@@ -61,7 +66,11 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
                   await connect(Wallet.WALLET_CONNECT);
                 }}
                 w="full"
-                leftIcon={<Image src={Icons.Walletconnect.src} w="32px" h="32px" />}
+                leftIcon={
+                  <Icon w="32px" h="32px">
+                    <Icons.Walletconnect />
+                  </Icon>
+                }
               >
                 Walletconnect
               </Button>

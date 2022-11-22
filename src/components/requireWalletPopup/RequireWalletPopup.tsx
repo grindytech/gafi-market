@@ -13,8 +13,6 @@ import {
 } from "@chakra-ui/react";
 import Icons from "../../images";
 
-
-
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -33,7 +31,11 @@ const RequireWalletPopup: React.FC<Props> = ({ isOpen, onClose }) => {
         <ModalFooter justifyContent="center">
           <Button
             colorScheme="teal"
-            leftIcon={<Icon as={Icons.Metamask.src} w="32px" h="32px" />}
+            leftIcon={
+              <Icon w="32px" h="32px">
+                <Icons.Metamask />
+              </Icon>
+            }
             onClick={() => {
               window.open("https://metamask.io/download/", "_blank");
             }}

@@ -1,15 +1,32 @@
-import { HStack, Image } from "@chakra-ui/react";
+import { Button, HStack, Icon, Image } from "@chakra-ui/react";
 import React from "react";
+import { FiArrowRight } from "react-icons/fi";
 import Icons from "../../images";
 import NftCollectionCard from "../NftCollectionCard";
-import SlideWithTitle from "../SlideWithTitle";
+import SlideWithTitle from "../slick/SlideWithTitle";
+import NextLink from "next/link";
 export default function HotCollections() {
   return (
     <SlideWithTitle
+      length={2}
       title={
-        <HStack alignItems="center">
-          <>Hot Collections&nbsp;</>
-          <Image src={Icons.Fire.src} w={7} h={7} />
+        <HStack justifyContent="space-between" w="full">
+          <HStack alignItems="center">
+            <>Top Collections&nbsp;</>
+            <Icon w={7} h={7}>
+              <Icons.Fire />
+            </Icon>
+          </HStack>
+          <Button
+            className="right-arrow-btn"
+            size="sm"
+            rightIcon={<FiArrowRight className="right-arrow-icon" />}
+            textTransform="uppercase"
+            as={NextLink}
+            href="/nft-collection"
+          >
+            View all
+          </Button>
         </HStack>
       }
       height="auto"
@@ -19,6 +36,7 @@ export default function HotCollections() {
         speed: 500,
         slidesToShow: 4,
         slidesToScroll: 4,
+        arrows: false,
         responsive: [
           {
             breakpoint: 1280,

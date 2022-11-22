@@ -1,23 +1,47 @@
-import { Box, Container, Heading, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Link,
+  Stack,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 // Here we have used react-icons package for the icons
 // And react-slick as our Carousel Lib
-import ReactSlide from "../ReactSlide";
+import ReactSlide from "../slick/ReactSlide";
 import React from "react";
+import { Settings } from "react-slick";
 
 // Settings for the slider
-const settings = {
-  dots: true,
-  arrows: false,
-  fade: true,
-  infinite: true,
-  autoplay: true,
-  speed: 500,
-  autoplaySpeed: 5000,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-};
+
 
 export default function HomeSlide() {
+  const dotColor = useColorModeValue("gray.600", "gray.600");
+  const settings: Settings = {
+    dots: true,
+    arrows: false,
+    fade: true,
+    infinite: false,
+    autoplay: true,
+    speed: 500,
+    autoplaySpeed: 3000,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    customPaging: (index) => {
+      return (
+        <Link
+          borderRadius={5}
+          transition="0.2s ease-in"
+          display="block"
+          w="full"
+          h="full"
+          bg={dotColor}
+        ></Link>
+      );
+    },
+  };
   // This list contains all the data for carousels
   // This can be static or loaded from a server
   const cards = [
@@ -42,7 +66,7 @@ export default function HomeSlide() {
   ];
 
   return (
-    <ReactSlide height="400px" setting={settings}>
+    <ReactSlide length={-1} height="400px" setting={settings}>
       {cards.map((card, index) => (
         <Box
           key={index}
