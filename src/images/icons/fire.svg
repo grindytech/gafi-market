@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="20px" height="27.299px" viewBox="0 0 20 27.299" enable-background="new 0 0 20 27.299" xml:space="preserve">
+  <linearGradient id="qode-footer-svg-gradient-1" gradientUnits="userSpaceOnUse" x1="5.9653" y1="26.4556" x2="15.5133" y2="3.962">
+  <stop offset="0" style="stop-color:#A9A7F9"></stop>
+  <stop offset="0.2956" style="stop-color:#A9A8F8"></stop>
+  <stop offset="0.9944" style="stop-color:#D5EDA3"></stop>
+  </linearGradient>
+  <path fill="url(#qode-footer-svg-gradient-1)" d="M11.926,27.115c-0.545,0.106-1.105,0.17-1.677,0.184C15.657,27.167,20,22.742,20,17.302
+    C20,9.297,12.514,3.236,6.179,0c5.29,11.273-3.767,15.347-2.831,8.461C1.197,10.618,0,14.537,0,17.302
+    c0,5.44,4.343,9.865,9.751,9.997c-0.572-0.014-1.132-0.078-1.677-0.184c-0.754-1.296-1.183-2.766-1.183-4.326
+    c0-2.604,1.188-4.962,3.109-6.669c1.921,1.707,3.109,4.065,3.109,6.669C13.109,24.349,12.68,25.819,11.926,27.115"></path>
+</svg>
