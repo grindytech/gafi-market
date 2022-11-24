@@ -42,7 +42,7 @@ export default function SlideWithTitle({
 }) {
   const settings = setting ?? defaultSettings;
   const top = useBreakpointValue({ base: "50%", md: "50%" });
-  const side = useBreakpointValue({ base: "-20px", md: "-10px" });
+  const side = useBreakpointValue({ base: "-10px", md: "-10px" });
   // As we have used custom buttons, we need a reference variable to
   // change the state
   const [slider, setSlider] = React.useState<Slider | null>(null);

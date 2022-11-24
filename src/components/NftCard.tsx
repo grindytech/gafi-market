@@ -13,23 +13,35 @@ import Card from "./card/Card";
 import CardBody from "./card/CardBody";
 import FloatIconWithText from "./FloatIconWithText";
 import LazyImage from "./LazyImage";
-const IMAGE = "https://d343muqqn13tb8.cloudfront.net/heroes/Ares.png";
 
-export default function NftCard() {
+export default function NftCard({ image }: { image: string }) {
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
 
   return (
-    <Box w="full" pb={3}>
-      <Card rounded="lg" p={1} __css={cardStyles}>
-        <CardBody rounded="lg" overflow="hidden">
+    <Box w="full">
+      <Card
+        rounded="xl"
+        __css={cardStyles}
+        border="3px solid"
+        borderColor={useColorModeValue("gray.200", "gray.700")}
+        p={5}
+        bg={useColorModeValue("white", "gray.900")}
+      >
+        <CardBody>
           <VStack w="full">
             <Box
-              bg={useColorModeValue("gray.800", "gray.800")}
+              rounded="2xl"
+              // bg={useColorModeValue("gray.800", "gray.800")}
               pos={"relative"}
               w="full"
               height={"300px"}
-              overflow="hidden"
+              overflow="visible"
+              justifyContent="center"
+              alignItems="center"
+              display="flex"
+              mb={5}
+              mt={1}
             >
               <HStack position="absolute" top={2} left={2}>
                 <FloatIconWithText w={8} h={8}>
@@ -46,12 +58,14 @@ export default function NftCard() {
               <LazyImage
                 data-component-name="NFTImage"
                 __css={imageStyles}
-                h={300}
-                w="full"
-                src={IMAGE}
+                h="300px"
+                w="auto"
+                src={image}
+                rounded="2xl"
+                objectFit='cover'
               />
             </Box>
-            <VStack p={3} w="full" spacing={1} alignItems="start">
+            <VStack w="full" spacing={1} alignItems="start">
               <Heading fontSize={{ base: "md", md: "2md", lg: "3md" }}>
                 Ares #12121
               </Heading>

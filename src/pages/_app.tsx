@@ -9,6 +9,7 @@ import theme from "../theme/theme";
 
 import "../../node_modules/slick-carousel/slick/slick-theme.css";
 import "../../node_modules/slick-carousel/slick/slick.css";
+import "../styles/styles.scss";
 import SEO from "../components/Seo";
 import { Images } from "../images";
 

@@ -7,13 +7,12 @@ import {
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
-import Link from "next/link";
 import NextLink from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import Icons from "../../images";
+import GameCard from "../game/GameCard";
 import ScrollSlide from "../hScroll/ScrollSlide";
-import NftCollectionCard from "../NftCollectionCard";
-export default function HotCollections() {
+export default function FeaturedGames() {
   const sliderBox = useStyleConfig("SliderBox");
 
   return (
@@ -27,10 +26,10 @@ export default function HotCollections() {
         <Heading w="full" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }}>
           <HStack justifyContent="space-between" w="full">
             <HStack alignItems="center">
-              <>Top Collections&nbsp;</>
-              <Icon w={7} h={7}>
+              <>Featured Games&nbsp;</>
+              {/* <Icon w={7} h={7}>
                 <Icons.Fire />
-              </Icon>
+              </Icon> */}
             </HStack>
             {/* <Button
               className="right-arrow-btn"
@@ -47,11 +46,13 @@ export default function HotCollections() {
       </HStack>
       <Box w="full" position="relative" __css={sliderBox}>
         <ScrollSlide>
-          {Array.from(Array(12).keys()).map((k) => (
-            <Link href="#" key={`TopCollection-${k + 1}`}>
-              <NftCollectionCard top={k + 1} />
-            </Link>
-          ))}
+          <GameCard />
+          <GameCard />
+          <GameCard />
+          <GameCard />
+          <GameCard />
+          <GameCard />
+          <GameCard />
         </ScrollSlide>
       </Box>
     </VStack>

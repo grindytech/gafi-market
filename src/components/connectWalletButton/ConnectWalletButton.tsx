@@ -29,9 +29,12 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
     <>
       <Button
         onClick={onOpen}
-        colorScheme="primary"
-        variant="outline"
+        variant="solid"
         {...rest}
+        colorScheme="primary"
+        bg="primary.500"
+        // borderColor="primary.200"
+        color="gray.50"
       >
         Connect to wallet
       </Button>
@@ -43,7 +46,6 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
           <ModalBody py="5">
             <VStack>
               <Button
-                colorScheme="primary"
                 variant="outline"
                 onClick={async () => {
                   onClose();
@@ -59,7 +61,6 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
                 Metamask
               </Button>
               <Button
-                colorScheme="primary"
                 variant="outline"
                 onClick={async () => {
                   onClose();

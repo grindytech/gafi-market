@@ -23,7 +23,7 @@ export default function HomeSlide() {
     dots: true,
     arrows: false,
     fade: true,
-    infinite: false,
+    infinite: true,
     autoplay: true,
     speed: 500,
     autoplaySpeed: 3000,
@@ -66,7 +66,7 @@ export default function HomeSlide() {
   ];
 
   return (
-    <ReactSlide length={-1} height="400px" setting={settings}>
+    <ReactSlide length={-1} height="450px" setting={settings}>
       {cards.map((card, index) => (
         <Box
           key={index}
@@ -78,7 +78,7 @@ export default function HomeSlide() {
           backgroundImage={`url(${card.image})`}
         >
           {/* This is the block you need to change, to customize the caption */}
-          <Container size="container.xl" height="400px" position="relative">
+          <Container size="container.xl" height="450px" position="relative">
             <Stack
               spacing={6}
               w={"full"}

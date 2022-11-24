@@ -1,15 +1,32 @@
 import { ComponentStyleConfig, extendTheme } from "@chakra-ui/react";
-import { createBreakpoints, StyleFunctionProps } from "@chakra-ui/theme-tools";
+import { StyleFunctionProps } from "@chakra-ui/theme-tools";
 
-const fonts = { mono: `'Menlo', monospace` };
+const fonts = {
+  heading: `sans-serif,'Open Sans'`,
+  body: `sans-serif,'Raleway'`,
+};
 
-const breakpoints = createBreakpoints({
+const breakpoints = {
   sm: "40em",
-  md: "52em",
-  lg: "64em",
-  xl: "80em",
-});
-
+  md: "64em",
+  lg: "80em",
+  xl: "110em",
+};
+const colors = {
+  primary: {
+    DEFAULT: "#6023C0",
+    "50": "#C6ABF0",
+    "100": "#BA9AED",
+    "200": "#A277E6",
+    "300": "#8B55E0",
+    "400": "#7332DA",
+    "500": "#6023C0",
+    "600": "#481A91",
+    "700": "#311261",
+    "800": "#190932",
+    "900": "#010002",
+  },
+};
 const styles = {
   global: {
     ".multi-slick-list .slick-list": { margin: "0 -10px" },
@@ -44,6 +61,7 @@ const Card: ComponentStyleConfig = {
     minWidth: "0px",
     wordWrap: "break-word",
     backgroundClip: "border-box",
+    transition: "all ease 0.5s",
   },
   variants: {
     panel: (props: StyleFunctionProps) => ({
@@ -80,8 +98,17 @@ const NFTCard: ComponentStyleConfig = {
     boxShadow: "sm",
     _hover: {
       boxShadow: "md",
+      borderColor: "primary.300",
       '[data-component-name="NFTImage"]': {
         transform: "scale(1.1)",
+      },
+      '[data-component-name="ShowOnHover"]': {
+        background: "rgba(0,0,0,0.3)",
+        visibility: "visible",
+      },
+      bgGradient: ["linear(to-b, cyan.100, purple.100)"],
+      _dark: {
+        bgGradient: ["linear(to-b, orange.800, purple.900)"],
       },
     },
     '[data-component-name="NFTImage"]': {
@@ -99,13 +126,6 @@ const NFTCardImage: ComponentStyleConfig = {
     objectFit: "cover",
   },
 };
-const Tab: ComponentStyleConfig = {
-  baseStyle: {
-    _selected: {
-      color: "blue",
-    },
-  },
-};
 const SliderBox: ComponentStyleConfig = {
   baseStyle: {
     '[data-component-name="arrow"]': {
@@ -118,6 +138,17 @@ const SliderBox: ComponentStyleConfig = {
         visibility: "visible",
         opacity: 1,
       },
+      ".react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar": {
+        visibility: "visible",
+      },
+    },
+  },
+};
+const Input: ComponentStyleConfig = {
+  baseStyle: {
+    _focusVisible: {
+      borderColor: "primary.200",
+      boxShadow: "primary.200",
     },
   },
 };
@@ -133,12 +164,12 @@ const components = {
     },
   },
   SliderBox,
-  Tab,
   Card,
   CardBody,
   CardHeader,
   NFTCard,
   NFTCardImage,
+  Input,
 };
 const theme = extendTheme({
   styles,
@@ -147,6 +178,12 @@ const theme = extendTheme({
   components,
   shadows: {
     outline: "none",
+  },
+  colors,
+  sizes: {
+    container: {
+      ...breakpoints,
+    },
   },
 });
 

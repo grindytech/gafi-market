@@ -1,9 +1,10 @@
 import {
-  BellIcon, ChevronDownIcon,
+  BellIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   CloseIcon,
   HamburgerIcon,
-  SearchIcon
+  SearchIcon,
 } from "@chakra-ui/icons";
 import {
   Avatar,
@@ -30,7 +31,7 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useSelector } from "react-redux";
@@ -45,7 +46,7 @@ export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
   const { user } = useSelector(selectProfile);
   const { nav } = useCustomColors();
-  const { reset ,waitToConnect} = useConnectWallet();
+  const { reset, waitToConnect } = useConnectWallet();
   return (
     <Box
       w="full"
@@ -103,7 +104,13 @@ export default function Navbar() {
                 pointerEvents="none"
                 children={<SearchIcon color="gray.300" />}
               />
-              <Input placeholder="Search..." />
+              <Input
+                variant="filled"
+                placeholder="Search..."
+                _focusVisible={{
+                  borderColor: "primary.300",
+                }}
+              />
             </InputGroup>
           </Stack>
 
@@ -177,7 +184,7 @@ const DesktopNav = () => {
                 as={NextLink}
                 p={2}
                 href={navItem.href ?? "#"}
-                fontSize={"sm"}
+                fontSize={"md"}
                 fontWeight="semibold"
                 color={linkColor}
                 _hover={{

@@ -1,20 +1,24 @@
 import { Box, VStack } from "@chakra-ui/react";
+import Blogs from "../components/home/Blogs";
+import FeaturedGames from "../components/home/FeaturedGames";
 import HomeSlide from "../components/home/HomeSlide";
 import HotCollections from "../components/home/HotCollections";
 import NftExplore from "../components/home/NftExplore";
-import Top from "../components/home/Top";
+import RecentlySold from "../components/home/RecentlySold";
 import { useConnectWallet } from "../connectWallet/useWallet";
 
 const Index = () => {
   const { account } = useConnectWallet();
   return (
-    <VStack w="full" spacing={10}>
+    <VStack w="full" spacing={12} mb={5}>
       <Box w="full" rounded="xl" overflow="hidden">
         <HomeSlide />
       </Box>
       <HotCollections />
-      <Top />
+      <FeaturedGames />
+      <RecentlySold />
       <NftExplore />
+      <Blogs/>
     </VStack>
   );
 };

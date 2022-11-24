@@ -21,11 +21,13 @@
     "next": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-horizontal-scrolling-menu": "^3.2.3",
     "react-icons": "^4.6.0",
     "react-lazyload": "^3.2.0",
     "react-query": "^3.39.2",
     "react-redux": "^8.0.5",
     "react-slick": "^0.29.0",
+    "sass": "^1.56.1",
     "slick-carousel": "^1.8.1",
     "web3": "1.7.4"
   },

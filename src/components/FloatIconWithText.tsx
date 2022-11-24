@@ -18,7 +18,7 @@ export default function FloatIconWithText({
       spacing={0}
       h={h}
       p={1}
-      bg="rgba(200, 200, 200, 0.2)"
+      bg={useColorModeValue("rgba(255, 255, 255, 0.7)", "rgba(0, 0, 0, 0.6)")}
       rounded="full"
       position="relative"
       overflow="hidden"
@@ -44,7 +44,7 @@ export default function FloatIconWithText({
           visibility="hidden"
           fontSize="sm"
           fontWeight="500"
-          color={useColorModeValue("gray.100", "gray.100")}
+          color={useColorModeValue("gray.700", "gray.100")}
           opacity={0}
           overflow="hidden"
           whiteSpace="nowrap"

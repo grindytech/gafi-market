@@ -8,7 +8,7 @@ export default function Layout(props: any) {
     <VStack
       w="full"
       position="relative"
-      bg="gray.100"
+      bg="white"
       color="black"
       _dark={{
         bg: "gray.900",
