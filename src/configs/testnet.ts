@@ -33,6 +33,6 @@ const configs: Configs = {
     },
   },
   DEFAULT_CHAIN: "BSC",
-  API_URL: "https://mpapi-testnet.heroesempires.com",
+  API_URL: "http://localhost:8080/",
 };
 export default configs;

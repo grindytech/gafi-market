@@ -48,6 +48,15 @@ const styles = {
         background: "white",
       },
     },
+    "::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(200, 200, 200, 0.3)",
+    },
+    "::-webkit-scrollbar-thumb": {
+      bg: "gray.100",
+    },
+    ".chakra-ui-dark ::-webkit-scrollbar-thumb": {
+      bg: "gray.900",
+    },
   },
 };
 
@@ -96,6 +105,9 @@ const NFTCard: ComponentStyleConfig = {
     overflow: "hidden",
     cursor: "pointer",
     boxShadow: "sm",
+    ".hover-show": {
+      display: "none",
+    },
     _hover: {
       boxShadow: "md",
       borderColor: "primary.300",
@@ -109,6 +121,12 @@ const NFTCard: ComponentStyleConfig = {
       bgGradient: ["linear(to-b, cyan.100, purple.100)"],
       _dark: {
         bgGradient: ["linear(to-b, orange.800, purple.900)"],
+      },
+      ".hover-hidden": {
+        display: "none",
+      },
+      ".hover-show": {
+        display: "block",
       },
     },
     '[data-component-name="NFTImage"]': {
@@ -152,6 +170,7 @@ const Input: ComponentStyleConfig = {
     },
   },
 };
+
 const components = {
   Link: {
     baseStyle: {

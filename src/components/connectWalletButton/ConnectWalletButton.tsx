@@ -15,6 +15,7 @@ import {
 import React from "react";
 import { useConnectWallet, Wallet } from "../../connectWallet/useWallet";
 import { Icons } from "../../images";
+import PrimaryButton from "../PrimaryButton";
 import RequireWalletPopup from "../requireWalletPopup/RequireWalletPopup";
 const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
   const { connect } = useConnectWallet();
@@ -27,17 +28,9 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
   } = useDisclosure();
   return (
     <>
-      <Button
-        onClick={onOpen}
-        variant="solid"
-        {...rest}
-        colorScheme="primary"
-        bg="primary.500"
-        // borderColor="primary.200"
-        color="gray.50"
-      >
+      <PrimaryButton onClick={onOpen} {...rest}>
         Connect to wallet
-      </Button>
+      </PrimaryButton>
       <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent mx={3} textAlign="center">

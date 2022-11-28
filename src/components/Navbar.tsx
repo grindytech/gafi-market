@@ -12,13 +12,16 @@ import {
   Button,
   Collapse,
   Container,
+  Fade,
   Flex,
+  Heading,
   HStack,
   Icon,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Link,
   Menu,
   MenuButton,
@@ -34,6 +37,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
+import { useState } from "react";
+import { BsSlashLg } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import { useConnectWallet } from "../connectWallet/useWallet";
 import { selectProfile } from "../store/profileSlice";
@@ -47,6 +52,8 @@ export default function Navbar() {
   const { user } = useSelector(selectProfile);
   const { nav } = useCustomColors();
   const { reset, waitToConnect } = useConnectWallet();
+  const [showSearchBox, setShowSearchBox] = useState(false);
+  const md = useBreakpointValue({ base: false, md: true });
   return (
     <Box
       w="full"
@@ -60,29 +67,28 @@ export default function Navbar() {
         <HStack
           minH={"60px"}
           py={{ base: 2 }}
-          px={{ base: 4 }}
-          align={"center"}
+          // px={{ base: 4 }}
         >
-          <Flex
-            flex={{ base: 1, md: "auto" }}
-            ml={{ base: -2 }}
-            display={{ base: "flex", md: "none" }}
-          >
-            <IconButton
-              onClick={onToggle}
-              icon={
-                isOpen ? (
-                  <CloseIcon w={3} h={3} />
-                ) : (
-                  <HamburgerIcon w={5} h={5} />
-                )
-              }
-              variant={"ghost"}
-              aria-label={"Toggle Navigation"}
-            />
-          </Flex>
           <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-            <Link as={NextLink} href="/">
+            <Flex
+              flex={{ base: 1, md: "auto" }}
+              // ml={{ base: -2 }}
+              display={{ base: "block", md: "none" }}
+            >
+              <IconButton
+                onClick={onToggle}
+                icon={
+                  isOpen ? (
+                    <CloseIcon w={3} h={3} />
+                  ) : (
+                    <HamburgerIcon w={5} h={5} />
+                  )
+                }
+                variant={"ghost"}
+                aria-label={"Toggle Navigation"}
+              />
+            </Flex>
+            <Link display="flex" alignItems="center" as={NextLink} href="/">
               <Text
                 textAlign={useBreakpointValue({ base: "center", md: "left" })}
                 fontFamily={"heading"}
@@ -98,21 +104,27 @@ export default function Navbar() {
               <DesktopNav />
             </Flex>
           </Flex>
-          <Stack>
-            <InputGroup>
-              <InputLeftElement
-                pointerEvents="none"
-                children={<SearchIcon color="gray.300" />}
-              />
-              <Input
-                variant="filled"
-                placeholder="Search..."
-                _focusVisible={{
-                  borderColor: "primary.300",
-                }}
-              />
-            </InputGroup>
-          </Stack>
+          {md && (
+            <Stack w={400}>
+              <InputGroup size="md" w="full">
+                <Input
+                  variant="filled"
+                  placeholder="Search nfts, collections and creators,..."
+                  _focusVisible={{
+                    borderColor: "primary.300",
+                  }}
+                />
+                <InputRightElement
+                  pointerEvents="none"
+                  children={
+                    <Text fontWeight="bold" fontSize="lg">
+                      /
+                    </Text>
+                  }
+                />
+              </InputGroup>
+            </Stack>
+          )}
 
           <Stack
             flex={{ base: 1, md: 0 }}
@@ -121,6 +133,18 @@ export default function Navbar() {
             direction={"row"}
             spacing={3}
           >
+            {!md && (
+              <IconButton
+                onClick={() => {
+                  setShowSearchBox(!showSearchBox);
+                }}
+                variant="ghost"
+                borderRadius={50}
+                aria-label="search"
+              >
+                <SearchIcon />
+              </IconButton>
+            )}
             {user ? (
               <>
                 <IconButton
@@ -162,6 +186,28 @@ export default function Navbar() {
           </Stack>
           <DarkModeSwitch />
         </HStack>
+        {showSearchBox && !md && (
+          <Box w="full" p={2}>
+            <InputGroup size="md" w="full">
+              <Input
+                variant="filled"
+                placeholder="Search nfts, collections and creators,..."
+                _focusVisible={{
+                  borderColor: "primary.300",
+                }}
+              />
+              <InputRightElement
+                pointerEvents="none"
+                children={
+                  <Text fontWeight="bold" fontSize="lg">
+                    /
+                  </Text>
+                }
+              />
+            </InputGroup>
+          </Box>
+        )}
+        {/* <Fade hidden={!showSearchBox && !md}></Fade> */}
       </Container>
 
       <Collapse in={isOpen} animateOpacity>
@@ -361,8 +407,8 @@ const NAV_ITEMS: Array<NavItem> = [
   //   href: "#",
   // },
   {
-    label: "Market",
-    href: "/market",
+    label: "Explore",
+    href: "/explore/nfts",
   },
   {
     label: "Games",

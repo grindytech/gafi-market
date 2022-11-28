@@ -1,5 +1,4 @@
 import jwtDecode from "jwt-decode";
-import React from "react";
 import { useDispatch } from "react-redux";
 import Web3 from "web3";
 import { ConnectWalletProvider } from "../connectWallet/useWallet";
@@ -23,9 +22,13 @@ export default function W3Provider(props: any) {
         address: account.toLowerCase(),
       });
       const message = String(sign.nonce);
-      const signature = await w3.eth.personal.sign(message, sign.address, "");
+      const signature = await w3.eth.personal.sign(
+        message,
+        account.toLowerCase(),
+        ""
+      );
       const { data: loginData } = await accountService.login({
-        address: sign.address,
+        address: account.toLowerCase(),
         signature,
       });
       dispatch(login({ accessToken: loginData.accessToken, user: account }));

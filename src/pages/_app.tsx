@@ -7,28 +7,42 @@ import W3Provider from "../layouts/W3Provider";
 import store from "../store";
 import theme from "../theme/theme";
 
+import { NextAdapter } from "next-query-params";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryParamProvider } from "use-query-params";
 import "../../node_modules/slick-carousel/slick/slick-theme.css";
 import "../../node_modules/slick-carousel/slick/slick.css";
-import "../styles/styles.scss";
 import SEO from "../components/Seo";
 import { Images } from "../images";
-
+import "../styles/styles.scss";
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider theme={theme}>
-      <Provider store={store}>
-        <W3Provider>
-          <Layout>
-            <SEO
-              image={Images.Placeholder.src}
-              description="Marketplace"
-              title="Marketplace"
-            />
-            <Component {...pageProps} />
-          </Layout>
-        </W3Provider>
-      </Provider>
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider theme={theme}>
+        <QueryParamProvider adapter={NextAdapter}>
+          <Provider store={store}>
+            <W3Provider>
+              <Layout>
+                <SEO
+                  image={Images.Placeholder.src}
+                  description="Marketplace"
+                  title="Marketplace"
+                />
+                <Component {...pageProps} />
+              </Layout>
+            </W3Provider>
+          </Provider>
+        </QueryParamProvider>
+      </ChakraProvider>
+    </QueryClientProvider>
   );
 }
 

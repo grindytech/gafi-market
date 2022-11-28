@@ -49,7 +49,7 @@ client.interceptors.request.use(beforeRequest);
   client.interceptors.response.use(({ data }) => {
     const { success = true, errors } = data;
     if (success) return data;
-    return Promise.reject(errors);
+    return Promise.reject(new Error(errors));
   }, onError);
 });
 

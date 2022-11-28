@@ -120,7 +120,7 @@ function useWallet({
         let user = "";
         let accounts: string[] = [];
         if (requestConnect) {
-          setWaitToConnect(true);
+          // setWaitToConnect(true);
           if (walletType === Wallet.WALLET_CONNECT) {
             try {
               accounts = await (provider as WalletConnectProvider).enable();
