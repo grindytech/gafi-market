@@ -12,16 +12,10 @@ import {
   Button,
   Collapse,
   Container,
-  Fade,
   Flex,
-  Heading,
   HStack,
   Icon,
   IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
   Link,
   Menu,
   MenuButton,
@@ -38,7 +32,7 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useState } from "react";
-import { BsSlashLg } from "react-icons/bs";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useSelector } from "react-redux";
 import { useConnectWallet } from "../connectWallet/useWallet";
 import { selectProfile } from "../store/profileSlice";
@@ -46,6 +40,7 @@ import useCustomColors from "../theme/useCustomColors";
 import { shorten } from "../utils/string.util";
 import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 import { DarkModeSwitch } from "./DarkModeSwitch";
+import SearchBox from "./SearchBox";
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
@@ -54,6 +49,7 @@ export default function Navbar() {
   const { reset, waitToConnect } = useConnectWallet();
   const [showSearchBox, setShowSearchBox] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
+  const [search, setSearch] = useState<string>();
   return (
     <Box
       w="full"
@@ -106,23 +102,13 @@ export default function Navbar() {
           </Flex>
           {md && (
             <Stack w={400}>
-              <InputGroup size="md" w="full">
-                <Input
-                  variant="filled"
-                  placeholder="Search nfts, collections and creators,..."
-                  _focusVisible={{
-                    borderColor: "primary.300",
-                  }}
-                />
-                <InputRightElement
-                  pointerEvents="none"
-                  children={
-                    <Text fontWeight="bold" fontSize="lg">
-                      /
-                    </Text>
-                  }
-                />
-              </InputGroup>
+              <SearchBox
+                placeHolder="Search nfts, collections and creators,..."
+                value={search}
+                onChange={(v) => {
+                  setSearch(v);
+                }}
+              />
             </Stack>
           )}
 
@@ -167,10 +153,13 @@ export default function Navbar() {
                   >
                     <Avatar
                       size={"sm"}
-                      // src={
-                      //   "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                      // }
-                    />
+                      icon={
+                        <Jazzicon
+                          diameter={31}
+                          seed={jsNumberForAddress(String(user))}
+                        />
+                      }
+                    ></Avatar>
                   </MenuButton>
                   <MenuList>
                     <MenuItem>{shorten(user, 7, 5)}</MenuItem>
@@ -186,7 +175,7 @@ export default function Navbar() {
           </Stack>
           <DarkModeSwitch />
         </HStack>
-        {showSearchBox && !md && (
+        {/* {showSearchBox && !md && (
           <Box w="full" p={2}>
             <InputGroup size="md" w="full">
               <Input
@@ -206,8 +195,7 @@ export default function Navbar() {
               />
             </InputGroup>
           </Box>
-        )}
-        {/* <Fade hidden={!showSearchBox && !md}></Fade> */}
+        )} */}
       </Container>
 
       <Collapse in={isOpen} animateOpacity>

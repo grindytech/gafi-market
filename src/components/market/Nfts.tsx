@@ -34,6 +34,7 @@ import { MarketType } from "../../services/types/enum";
 import useCustomColors from "../../theme/useCustomColors";
 import NftsFilter from "../filters/NftsFilter";
 import NftCardMarket from "../nftcard/NftCardMarket";
+import SearchBox from "../SearchBox";
 
 export default function Nfts() {
   const [showFilter, setShowFilter] = useState(false);
@@ -41,7 +42,7 @@ export default function Nfts() {
   const { borderColor } = useCustomColors();
   const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
-    size: withDefault(NumberParam, 18),
+    size: withDefault(NumberParam, 1),
     maxPrice: NumberParam,
     minPrice: NumberParam,
     search: withDefault(StringParam, ""),
@@ -65,11 +66,11 @@ export default function Nfts() {
     isLoading,
   } = useInfiniteQuery(
     ["Nfts", query],
-    async () => {
+    async ({ pageParam = 1 }) => {
       const rs = await nftService.getNfts({
         desc: query.desc as "desc" | "asc",
         orderBy: query.orderBy,
-        page: query.page,
+        page: pageParam,
         search: query.search,
         size: query.size,
         attributes: query.attributes ?? JSON.parse(query.attributes),
@@ -113,7 +114,7 @@ export default function Nfts() {
   });
   return (
     <VStack spacing={5} w="full" alignItems="start">
-      <Stack direction={["column", "row"]} w="full" justifyContent="start">
+      <Stack direction="row" w="full" justifyContent="space-between">
         <HStack>
           <Button
             onClick={() => {
@@ -124,6 +125,8 @@ export default function Nfts() {
           >
             Filter
           </Button>
+        </HStack>
+        <HStack>
           <IconButton
             isLoading={isFetching}
             onClick={() => {
@@ -146,23 +149,29 @@ export default function Nfts() {
           </Menu>
         </HStack>
       </Stack>
-      <HStack alignItems="stretch" spacing={3}>
-        {md && showFilter && (
-          <Box
-            border="1px solid"
-            borderColor={borderColor}
-            rounded="xl"
-            w="400px"
-          >
-            <NftsFilter />
-          </Box>
-        )}
-        <>
+      <HStack w="full" alignItems="start" spacing={0}>
+        <Box
+          display={md && showFilter ? "block" : "none"}
+          position="sticky"
+          border="1px solid"
+          borderColor={borderColor}
+          rounded="xl"
+          minW="350px"
+          w="350px"
+          top="10px"
+          height="calc( 100vh - 160px )"
+          minH={500}
+          mr={3}
+          overflow="hidden"
+        >
+          <NftsFilter />
+        </Box>
+        <Box w="full">
           <SimpleGrid
             justifyContent="center"
             w="full"
             columns={showFilter && md ? [1, 1, 2, 3, 4] : [1, 2, 3, 4, 6]}
-            spacing="15px"
+            gap="15px"
           >
             {!(isLoading || isFetching) &&
               marketNfts.map((nft) => {
@@ -177,7 +186,7 @@ export default function Nfts() {
           <Box my={3}>
             {hasNextPage && (isFetchingNextPage ? <CircularProgress /> : <></>)}
           </Box>
-        </>
+        </Box>
       </HStack>
     </VStack>
   );

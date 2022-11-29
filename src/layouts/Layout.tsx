@@ -12,7 +12,7 @@ export default function Layout(props: any) {
       color="black"
       _dark={{
         bg: "gray.900",
-        color: "white",
+        color: "gray.100",
       }}
       transition="all 0.15s ease-out"
     >

@@ -2,7 +2,7 @@ import Metamask from "./icons/metamask.svg";
 import Walletconnect from "./icons/walletconnect.svg";
 import Fire from "./icons/fire.svg";
 import Placeholder from "./placeholder.webp";
-import BSC from "./icons/chain/bsc.svg";
+import BSC from "./icons/coin/bnb.svg";
 import DOS from "./icons/chain/dos.svg";
 import AVAX from "./icons/chain/avax.svg";
 import BNB from "./icons/coin/bnb.svg";
