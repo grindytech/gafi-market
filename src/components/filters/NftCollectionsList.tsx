@@ -4,21 +4,21 @@ import {
   CircularProgress,
   CloseButton,
   HStack,
-  IconButton,
   StackProps,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { useMemo, useRef, useState } from "react";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useInfiniteQuery } from "react-query";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
-import SearchBox from "../SearchBox";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import useCustomColors from "../../theme/useCustomColors";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
+import useCustomColors from "../../theme/useCustomColors";
+import SearchBox from "../SearchBox";
 import Skeleton from "../Skeleton";
 import Properties from "./Properties";
+import { useNftQueryParam } from "./useCustomParam";
 
 const CollectionItem = ({
   c,
@@ -50,7 +50,7 @@ const CollectionItem = ({
       alignItems="center"
       justifyContent="space-between"
     >
-      <HStack>
+      <HStack w="full">
         <Skeleton isLoaded={!loading}>
           <Avatar
             size="sm"
@@ -74,7 +74,7 @@ const CollectionItem = ({
 
 export default function NftCollectionsList() {
   const [search, setSearch] = useState<string>();
-  const [selected, setSelected] = useState<NftCollectionDto>();
+  const { query, setQuery } = useNftQueryParam();
   const {
     data,
     isFetching,
@@ -109,22 +109,28 @@ export default function NftCollectionsList() {
     () => data?.pages.flatMap((page) => page.items) || [],
     [data]
   );
+  const selected = () => collections.find((c) => c.id === query.collectionId);
+
   const loadingRef = useRef<HTMLDivElement>(null);
   useIntersectionObserver({
     target: loadingRef,
     onIntersect: fetchNextPage,
     enabled: !isFetching && hasNextPage,
   });
-  return selected ? (
+  return selected() ? (
     <VStack w="full">
-      <CollectionItem activated c={selected}>
+      <CollectionItem activated c={selected()}>
         <CloseButton
           onClick={() => {
-            setSelected(undefined);
+            setQuery({
+              ...setQuery,
+              collectionId: undefined,
+              attributes: [],
+            });
           }}
         />
       </CollectionItem>
-      <Properties c={selected} />
+      <Properties c={selected()} />
     </VStack>
   ) : (
     <VStack w="full">
@@ -148,7 +154,10 @@ export default function NftCollectionsList() {
               return (
                 <CollectionItem
                   onClick={() => {
-                    setSelected(c);
+                    setQuery({
+                      ...setQuery,
+                      collectionId: c?.id,
+                    });
                   }}
                   key={c.id}
                   c={c}

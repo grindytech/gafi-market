@@ -1,5 +1,6 @@
 import { MarketType } from "../enum";
 import { BaseQueryParams } from "./BaseQueryParams";
+import { GetNftAttributes } from "./GetNftAttributes";
 
 export class GetNfts extends BaseQueryParams {
   marketType?: MarketType;
@@ -7,13 +8,8 @@ export class GetNfts extends BaseQueryParams {
   minPrice?: number;
   maxPrice?: number;
   collectionId?: string;
-  attributes?: {
-    key: string;
-    value?: string;
-    minNumber?: number;
-    maxNumber?: number;
-    options?: string[];
-  }[];
+  attributes?: GetNftAttributes[];
   game?: string;
   chain?: string;
+  paymentTokenId?: string;
 }

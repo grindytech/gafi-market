@@ -12,8 +12,9 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Icons from "../../images";
+import { useNftQueryParam } from "./useCustomParam";
 export default function PriceFilter() {
   const options = [
     { value: "BNB", label: "BNB", icon: <Icons.token.BNB /> },
@@ -22,7 +23,13 @@ export default function PriceFilter() {
   const [token, setToken] = useState("BNB");
   const [min, setMin] = useState<string>();
   const [max, setMax] = useState<string>();
-
+  const { query, setQuery } = useNftQueryParam();
+  useEffect(() => {
+    console.log(query)
+    setMin(query.minPrice ? String(query.minPrice) : "");
+    setMax(query.maxPrice ? String(query.maxPrice) : "");
+    setToken(query.paymentTokenId ?? "BNB");
+  }, [query]);
   return (
     <VStack w="full" spacing={3} p={1}>
       <HStack w="full">
@@ -80,7 +87,19 @@ export default function PriceFilter() {
         </Box>
       </HStack>
 
-      <Button w="full">Apply</Button>
+      <Button
+        onClick={() => {
+          setQuery({
+            ...query,
+            minPrice: min ? Number(min) : undefined,
+            maxPrice: max ? Number(max) : undefined,
+            paymentTokenId: token,
+          });
+        }}
+        w="full"
+      >
+        Apply
+      </Button>
     </VStack>
   );
 }

@@ -36,7 +36,8 @@ export default function RadioCardGroup({
         return (
           <Box pb={2} pr={2} key={`ChooseBlockchain-${value}`}>
             <RadioCard
-              defaultChecked={!!defaultChecked}
+              isChecked={defaultChecked}
+              defaultChecked={defaultChecked}
               value={value}
               key={value}
               {...radio}

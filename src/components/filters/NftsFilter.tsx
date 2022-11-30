@@ -1,4 +1,3 @@
-import { SearchIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton as ChakraAccordionButton,
@@ -6,23 +5,17 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Button,
   Heading,
   HStack,
   Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import Icons from "../../images";
-import NftCollectionsList from "./NftCollectionsList";
 import SearchBox from "../SearchBox";
+import NftCollectionsList from "./NftCollectionsList";
 import PriceFilter from "./PriceFilter";
 import RadioCardGroup from "./RadioCardGroup";
-import { MarketType } from "../../services/types/enum";
-import { Attribute } from "../../services/types/dtos/Attribute";
+import { useNftQueryParam } from "./useCustomParam";
 const AccordionButton = ({ children, ...rest }: AccordionButtonProps) => {
   return (
     <ChakraAccordionButton
@@ -42,7 +35,7 @@ const AccordionButton = ({ children, ...rest }: AccordionButtonProps) => {
 const BLOCK_OPTIONS = [
   {
     label: "All chain",
-    value: "all",
+    value: "",
     icon: <></>,
     defaultChecked: true,
   },
@@ -77,7 +70,7 @@ const BLOCK_OPTIONS = [
 const STATUS_OPTIONS = [
   {
     label: "All",
-    value: "all",
+    value: "",
     icon: <></>,
   },
   {
@@ -93,23 +86,15 @@ const STATUS_OPTIONS = [
 ];
 
 export default function NftsFilter() {
-  const [chain, setChain] = useState("all");
-  const [collection, setCollection] = useState<string>();
-  const [search, setSearch] = useState<string>();
-  const [minPrice, setMinPrice] = useState<number>();
-  const [maxPrice, setMaxPrice] = useState<number>();
-  const [status, setStatus] = useState<MarketType>();
-  const [paymentToken, setPaymentToken] = useState<string>();
-  const [attributes, setAttributes] = useState<Attribute[]>();
-
+  const { query, setQuery } = useNftQueryParam();
   return (
     <VStack w="full" h="full" p={5} overflow="auto">
       <HStack w="full" mb={1} justifyContent="space-between">
         <SearchBox
           placeHolder="Search..."
-          value={search}
+          value={query.search}
           onChange={(v) => {
-            setSearch(v);
+            setQuery({ ...query, search: v });
           }}
         />
       </HStack>
@@ -122,7 +107,7 @@ export default function NftsFilter() {
           <AccordionPanel pb={4} px={0}>
             <RadioCardGroup
               onChange={(v: any) => {
-                setChain(v);
+                setQuery({ ...query, chain: v });
               }}
               direction="row"
               flexWrap="wrap"
@@ -149,7 +134,12 @@ export default function NftsFilter() {
           </AccordionButton>
           <AccordionPanel pb={4} px={0}>
             <RadioCardGroup
-              onChange={(v: any) => {}}
+              onChange={(v: any) => {
+                setQuery({
+                  ...query,
+                  marketType: v,
+                });
+              }}
               direction="row"
               flexWrap="wrap"
               defaultValue="all"

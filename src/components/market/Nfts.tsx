@@ -1,67 +1,48 @@
-import { ChevronDownIcon, SearchIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
+  AvatarBadge,
   Box,
   Button,
+  Circle,
   CircularProgress,
-  Fade,
   HStack,
   IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
   SimpleGrid,
   Stack,
+  Text,
   useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
 import { useMemo, useRef, useState } from "react";
 import { FiArrowLeft, FiFilter, FiRefreshCw } from "react-icons/fi";
 import { useInfiniteQuery } from "react-query";
-import {
-  BooleanParam,
-  NumberParam,
-  StringParam,
-  useQueryParams,
-  withDefault,
-} from "use-query-params";
+
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
 import { MarketType } from "../../services/types/enum";
+import { GetNfts } from "../../services/types/params/GetNfts";
 import useCustomColors from "../../theme/useCustomColors";
 import NftsFilter from "../filters/NftsFilter";
+import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
-import SearchBox from "../SearchBox";
 
 export default function Nfts() {
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
-  const [query, setQuery] = useQueryParams({
-    page: withDefault(NumberParam, 1),
-    size: withDefault(NumberParam, 1),
-    maxPrice: NumberParam,
-    minPrice: NumberParam,
-    search: withDefault(StringParam, ""),
-    desc: withDefault(StringParam, "asc"),
-    orderBy: withDefault(StringParam, "price"),
-    blacklist: BooleanParam,
-    attributes: withDefault(StringParam, ""), //format: json
-    chain: StringParam,
-    collectionId: StringParam,
-    game: StringParam,
-    marketType: StringParam, // withDefault(StringParam, "OnSale"),
-  });
+  const { query, setQuery, fixedProperties, defaultValue } = useNftQueryParam();
+  const countFilter = () =>
+    Object.keys(query).filter((k) => !!query[k]).length - fixedProperties;
   const {
     data: nftsRsp,
     isFetching,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
-    remove,
     refetch,
     isLoading,
   } = useInfiniteQuery(
@@ -73,17 +54,17 @@ export default function Nfts() {
         page: pageParam,
         search: query.search,
         size: query.size,
-        attributes: query.attributes ?? JSON.parse(query.attributes),
+        attributes: query.attributes,
         chain: query.chain,
         collectionId: query.collectionId,
         game: query.game,
         marketType: query.marketType as MarketType,
         maxPrice: query.maxPrice,
         minPrice: query.minPrice,
+        paymentTokenId: query.paymentTokenId,
       });
       return rs.data;
     },
-
     {
       getNextPageParam: (lastPage) =>
         lastPage.hasNext ? lastPage.currentPage + 1 : undefined,
@@ -112,6 +93,7 @@ export default function Nfts() {
     onIntersect: fetchNextPage,
     enabled: !isFetching && hasNextPage,
   });
+
   return (
     <VStack spacing={5} w="full" alignItems="start">
       <Stack direction="row" w="full" justifyContent="space-between">
@@ -123,8 +105,42 @@ export default function Nfts() {
             leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
             lineHeight="base"
           >
-            Filter
+            <HStack>
+              <Text>Filter</Text>
+              {countFilter() && (
+                <Box
+                  w="1.5em"
+                  h="1.5em"
+                  justifyContent="center"
+                  alignItems="center"
+                  fontSize="xs"
+                  rounded="full"
+                  bg="gray"
+                  color="white"
+                >
+                  {countFilter()}
+                </Box>
+              )}
+            </HStack>
           </Button>
+          {countFilter() && (
+            <Button
+              onClick={() => {
+                setQuery(
+                  {
+                    page: 1,
+                    size: 18,
+                    desc: "desc",
+                    orderBy: "price",
+                    attributes: [],
+                  },
+                  "replace"
+                );
+              }}
+            >
+              Reset all
+            </Button>
+          )}
         </HStack>
         <HStack>
           <IconButton
@@ -173,11 +189,11 @@ export default function Nfts() {
             columns={showFilter && md ? [1, 1, 2, 3, 4] : [1, 2, 3, 4, 6]}
             gap="15px"
           >
-            {!(isLoading || isFetching) &&
+            {!isLoading &&
               marketNfts.map((nft) => {
                 return nft ? <NftCardMarket nft={nft} key={nft.id} /> : <></>;
               })}
-            {(isLoading || isFetching) &&
+            {isLoading &&
               Array.from(Array(12).keys()).map((k) => (
                 <NftCardMarket loading key={`nft-template-${k}`} />
               ))}
