@@ -49,49 +49,46 @@ export default function NftCard({
         }}
       >
         <CardBody>
-          <VStack w="full">
-            <Box p={3}>
-              <Box
-                rounded="2xl"
-                // bg={useColorModeValue("gray.800", "gray.800")}
-                pos={"relative"}
-                w="full"
-                height={"300px"}
-                overflow="hidden"
-                justifyContent="center"
-                alignItems="center"
-                display="flex"
-              >
-                {showOnHover && (
-                  <HStack
-                    className="hover-show"
-                    position="absolute"
-                    top={0}
-                    left={0}
-                    w="full"
-                    h="full"
-                    zIndex={2}
-                  >
-                    {showOnHover}
-                  </HStack>
+          <VStack w="full" spacing={0}>
+            <Box
+              rounded="xl"
+              pos={"relative"}
+              w="full"
+              height={"300px"}
+              overflow="hidden"
+              justifyContent="center"
+              alignItems="center"
+              display="flex"
+            >
+              {showOnHover && (
+                <HStack
+                  className="hover-show"
+                  position="absolute"
+                  top={0}
+                  left={0}
+                  w="full"
+                  h="full"
+                  zIndex={2}
+                >
+                  {showOnHover}
+                </HStack>
+              )}
+              <Skeleton isLoaded={!loading}>
+                <LazyImage
+                  className={videoUri && "hover-hidden"}
+                  data-component-name="NFTImage"
+                  __css={imageStyles}
+                  h="300px"
+                  w="full"
+                  src={image}
+                  objectFit="cover"
+                />
+                {videoUri && (
+                  <video className="hover-show" ref={videoRef} height="300px">
+                    <source src={videoUri} />
+                  </video>
                 )}
-                <Skeleton isLoaded={!loading}>
-                  <LazyImage
-                    className={videoUri && "hover-hidden"}
-                    data-component-name="NFTImage"
-                    __css={imageStyles}
-                    h="300px"
-                    src={image}
-                    rounded="2xl"
-                    objectFit="cover"
-                  />
-                  {videoUri && (
-                    <video className="hover-show" ref={videoRef} height="300px">
-                      <source src={videoUri} />
-                    </video>
-                  )}
-                </Skeleton>
-              </Box>
+              </Skeleton>
             </Box>
             <VStack w="full" spacing={0} alignItems="start">
               {children}

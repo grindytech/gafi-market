@@ -1,11 +1,12 @@
-import { Container, VStack } from "@chakra-ui/react";
+import { Container, StackProps, VStack } from "@chakra-ui/react";
 import React from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
-export default function Layout(props: any) {
+export default function Layout({ children, ...rest }: StackProps) {
   return (
     <VStack
+      {...rest}
       w="full"
       position="relative"
       bg="white"
@@ -20,7 +21,7 @@ export default function Layout(props: any) {
         <VStack w="full" spacing={5}>
           <Navbar />
           <Container maxW="container.xl" w="full">
-            {props.children}
+            {children}
           </Container>
         </VStack>
         <Footer />

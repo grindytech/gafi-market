@@ -5,12 +5,28 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  Box,
+  Button,
+  ButtonProps,
+  Card,
+  CardBody,
+  CardHeader,
+  CloseButton,
   Heading,
   HStack,
   Icon,
+  useColorModeValue,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import React from "react";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import { useSelector } from "react-redux";
 import Icons from "../../images";
+import { ChainDto } from "../../services/types/dtos/ChainDto";
+import { selectProfile } from "../../store/profileSlice";
+import { selectSystem } from "../../store/systemSlice";
+import PrimaryButton from "../PrimaryButton";
 import SearchBox from "../SearchBox";
 import NftCollectionsList from "./NftCollectionsList";
 import PriceFilter from "./PriceFilter";
@@ -32,41 +48,6 @@ const AccordionButton = ({ children, ...rest }: AccordionButtonProps) => {
   );
 };
 
-const BLOCK_OPTIONS = [
-  {
-    label: "All chain",
-    value: "",
-    icon: <></>,
-    defaultChecked: true,
-  },
-  {
-    label: "BSC",
-    value: "bsc",
-    icon: (
-      <Icon w={5} h={5}>
-        <Icons.chain.BSC />
-      </Icon>
-    ),
-  },
-  {
-    label: "AVAX",
-    value: "avax",
-    icon: (
-      <Icon w={5} h={5}>
-        <Icons.chain.AVAX />
-      </Icon>
-    ),
-  },
-  {
-    label: "DOS",
-    value: "dos",
-    icon: (
-      <Icon w={5} h={5}>
-        <Icons.chain.DOS />
-      </Icon>
-    ),
-  },
-];
 const STATUS_OPTIONS = [
   {
     label: "All",
@@ -87,6 +68,8 @@ const STATUS_OPTIONS = [
 
 export default function NftsFilter() {
   const { query, setQuery } = useNftQueryParam();
+  const { chains } = useSelector(selectSystem);
+
   return (
     <VStack w="full" h="full" p={5} overflow="auto">
       <HStack w="full" mb={1} justifyContent="space-between">
@@ -106,15 +89,38 @@ export default function NftsFilter() {
           </AccordionButton>
           <AccordionPanel pb={4} px={0}>
             <RadioCardGroup
+              value={query.chain}
               onChange={(v: any) => {
                 setQuery({ ...query, chain: v });
               }}
               direction="row"
               flexWrap="wrap"
-              defaultValue="all"
-              defaultChecked={true}
               spacing={0}
-              options={BLOCK_OPTIONS}
+              options={[
+                {
+                  label: "All chain",
+                  value: "",
+                  icon: <></>,
+                },
+                ,
+                ...chains.map((chain: ChainDto) => {
+                  const icon = Icons.chain[chain.symbol.toUpperCase()];
+                  return {
+                    label: chain.name,
+                    value: chain.id,
+                    icon: icon ? (
+                      <Icon w={5} h={5}>
+                        {icon()}
+                      </Icon>
+                    ) : (
+                      <Jazzicon
+                        diameter={20}
+                        seed={jsNumberForAddress(String(chain.symbol))}
+                      />
+                    ),
+                  };
+                }),
+              ]}
             />
           </AccordionPanel>
         </AccordionItem>
@@ -134,6 +140,7 @@ export default function NftsFilter() {
           </AccordionButton>
           <AccordionPanel pb={4} px={0}>
             <RadioCardGroup
+              value={query.marketType}
               onChange={(v: any) => {
                 setQuery({
                   ...query,
@@ -160,5 +167,72 @@ export default function NftsFilter() {
         </AccordionItem>
       </Accordion>
     </VStack>
+  );
+}
+
+export function NftsFilterMobileBtn({ children, ...rest }: ButtonProps) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { reset } = useNftQueryParam();
+  return (
+    <Box>
+      <Button {...rest} onClick={onOpen}>
+        {children}
+      </Button>
+      <VStack
+        display={isOpen ? "block" : "none"}
+        position="fixed"
+        zIndex={100}
+        w="100vw"
+        h="full"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        bg={useColorModeValue("gray.50", "gray.900")}
+      >
+        <HStack
+          h="60px"
+          alignItems="center"
+          boxShadow="md"
+          px={5}
+          w="full"
+          justifyContent="space-between"
+        >
+          <Heading fontSize="xl">FILTER</Heading>
+          <CloseButton onClick={onClose} />
+        </HStack>
+        <Box w="full" h="calc( 100vh - 60px )" overflow="auto">
+          <Box mb="100px">
+            <NftsFilter />
+          </Box>
+        </Box>
+        <HStack
+          p={3}
+          w="full"
+          justifyContent="center"
+          alignItems="center"
+          bg={useColorModeValue("rgba(255,255,255,0.9)", "gray.900")}
+          position="absolute"
+          bottom={0}
+          left={0}
+          height="100px"
+          spacing={5}
+        >
+          <Button
+            rounded="full"
+            size="lg"
+            onClick={() => {
+              reset();
+              onClose();
+            }}
+          >
+            Reset all
+          </Button>
+          <PrimaryButton size="lg" rounded="full" onClick={onClose}>
+            View result
+          </PrimaryButton>
+        </HStack>
+      </VStack>
+    </Box>
   );
 }

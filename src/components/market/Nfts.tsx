@@ -1,9 +1,7 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
-  AvatarBadge,
   Box,
   Button,
-  Circle,
   CircularProgress,
   HStack,
   IconButton,
@@ -12,6 +10,7 @@ import {
   MenuItem,
   MenuList,
   SimpleGrid,
+  Spinner,
   Stack,
   Text,
   useBreakpointValue,
@@ -24,17 +23,18 @@ import { useInfiniteQuery } from "react-query";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
 import { MarketType } from "../../services/types/enum";
-import { GetNfts } from "../../services/types/params/GetNfts";
 import useCustomColors from "../../theme/useCustomColors";
-import NftsFilter from "../filters/NftsFilter";
+import { EmptyState, ErrorState } from "../EmptyState";
+import NftsFilter, { NftsFilterMobileBtn } from "../filters/NftsFilter";
+import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
 
-export default function Nfts() {
+export default function Nfts({ owner }: { owner?: string }) {
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
-  const { query, setQuery, fixedProperties, defaultValue } = useNftQueryParam();
+  const { query, setQuery, fixedProperties } = useNftQueryParam();
   const countFilter = () =>
     Object.keys(query).filter((k) => !!query[k]).length - fixedProperties;
   const {
@@ -45,8 +45,9 @@ export default function Nfts() {
     hasNextPage,
     refetch,
     isLoading,
+    isError,
   } = useInfiniteQuery(
-    ["Nfts", query],
+    ["Nfts", JSON.stringify(query)],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNfts({
         desc: query.desc as "desc" | "asc",
@@ -62,6 +63,7 @@ export default function Nfts() {
         maxPrice: query.maxPrice,
         minPrice: query.minPrice,
         paymentTokenId: query.paymentTokenId,
+        owner: owner,
       });
       return rs.data;
     },
@@ -70,16 +72,10 @@ export default function Nfts() {
         lastPage.hasNext ? lastPage.currentPage + 1 : undefined,
       getPreviousPageParam: (firstPage) =>
         firstPage.hasPrevious ? firstPage.currentPage - 1 : undefined,
-      onSuccess: () => {
-        // if (query.search) {
-        //   sendGAEvent("mp_search_keyword", { key_work: query.search });
-        // }
-      },
+      onSuccess: () => {},
       onError: (error) => {
         console.error(error);
-        // setError(true);
       },
-      retry: false,
     }
   );
   const marketNfts = useMemo(
@@ -91,38 +87,66 @@ export default function Nfts() {
   useIntersectionObserver({
     target: loadingRef,
     onIntersect: fetchNextPage,
-    enabled: !isFetching && hasNextPage,
+    enabled: !isLoading && !isFetching && hasNextPage,
   });
+
+  const isEmpty = useMemo(
+    () => !isError && !isLoading && !isFetching && marketNfts.length === 0,
+    [isError, isLoading, isFetching, marketNfts.length]
+  );
 
   return (
     <VStack spacing={5} w="full" alignItems="start">
       <Stack direction="row" w="full" justifyContent="space-between">
         <HStack>
-          <Button
-            onClick={() => {
-              setShowFilter(!showFilter);
-            }}
-            leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
-            lineHeight="base"
-          >
-            <HStack>
-              <Text>Filter</Text>
-              {countFilter() && (
-                <Box
-                  w="1.5em"
-                  h="1.5em"
-                  justifyContent="center"
-                  alignItems="center"
-                  fontSize="xs"
-                  rounded="full"
-                  bg="gray"
-                  color="white"
-                >
-                  {countFilter()}
-                </Box>
-              )}
-            </HStack>
-          </Button>
+          {md && (
+            <Button
+              onClick={() => {
+                setShowFilter(!showFilter);
+              }}
+              leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
+              lineHeight="base"
+            >
+              <HStack>
+                <Text>Filter</Text>
+                {countFilter() && (
+                  <Box
+                    w="1.5em"
+                    h="1.5em"
+                    justifyContent="center"
+                    alignItems="center"
+                    fontSize="xs"
+                    rounded="full"
+                    bg="gray"
+                    color="white"
+                  >
+                    {countFilter()}
+                  </Box>
+                )}
+              </HStack>
+            </Button>
+          )}
+          {!md && (
+            <NftsFilterMobileBtn lineHeight="base">
+              <HStack>
+                <Text>Filter</Text>
+                {countFilter() && (
+                  <Box
+                    w="1.5em"
+                    h="1.5em"
+                    justifyContent="center"
+                    alignItems="center"
+                    fontSize="xs"
+                    rounded="full"
+                    bg="gray"
+                    color="white"
+                  >
+                    {countFilter()}
+                  </Box>
+                )}
+              </HStack>
+            </NftsFilterMobileBtn>
+          )}
           {countFilter() && (
             <Button
               onClick={() => {
@@ -133,6 +157,8 @@ export default function Nfts() {
                     desc: "desc",
                     orderBy: "price",
                     attributes: [],
+                    chain: "",
+                    marketType: "",
                   },
                   "replace"
                 );
@@ -153,16 +179,7 @@ export default function Nfts() {
           >
             <FiRefreshCw />
           </IconButton>
-          <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              Recently listed
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Recently listed</MenuItem>
-              <MenuItem>Price: low to high</MenuItem>
-              <MenuItem>Price: high to low</MenuItem>
-            </MenuList>
-          </Menu>
+          <Sort />
         </HStack>
       </Stack>
       <HStack w="full" alignItems="start" spacing={0}>
@@ -174,8 +191,8 @@ export default function Nfts() {
           rounded="xl"
           minW="350px"
           w="350px"
-          top="10px"
-          height="calc( 100vh - 160px )"
+          top="30px"
+          height="calc( 100vh - 60px )"
           minH={500}
           mr={3}
           overflow="hidden"
@@ -183,6 +200,32 @@ export default function Nfts() {
           <NftsFilter />
         </Box>
         <Box w="full">
+          {isEmpty && (
+            <Box w="full" py={10}>
+              <EmptyState>
+                <Button
+                  onClick={() => {
+                    refetch();
+                  }}
+                >
+                  Try again
+                </Button>
+              </EmptyState>
+            </Box>
+          )}
+          {isError && (
+            <Box w="full" py={10}>
+              <ErrorState>
+                <Button
+                  onClick={() => {
+                    refetch();
+                  }}
+                >
+                  Try again
+                </Button>
+              </ErrorState>
+            </Box>
+          )}
           <SimpleGrid
             justifyContent="center"
             w="full"
@@ -193,14 +236,29 @@ export default function Nfts() {
               marketNfts.map((nft) => {
                 return nft ? <NftCardMarket nft={nft} key={nft.id} /> : <></>;
               })}
-            {isLoading &&
+
+            {(isLoading || isFetching) &&
+              marketNfts.length === 0 &&
               Array.from(Array(12).keys()).map((k) => (
                 <NftCardMarket loading key={`nft-template-${k}`} />
               ))}
           </SimpleGrid>
-          <div ref={loadingRef} />
+          {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}
           <Box my={3}>
-            {hasNextPage && (isFetchingNextPage ? <CircularProgress /> : <></>)}
+            {hasNextPage &&
+              (isFetchingNextPage ? (
+                <HStack py={3} w="full" justifyContent="center">
+                  <Spinner
+                    thickness="4px"
+                    speed="0.65s"
+                    // emptyColor="gray.200"
+                    // color="blue.500"
+                    size="lg"
+                  />
+                </HStack>
+              ) : (
+                <></>
+              ))}
           </Box>
         </Box>
       </HStack>

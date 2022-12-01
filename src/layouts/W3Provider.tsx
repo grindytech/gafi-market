@@ -1,9 +1,18 @@
 import jwtDecode from "jwt-decode";
+import { useEffect } from "react";
+import { useQuery } from "react-query";
 import { useDispatch } from "react-redux";
 import Web3 from "web3";
 import { ConnectWalletProvider } from "../connectWallet/useWallet";
+import systemService from "../services/system.service";
 import { accountService } from "../services/user.service";
-import { LOCAL_PROFILE_KEY, login, logout } from "../store/profileSlice";
+import {
+  LOCAL_PROFILE_KEY,
+  login,
+  logout,
+  userData,
+} from "../store/profileSlice";
+import { setChains, setPaymentTokens } from "../store/systemSlice";
 
 export default function W3Provider(props: any) {
   const dispatch = useDispatch();
@@ -16,6 +25,8 @@ export default function W3Provider(props: any) {
       const payload: { exp: number } = jwtDecode(accessToken);
       if (payload.exp - 3600 * 0.1 > Date.now() / 1000) {
         dispatch(login({ accessToken, user }));
+        const userInfo = await accountService.profile();
+        dispatch(userData({ profile: userInfo }));
       }
     } else {
       const { data: sign } = await accountService.nonce({
@@ -32,8 +43,29 @@ export default function W3Provider(props: any) {
         signature,
       });
       dispatch(login({ accessToken: loginData.accessToken, user: account }));
+      const userInfo = await accountService.profile();
+      dispatch(userData({ profile: userInfo }));
     }
   };
+
+  const { data: chains } = useQuery(
+    "chains",
+    async () => systemService.getChainSupport(),
+    {
+      onSuccess: ({ data }) => {
+        dispatch(setChains({ chains: data }));
+      },
+    }
+  );
+  const { data: paymentTokens } = useQuery(
+    "paymentTokens",
+    async () => systemService.getPaymentTokens(),
+    {
+      onSuccess: ({ data }) => {
+        dispatch(setPaymentTokens({ paymentTokens: data }));
+      },
+    }
+  );
   return (
     <ConnectWalletProvider
       onDisconnect={() => dispatch(logout())}

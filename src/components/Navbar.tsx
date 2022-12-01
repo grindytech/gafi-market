@@ -3,6 +3,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   CloseIcon,
+  CopyIcon,
   HamburgerIcon,
   SearchIcon,
 } from "@chakra-ui/icons";
@@ -10,6 +11,7 @@ import {
   Avatar,
   Box,
   Button,
+  ButtonProps,
   Collapse,
   Container,
   Flex,
@@ -21,6 +23,7 @@ import {
   MenuButton,
   MenuDivider,
   MenuItem,
+  MenuItemProps,
   MenuList,
   Popover,
   PopoverContent,
@@ -32,15 +35,32 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useState } from "react";
+import { FiEdit, FiLogOut, FiUser } from "react-icons/fi";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useSelector } from "react-redux";
 import { useConnectWallet } from "../connectWallet/useWallet";
+import useCustomToast from "../hooks/useCustomToast";
 import { selectProfile } from "../store/profileSlice";
 import useCustomColors from "../theme/useCustomColors";
 import { shorten } from "../utils/string.util";
 import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import SearchBox from "./SearchBox";
+const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
+  return (
+    <MenuItem
+      display="flex"
+      fontWeight="normal"
+      justifyContent="start"
+      as={Button}
+      {...rest}
+      rounded="lg"
+      alignItems="center"
+    >
+      <Text lineHeight={1}>{children}</Text>
+    </MenuItem>
+  );
+};
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
@@ -50,6 +70,7 @@ export default function Navbar() {
   const [showSearchBox, setShowSearchBox] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const [search, setSearch] = useState<string>();
+  const toast = useCustomToast();
   return (
     <Box
       w="full"
@@ -161,11 +182,30 @@ export default function Navbar() {
                       }
                     ></Avatar>
                   </MenuButton>
-                  <MenuList>
-                    <MenuItem>{shorten(user, 7, 5)}</MenuItem>
-                    <MenuItem>Link 2</MenuItem>
+                  <MenuList px={2}>
+                    <MenuItemBtn
+                      onClick={() => {
+                        navigator.clipboard.writeText(String(user));
+                        toast.success("Copied!");
+                      }}
+                      rightIcon={<CopyIcon color="gray" />}
+                    >
+                      {shorten(user, 7, 5)}
+                    </MenuItemBtn>
                     <MenuDivider />
-                    <MenuItem onClick={reset}>Disconnect</MenuItem>
+                    <NextLink href="/profile">
+                      <MenuItemBtn leftIcon={<FiUser />}>Profile</MenuItemBtn>
+                    </NextLink>
+                    <MenuItemBtn leftIcon={<FiEdit />}>
+                      Edit Profile
+                    </MenuItemBtn>
+                    <MenuItemBtn
+                      color="gray"
+                      leftIcon={<FiLogOut />}
+                      onClick={reset}
+                    >
+                      Disconnect
+                    </MenuItemBtn>
                   </MenuList>
                 </Menu>
               </>

@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <QueryParamProvider adapter={NextAdapter}>
           <Provider store={store}>
             <W3Provider>
-              <Layout>
+              <Layout overflow="auto" w="100vw" h="100vh">
                 <SEO
                   image={Images.Placeholder.src}
                   description="Marketplace"

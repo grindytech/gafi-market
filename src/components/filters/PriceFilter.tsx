@@ -13,23 +13,57 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import { useSelector } from "react-redux";
 import Icons from "../../images";
+import { selectSystem, setPaymentTokens } from "../../store/systemSlice";
 import { useNftQueryParam } from "./useCustomParam";
 export default function PriceFilter() {
-  const options = [
-    { value: "BNB", label: "BNB", icon: <Icons.token.BNB /> },
-    { value: "He", label: "He", icon: <Icons.token.HE /> },
-  ];
-  const [token, setToken] = useState("BNB");
+  // const options = [
+  //   { value: "BNB", label: "BNB", icon: <Icons.token.BNB /> },
+  //   { value: "He", label: "He", icon: <Icons.token.HE /> },
+  // ];
   const [min, setMin] = useState<string>();
   const [max, setMax] = useState<string>();
+  const { paymentTokens } = useSelector(selectSystem);
+  const [tokenSymbol, setTokenSymbol] = useState(paymentTokens[0]?.id);
+  const [tokenId, setTokenId] = useState(paymentTokens[0]?.symbol);
+
+  const options = paymentTokens.map((p) => {
+    const icon = Icons.token[p.symbol.toUpperCase()];
+    return {
+      value: p.id,
+      label: p.symbol,
+      icon: (
+        <Icon w={5} h={5}>
+          {icon ? (
+            icon()
+          ) : (
+            <Jazzicon
+              diameter={20}
+              seed={jsNumberForAddress(String(p.symbol))}
+            />
+          )}
+        </Icon>
+      ),
+    };
+  });
   const { query, setQuery } = useNftQueryParam();
   useEffect(() => {
-    console.log(query)
     setMin(query.minPrice ? String(query.minPrice) : "");
     setMax(query.maxPrice ? String(query.maxPrice) : "");
-    setToken(query.paymentTokenId ?? "BNB");
-  }, [query]);
+    if (query.paymentTokenId) {
+      const payment = paymentTokens.find((p) => p.id === query.paymentTokenId);
+      if (payment) {
+        setTokenId(payment.id);
+        setTokenSymbol(payment.symbol);
+      }
+    }
+  }, [query.minPrice, query.maxPrice, query.paymentTokenId]);
+  useEffect(() => {
+    setTokenId(paymentTokens[0]?.id);
+    setTokenSymbol(paymentTokens[0]?.symbol);
+  }, [paymentTokens]);
   return (
     <VStack w="full" spacing={3} p={1}>
       <HStack w="full">
@@ -53,35 +87,46 @@ export default function PriceFilter() {
         <Box w="full">
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              {token}
+              {tokenSymbol}
             </MenuButton>
             <MenuList>
-              {options.map(({ value, label, icon }) => (
-                <MenuItem p={0} key={`PriceFilter-chain-${value}`}>
-                  <Button
-                    onClick={() => {
-                      setToken(value);
-                    }}
-                    rounded={0}
-                    variant="unstyled"
-                    disabled={value === token}
-                  >
-                    <HStack
-                      py={1}
-                      px={2}
-                      w="full"
-                      justifyContent="start"
-                      alignItems="center"
-                      lineHeight="1em"
+              {paymentTokens.map((p) => {
+                const icon = Icons.token[p.symbol.toUpperCase()];
+                return (
+                  <MenuItem p={0} key={`PriceFilter-chain-${p.symbol}`}>
+                    <Button
+                      onClick={() => {
+                        setTokenId(p.id);
+                        setTokenSymbol(p.symbol);
+                      }}
+                      rounded={0}
+                      variant="unstyled"
+                      disabled={p.id === tokenId}
                     >
-                      <Icon w={6} h={6}>
-                        {React.cloneElement(icon)}
-                      </Icon>
-                      <Text>{label}</Text>
-                    </HStack>
-                  </Button>
-                </MenuItem>
-              ))}
+                      <HStack
+                        py={1}
+                        px={2}
+                        w="full"
+                        justifyContent="start"
+                        alignItems="center"
+                        lineHeight="1em"
+                      >
+                        {icon ? (
+                          <Icon w={6} h={6}>
+                            {icon()}
+                          </Icon>
+                        ) : (
+                          <Jazzicon
+                            diameter={24}
+                            seed={jsNumberForAddress(String(p.symbol))}
+                          />
+                        )}
+                        <Text>{p.symbol}</Text>
+                      </HStack>
+                    </Button>
+                  </MenuItem>
+                );
+              })}
             </MenuList>
           </Menu>
         </Box>
@@ -93,7 +138,7 @@ export default function PriceFilter() {
             ...query,
             minPrice: min ? Number(min) : undefined,
             maxPrice: max ? Number(max) : undefined,
-            paymentTokenId: token,
+            paymentTokenId: tokenId,
           });
         }}
         w="full"

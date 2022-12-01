@@ -19,12 +19,18 @@ type RadioOption = {
 export default function RadioCardGroup({
   onChange,
   options,
+  value,
   ...rest
-}: StackProps & { options: RadioOption[]; onChange?: (val: string) => void }) {
+}: StackProps & {
+  options: RadioOption[];
+  onChange?: (val: string) => void;
+  value: any;
+}) {
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "framework",
     defaultValue: "react",
     onChange: onChange,
+    value,
   });
 
   const group = getRootProps();
@@ -38,8 +44,6 @@ export default function RadioCardGroup({
             <RadioCard
               isChecked={defaultChecked}
               defaultChecked={defaultChecked}
-              value={value}
-              key={value}
               {...radio}
             >
               <HStack spacing={1} alignItems="center" height="2em">

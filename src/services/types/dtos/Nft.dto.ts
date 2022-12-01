@@ -5,6 +5,7 @@ import { MediaDto } from "./Media.dto";
 import { NftCollectionDto } from "./NftCollectionDto";
 import { SalesDto } from "./SalesDto";
 import { Users } from "./Users";
+import { ChainDto } from "./ChainDto";
 
 export class NftDto extends BaseDocumentDto {
   marketType: MarketType;
@@ -22,4 +23,5 @@ export class NftDto extends BaseDocumentDto {
   price: number;
   lastSold: number;
   lastSoldToken: string;
+  chain: ChainDto;
 }

@@ -8,22 +8,36 @@ import {
 } from "use-query-params";
 
 export const useNftQueryParam = () => {
-  const defaultValue = {
+  const [query, setQuery] = useQueryParams({
     page: withDefault(NumberParam, 1),
     size: withDefault(NumberParam, 18),
     maxPrice: NumberParam,
     minPrice: NumberParam,
     search: StringParam,
-    desc: withDefault(StringParam, "asc"),
-    orderBy: withDefault(StringParam, "price"),
+    desc: withDefault(StringParam, "desc"),
+    orderBy: withDefault(StringParam, "updatedAt"),
     blacklist: BooleanParam,
     attributes: withDefault(JsonParam, []),
-    chain: StringParam,
+    chain: withDefault(StringParam, ""),
     collectionId: StringParam,
     game: StringParam,
     paymentTokenId: StringParam,
-    marketType: StringParam, // withDefault(StringParam, "OnSale"),
+    marketType: withDefault(StringParam, ""),
+    sort: withDefault(NumberParam, 0),
+  });
+  const reset = () => {
+    setQuery(
+      {
+        page: 1,
+        size: 18,
+        desc: "desc",
+        orderBy: "price",
+        attributes: [],
+        chain: "",
+        marketType: "",
+      },
+      "replace"
+    );
   };
-  const [query, setQuery] = useQueryParams(defaultValue);
-  return { query, setQuery, defaultValue, fixedProperties: 5 };
+  return { query, setQuery, fixedProperties: 5, reset };
 };

@@ -16,7 +16,7 @@ import NftCard from "./NftCard";
 import NextLink from "next/link";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import Skeleton from "../Skeleton";
-
+import Icons from "../../images";
 
 export default function NftCardMarket({
   nft,
@@ -89,10 +89,17 @@ export default function NftCardMarket({
               </Text>
             </NextLink>
           </Skeleton>
-          <Skeleton isLoaded={!loading}>
-            <Text fontSize="md" fontWeight="semibold">
-              {nft?.name}
-            </Text>
+          <Skeleton w='full' isLoaded={!loading}>
+            <HStack w="full" justifyContent="space-between">
+              <Text fontSize="md" fontWeight="semibold">
+                {nft?.name}
+              </Text>
+              <Icon blur='xl' w={5} h={5}>
+                {Icons.chain[String(nft?.chain?.symbol).toUpperCase()]
+                  ? Icons.chain[String(nft?.chain?.symbol).toUpperCase()]()
+                  : ""}
+              </Icon>
+            </HStack>
           </Skeleton>
         </VStack>
         <HStack

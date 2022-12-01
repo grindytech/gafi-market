@@ -8,7 +8,7 @@ export default function RadioCard(props: RadioProps) {
 
   return (
     <Box as="label">
-      <input {...input} />
+      <input checked {...input} />
       <Box
         {...checkbox}
         cursor="pointer"

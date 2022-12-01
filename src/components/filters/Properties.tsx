@@ -106,7 +106,6 @@ const PropertyString = ({ attrMap, onChange, defaultAttr }: PropertyProps) => {
   const [values, setValues] = useState<any[]>(
     defaultAttr?.value ? defaultAttr.value : []
   );
-  console.log("default PropertyString", values);
   return (
     <CustomAccordionItem
       count={values?.length}
@@ -137,7 +136,11 @@ const PropertyString = ({ attrMap, onChange, defaultAttr }: PropertyProps) => {
       >
         <VStack w="full" alignItems="start">
           {attrMap.options?.map((option) => {
-            return <Checkbox value={option}>{option}</Checkbox>;
+            return (
+              <Checkbox key={option} value={option}>
+                {option}
+              </Checkbox>
+            );
           })}
         </VStack>
       </CheckboxGroup>

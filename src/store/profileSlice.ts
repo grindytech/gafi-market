@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { UserDto } from "../services/types/dtos/UserDto";
 
 export type ProfileState = {
   accessToken: string;
   isLoggedIn: boolean;
   user: string;
+  profile: UserDto;
 };
 
 export const LOCAL_PROFILE_KEY = "profile";
@@ -14,6 +16,7 @@ export const profileSlice = createSlice({
     accessToken: "",
     isLoggedIn: false,
     user: "",
+    profile: {},
   },
   reducers: {
     login: (state, { payload }) => {
@@ -22,19 +25,21 @@ export const profileSlice = createSlice({
       state.user = user?.toLowerCase();
       state.isLoggedIn = true;
       localStorage.setItem(LOCAL_PROFILE_KEY, JSON.stringify(payload));
-      return state;
     },
     logout: (state) => {
       localStorage.removeItem(LOCAL_PROFILE_KEY);
       state.accessToken = "";
       state.user = "";
       state.isLoggedIn = false;
-      return state;
+    },
+    userData: (state, { payload }) => {
+      const { profile } = payload;
+      state.profile = profile;
     },
   },
 });
 
-export const { login, logout } = profileSlice.actions;
+export const { login, logout, userData } = profileSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This

@@ -123,7 +123,7 @@ export default function NftCollectionsList() {
         <CloseButton
           onClick={() => {
             setQuery({
-              ...setQuery,
+              ...query,
               collectionId: undefined,
               attributes: [],
             });
@@ -155,7 +155,7 @@ export default function NftCollectionsList() {
                 <CollectionItem
                   onClick={() => {
                     setQuery({
-                      ...setQuery,
+                      ...query,
                       collectionId: c?.id,
                     });
                   }}

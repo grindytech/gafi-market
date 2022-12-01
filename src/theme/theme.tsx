@@ -1,10 +1,10 @@
 import { ComponentStyleConfig, extendTheme } from "@chakra-ui/react";
 import { StyleFunctionProps } from "@chakra-ui/theme-tools";
 
-const fonts = {
-  heading: `sans-serif,'Open Sans'`,
-  body: `sans-serif,'Raleway'`,
-};
+// const fonts = {
+//   heading: `sans-serif,'Open Sans'`,
+//   body: `sans-serif,'Raleway'`,
+// };
 
 const breakpoints = {
   sm: "40em",
@@ -192,7 +192,7 @@ const components = {
 };
 const theme = extendTheme({
   styles,
-  fonts,
+  // fonts,
   breakpoints,
   components,
   shadows: {
