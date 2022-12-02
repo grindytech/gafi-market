@@ -47,7 +47,7 @@ export default function Nfts({ owner }: { owner?: string }) {
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", JSON.stringify(query)],
+    ["Nfts", JSON.stringify(query),owner],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNfts({
         desc: query.desc as "desc" | "asc",

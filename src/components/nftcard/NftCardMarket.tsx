@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Fade,
   HStack,
   Icon,
@@ -17,6 +18,7 @@ import NextLink from "next/link";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import Skeleton from "../Skeleton";
 import Icons from "../../images";
+import SaleButton from "./SaleButton";
 
 export default function NftCardMarket({
   nft,
@@ -26,6 +28,7 @@ export default function NftCardMarket({
   loading?: boolean;
 }) {
   const { user } = useSelector(selectProfile);
+  const isOwner = user === nft?.owner.address;
   return (
     <NftCard
       loading={loading}
@@ -42,10 +45,15 @@ export default function NftCardMarket({
           <HStack w="full" justifyContent="center" p={2}>
             <Fade in={true}>
               {!nft?.sale ? (
-                <HStack>
-                  <PrimaryButton>Make offer</PrimaryButton>
-                </HStack>
-              ) : user === nft?.owner.address ? (
+                <>
+                  {!isOwner && (
+                    <HStack>
+                      <PrimaryButton>Make offer</PrimaryButton>
+                    </HStack>
+                  )}
+                  {isOwner && <SaleButton nft={nft}>Put on sale</SaleButton>}
+                </>
+              ) : isOwner ? (
                 <HStack>
                   <PrimaryButton
                     colorScheme="red"
@@ -89,12 +97,12 @@ export default function NftCardMarket({
               </Text>
             </NextLink>
           </Skeleton>
-          <Skeleton w='full' isLoaded={!loading}>
+          <Skeleton w="full" isLoaded={!loading}>
             <HStack w="full" justifyContent="space-between">
               <Text fontSize="md" fontWeight="semibold">
                 {nft?.name}
               </Text>
-              <Icon blur='xl' w={5} h={5}>
+              <Icon blur="xl" w={5} h={5}>
                 {Icons.chain[String(nft?.chain?.symbol).toUpperCase()]
                   ? Icons.chain[String(nft?.chain?.symbol).toUpperCase()]()
                   : ""}

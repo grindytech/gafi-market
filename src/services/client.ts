@@ -11,16 +11,17 @@ const onError = ({ response }: any) => {
       return Promise.reject(response);
     }
     if (status === 401) {
-      store.dispatch(logout());
+      // store.dispatch(logout());
     } else {
-      const msg =
-        data.errors?.message &&
-        data.errors?.message !== "null" &&
-        data.errors?.message !== "undefined"
-          ? data.errors?.message
-          : null;
-      if (msg) toast().error(`${status} - ${msg}`);
+      
     }
+    const msg =
+      data.errors?.message &&
+      data.errors?.message !== "null" &&
+      data.errors?.message !== "undefined"
+        ? data.errors?.message
+        : null;
+    if (msg) toast().error(`${status} - ${msg}`);
   } else {
     toast().error(`Cannot connect to Server`);
   }

@@ -1,7 +1,7 @@
 import jwtDecode from "jwt-decode";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Web3 from "web3";
 import { ConnectWalletProvider } from "../connectWallet/useWallet";
 import systemService from "../services/system.service";
@@ -10,6 +10,7 @@ import {
   LOCAL_PROFILE_KEY,
   login,
   logout,
+  selectProfile,
   userData,
 } from "../store/profileSlice";
 import { setChains, setPaymentTokens } from "../store/systemSlice";
@@ -25,8 +26,6 @@ export default function W3Provider(props: any) {
       const payload: { exp: number } = jwtDecode(accessToken);
       if (payload.exp - 3600 * 0.1 > Date.now() / 1000) {
         dispatch(login({ accessToken, user }));
-        const userInfo = await accountService.profile();
-        dispatch(userData({ profile: userInfo }));
       }
     } else {
       const { data: sign } = await accountService.nonce({
@@ -43,8 +42,6 @@ export default function W3Provider(props: any) {
         signature,
       });
       dispatch(login({ accessToken: loginData.accessToken, user: account }));
-      const userInfo = await accountService.profile();
-      dispatch(userData({ profile: userInfo }));
     }
   };
 
@@ -66,6 +63,14 @@ export default function W3Provider(props: any) {
       },
     }
   );
+  const { user, accessToken, isLoggedIn } = useSelector(selectProfile);
+  useEffect(() => {
+    if (user && accessToken && isLoggedIn) {
+      accountService.profile().then((userInfo) => {
+        dispatch(userData({ profile: userInfo }));
+      });
+    }
+  }, [user]);
   return (
     <ConnectWalletProvider
       onDisconnect={() => dispatch(logout())}

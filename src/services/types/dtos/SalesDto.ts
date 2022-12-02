@@ -1,5 +1,5 @@
 import { BaseDocumentDto } from "./BaseDocumentDto";
-import { PaymentTokenDto } from "./PaymentTokenDto";
+import { PaymentToken } from "./PaymentToken.dto";
 
 export class SalesDto extends BaseDocumentDto {
   tokenId: string;
@@ -12,5 +12,5 @@ export class SalesDto extends BaseDocumentDto {
 
   price: number;
 
-  paymentToken: PaymentTokenDto;
+  paymentToken: PaymentToken;
 }
