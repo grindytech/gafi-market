@@ -46,7 +46,7 @@ export default function Profile({ address }: { address?: string }) {
     [address, user]
   );
   const isOwner = useMemo(
-    () => user && user?.toLowerCase() === address?.toLowerCase(),
+    () => user && (!address || user?.toLowerCase() === address?.toLowerCase()),
     [user, address]
   );
   const { data: viewProfile } = useQuery(
@@ -93,9 +93,10 @@ export default function Profile({ address }: { address?: string }) {
                           shorten(viewProfile?.address, 7, 5))}
                     </Heading>
                     <HStack justifyContent="start" w="full">
-                      {viewProfile?.username !== viewProfile?.address && (
-                        <Text size="sm">@{viewProfile.username}</Text>
-                      )}
+                      {viewProfile?.username &&
+                        viewProfile?.username !== viewProfile?.address && (
+                          <Text size="sm">@{viewProfile.username}</Text>
+                        )}
                       <Button
                         onClick={() => {
                           navigator.clipboard.writeText(String(user));

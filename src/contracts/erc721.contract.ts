@@ -1,9 +1,9 @@
-import { default as mpContractAbi } from "./abi/erc721.abi.json";
+import { default as erc721ContractAbi } from "./abi/erc721.abi.json";
 import { web3Inject } from ".";
 import { AbiItem } from "web3-utils";
 
 const erc721 = (address: string, web3 = web3Inject) => {
-  return new web3.eth.Contract(mpContractAbi as AbiItem[], address);
+  return new web3.eth.Contract(erc721ContractAbi as AbiItem[], address);
 };
 
 const isApproveForAll = async (

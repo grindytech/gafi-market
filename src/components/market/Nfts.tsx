@@ -47,7 +47,7 @@ export default function Nfts({ owner }: { owner?: string }) {
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", JSON.stringify(query),owner],
+    ["Nfts", JSON.stringify(query), owner],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNfts({
         desc: query.desc as "desc" | "asc",
@@ -234,13 +234,30 @@ export default function Nfts({ owner }: { owner?: string }) {
           >
             {!isLoading &&
               marketNfts.map((nft) => {
-                return nft ? <NftCardMarket nft={nft} key={nft.id} /> : <></>;
+                return nft ? (
+                  <NftCardMarket
+                    onCancelSale={() => {
+                      refetch();
+                    }}
+                    onSale={() => {
+                      refetch();
+                    }}
+                    nft={nft}
+                    key={nft.id}
+                  />
+                ) : (
+                  <></>
+                );
               })}
 
             {(isLoading || isFetching) &&
               marketNfts.length === 0 &&
               Array.from(Array(12).keys()).map((k) => (
-                <NftCardMarket loading key={`nft-template-${k}`} />
+                <NftCardMarket
+                  
+                  loading
+                  key={`nft-template-${k}`}
+                />
               ))}
           </SimpleGrid>
           {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}

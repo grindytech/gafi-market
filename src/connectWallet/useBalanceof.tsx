@@ -1,5 +1,6 @@
-import { Chain, getErc20Balance, getNativeBalance } from "../contracts";
+import { Chain, getNativeBalance } from "../contracts";
 import { useQuery } from "react-query";
+import erc20Contract from "../contracts/erc20.contract";
 
 export type BalanceOfProps = {
   chain?: Chain;
@@ -22,7 +23,7 @@ export function useBalanceOf({
       if (isNative) {
         balance = await getNativeBalance(account, chain);
       } else {
-        balance = await getErc20Balance(account, tokenAddress, chain);
+        balance = await erc20Contract.getErc20Balance(account, tokenAddress, chain);
       }
       return balance;
     },

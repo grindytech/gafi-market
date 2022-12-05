@@ -50,36 +50,36 @@ export default function NftCard({
       >
         <CardBody>
           <VStack w="full" spacing={0}>
-            <Box
-              rounded="xl"
-              pos={"relative"}
-              w="full"
-              height={"300px"}
-              overflow="hidden"
-              justifyContent="center"
-              alignItems="center"
-              display="flex"
-            >
-              {showOnHover && (
-                <HStack
-                  className="hover-show"
-                  position="absolute"
-                  top={0}
-                  left={0}
-                  w="full"
-                  h="full"
-                  zIndex={2}
-                >
-                  {showOnHover}
-                </HStack>
-              )}
-              <Skeleton isLoaded={!loading}>
+            <Box>
+              <Box
+                overflow="hidden"
+                m={2}
+                rounded="xl"
+                pos={"relative"}
+                h="300px"
+                justifyContent="center"
+                alignItems="center"
+                display="flex"
+              >
+                {showOnHover && !loading && (
+                  <HStack
+                    className="hover-show"
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    w="full"
+                    h="full"
+                    zIndex={2}
+                  >
+                    {showOnHover}
+                  </HStack>
+                )}
+
                 <LazyImage
                   className={videoUri && "hover-hidden"}
                   data-component-name="NFTImage"
                   __css={imageStyles}
                   h="300px"
-                  w="full"
                   src={image}
                   objectFit="cover"
                 />
@@ -88,7 +88,7 @@ export default function NftCard({
                     <source src={videoUri} />
                   </video>
                 )}
-              </Skeleton>
+              </Box>
             </Box>
             <VStack w="full" spacing={0} alignItems="start">
               {children}

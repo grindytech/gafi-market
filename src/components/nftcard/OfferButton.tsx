@@ -42,7 +42,7 @@ import { convertToContractValue } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 
-export default function SaleButton({
+export default function OfferButton({
   nft,
   children,
   onSuccess,

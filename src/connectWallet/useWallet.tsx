@@ -68,16 +68,21 @@ const ConnectWalletProvider = (props: {
   const { children, onConnect, onDisconnect } = props;
   const walletContext = useWallet({ onConnect, onDisconnect });
   useEffect(() => {
-    const { ethereum, connect, wallet } = walletContext;
-    const reConnect = () => wallet && connect(wallet, false);
+    const { ethereum, connect, wallet, reset, connected } = walletContext;
+    const reConnect = () => {
+      wallet && connect(wallet, false);
+    };
+    const onAccountChange = () => {
+      connected && reset();
+    };
     if (ethereum && wallet) {
       (ethereum as any)?.on("chainChanged", reConnect);
-      (ethereum as any)?.on("accountsChanged", reConnect);
+      (ethereum as any)?.on("accountsChanged", onAccountChange);
     }
     return () => {
       if (ethereum) {
         (ethereum as any)?.removeListener("chainChanged", reConnect);
-        (ethereum as any)?.removeListener("accountsChanged", reConnect);
+        (ethereum as any)?.removeListener("accountsChanged", onAccountChange);
       }
     };
   }, [walletContext]);

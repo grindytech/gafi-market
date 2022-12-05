@@ -112,7 +112,7 @@ const NFTCard: ComponentStyleConfig = {
       boxShadow: "md",
       borderColor: "primary.300",
       '[data-component-name="NFTImage"]': {
-        transform: "scale(1.1)",
+        transform: "scale(1.05)",
       },
       '[data-component-name="ShowOnHover"]': {
         background: "rgba(0,0,0,0.3)",

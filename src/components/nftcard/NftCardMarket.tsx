@@ -19,13 +19,21 @@ import { NftDto } from "../../services/types/dtos/Nft.dto";
 import Skeleton from "../Skeleton";
 import Icons from "../../images";
 import SaleButton from "./SaleButton";
+import CancelBtn from "./CancelButton";
+import BuyButton from "./BuyButton";
 
 export default function NftCardMarket({
   nft,
   loading,
+  onCancelSale,
+  onSale,
+  onBuy,
 }: {
   nft?: NftDto;
   loading?: boolean;
+  onCancelSale?: (nft: NftDto) => void;
+  onSale?: (nft: NftDto) => void;
+  onBuy?: (nft: NftDto) => void;
 }) {
   const { user } = useSelector(selectProfile);
   const isOwner = user === nft?.owner.address;
@@ -51,21 +59,38 @@ export default function NftCardMarket({
                       <PrimaryButton>Make offer</PrimaryButton>
                     </HStack>
                   )}
-                  {isOwner && <SaleButton nft={nft}>Put on sale</SaleButton>}
+                  {isOwner && (
+                    <SaleButton
+                      onSuccess={() => {
+                        onSale && onSale(nft);
+                      }}
+                      nft={nft}
+                    >
+                      Put on sale
+                    </SaleButton>
+                  )}
                 </>
               ) : isOwner ? (
                 <HStack>
-                  <PrimaryButton
-                    colorScheme="red"
-                    bg="red.600"
-                    _hover={{ bg: "red.500" }}
+                  <CancelBtn
+                    onSuccess={() => {
+                      onCancelSale && onCancelSale(nft);
+                    }}
+                    nft={nft}
                   >
                     Cancel
-                  </PrimaryButton>
+                  </CancelBtn>
                 </HStack>
               ) : (
                 <HStack>
-                  <PrimaryButton>Buy now</PrimaryButton>
+                  <BuyButton
+                    nft={nft}
+                    onSuccess={() => {
+                      onBuy && onBuy(nft);
+                    }}
+                  >
+                    Buy now
+                  </BuyButton>
                   <IconButton aria-label="Add to cart">
                     <FiPlus size="30px" />
                   </IconButton>
@@ -76,8 +101,8 @@ export default function NftCardMarket({
         </VStack>
       }
     >
-      <VStack w="full" alignItems="start" p={3} spacing={2}>
-        <VStack p={1} w="full" alignItems="start" spacing={0}>
+      <VStack w="full" alignItems="start" p={2} spacing={2}>
+        <VStack p={1} w="full" alignItems="start" spacing={1}>
           <Skeleton minW={100} height="1em" isLoaded={!loading}>
             <NextLink href="#">
               <Text
@@ -99,9 +124,14 @@ export default function NftCardMarket({
           </Skeleton>
           <Skeleton w="full" isLoaded={!loading}>
             <HStack w="full" justifyContent="space-between">
-              <Text fontSize="md" fontWeight="semibold">
-                {nft?.name}
-              </Text>
+              <VStack spacing={0} alignItems="start">
+                <Text fontSize="md" fontWeight="semibold">
+                  {nft?.name || <>&nbsp;</>}
+                </Text>
+                <Text color="gray" fontSize="xs" fontWeight="semibold">
+                  #{nft?.tokenId}
+                </Text>
+              </VStack>
               <Icon blur="xl" w={5} h={5}>
                 {Icons.chain[String(nft?.chain?.symbol).toUpperCase()]
                   ? Icons.chain[String(nft?.chain?.symbol).toUpperCase()]()
@@ -122,7 +152,7 @@ export default function NftCardMarket({
               Price
             </Text>
             <Skeleton isLoaded={!loading}>
-              <Text color="gray.400">
+              <Text fontSize="sm" color="gray.400">
                 {nft?.price > 0
                   ? `${nft?.price} ${nft?.sale.paymentToken.symbol}`
                   : "Not for sale"}
@@ -134,7 +164,7 @@ export default function NftCardMarket({
               Last sold
             </Text>
             <Skeleton isLoaded={!loading}>
-              <Text color="gray.400" minW={50}>
+              <Text fontSize="sm" color="gray.400" minW={50}>
                 {nft?.lastSold >= 0
                   ? `${nft?.lastSold} ${nft?.lastSoldToken}`
                   : "--"}

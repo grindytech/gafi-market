@@ -5,7 +5,6 @@ import { AbiItem } from "web3-utils";
 import configs from "../configs";
 
 
-import erc20 from "./abi/erc20.abi.json";
 
 const DEFAULT_CHAIN = configs.DEFAULT_CHAIN;
 
@@ -47,23 +46,6 @@ export const safeAmount = ({
   return parseInt(trimmedStr) / 10 ** significant;
 };
 
-export const erc20Contract = (address: string, web3 = web3Inject) => {
-  return new web3.eth.Contract(erc20 as AbiItem[], address);
-};
-export const getErc20Balance = async (
-  account: string,
-  contractAddress: string,
-  chain: string = DEFAULT_CHAIN,
-  decimal = 18
-) => {
-  const web3Http = WEB3_HTTP_PROVIDERS[chain];
-  const contract = new web3Http.eth.Contract(
-    erc20 as AbiItem[],
-    contractAddress
-  );
-  let balance = await contract.methods.balanceOf(account).call();
-  return safeAmount({ str: balance, decimal });
-};
 export const getNativeBalance = async (
   account: string,
   chain: string = DEFAULT_CHAIN
