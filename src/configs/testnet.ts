@@ -33,6 +33,6 @@ const configs: Configs = {
     },
   },
   DEFAULT_CHAIN: "BSC",
-  API_URL: "http://localhost:8080/",
+  API_URL: process.env.REACT_APP_API_URI || "http://localhost:8086/",
 };
 export default configs;
