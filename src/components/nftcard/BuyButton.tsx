@@ -37,6 +37,7 @@ import { convertToContractValue } from "../../utils/utils";
 import ConnectWalletButton from "../connectWalletButton/ConnectWalletButton";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
+import SwitchNetworkButton from "../SwitchNetworkButton";
 
 export default function BuyButton({
   nft,
@@ -59,14 +60,9 @@ export default function BuyButton({
     tokenAddress: nft.sale.paymentToken.contractAddress,
     isNative: false,
   });
-  const { isWrongNetwork, changeNetwork } = useSwitchNetwork();
-
   const buyNftHandle = async () => {
     try {
       setLoading(true);
-      if (isWrongNetwork(nft.chain.symbol.toUpperCase())) {
-        await changeNetwork(nft.chain.symbol.toUpperCase());
-      }
       const approvePrice = convertToContractValue({
         amount: nft.sale.price,
         decimal: nft.sale.paymentToken.decimals,
@@ -147,7 +143,10 @@ export default function BuyButton({
           </ModalBody>
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
-              {user ? (
+              <SwitchNetworkButton
+                symbol={nft.chain.symbol}
+                name={nft.chain.name}
+              >
                 <PrimaryButton
                   isLoading={loading}
                   onClick={buyNftHandle}
@@ -155,9 +154,7 @@ export default function BuyButton({
                 >
                   Confirm
                 </PrimaryButton>
-              ) : (
-                <ConnectWalletButton w="full" />
-              )}
+              </SwitchNetworkButton>
             </HStack>
           </ModalFooter>
         </ModalContent>

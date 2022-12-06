@@ -170,6 +170,13 @@ const Input: ComponentStyleConfig = {
     },
   },
 };
+const Button: ComponentStyleConfig = {
+  variants: {
+    link: {
+      color: "primary.50",
+    },
+  },
+};
 
 const components = {
   Link: {
@@ -182,6 +189,7 @@ const components = {
       },
     },
   },
+  Button,
   SliderBox,
   Card,
   CardBody,

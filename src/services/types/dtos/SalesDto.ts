@@ -15,4 +15,8 @@ export class SalesDto extends BaseDocumentDto {
   paymentToken: PaymentToken;
 
   period: number;
+
+  endTime: Date;
+
+  startTime: Date;
 }

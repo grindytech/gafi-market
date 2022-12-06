@@ -1,6 +1,9 @@
 import { Button, ButtonProps } from "@chakra-ui/react";
 
-export default function PrimaryButton({ children,...rest }: ButtonProps) {
+export default function PrimaryButton({
+  children,
+  ...rest
+}: ButtonProps & any) {
   return (
     <Button
       variant="solid"

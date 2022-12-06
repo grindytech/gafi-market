@@ -10,7 +10,8 @@ import {
   Text,
   ButtonProps,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import id from "date-fns/esm/locale/id/index.js";
+import { useEffect, useMemo, useState } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useSelector } from "react-redux";
 import Icons from "../../images";
@@ -20,18 +21,28 @@ import { useNftQueryParam } from "./useCustomParam";
 
 export default function TokenSymbolToken({
   onChangeToken,
+  chain,
   ...rest
 }: ButtonProps & {
   onChangeToken: (token: PaymentToken) => void;
+  chain?: string;
 }) {
   const { query, setQuery } = useNftQueryParam();
   const { paymentTokens } = useSelector(selectSystem);
-  const [tokenSymbol, setTokenSymbol] = useState(paymentTokens[0]?.symbol);
-  const [tokenId, setTokenId] = useState(paymentTokens[0]?.id);
+  const paymentTokensSource = useMemo(() => {
+    if (!chain) return paymentTokens;
+    return paymentTokens.filter((p) => p.chain === chain);
+  }, [chain, paymentTokens]);
+  const [tokenSymbol, setTokenSymbol] = useState(
+    paymentTokensSource[0]?.symbol
+  );
+  const [tokenId, setTokenId] = useState(paymentTokensSource[0]?.id);
 
   useEffect(() => {
     if (query.paymentTokenId) {
-      const payment = paymentTokens.find((p) => p.id === query.paymentTokenId);
+      const payment = paymentTokensSource.find(
+        (p) => p.id === query.paymentTokenId
+      );
       if (payment) {
         setTokenId(payment.id);
         setTokenSymbol(payment.symbol);
@@ -40,16 +51,17 @@ export default function TokenSymbolToken({
     }
   }, [query.paymentTokenId]);
   useEffect(() => {
-    setTokenId(paymentTokens[0]?.id);
-    paymentTokens[0] && onChangeToken(paymentTokens[0]);
-  }, [paymentTokens]);
+    debugger
+    setTokenId(paymentTokensSource[0]?.id);
+    paymentTokensSource[0] && onChangeToken(paymentTokensSource[0]);
+  }, [paymentTokensSource]);
   return (
     <Menu>
       <MenuButton {...rest} as={Button} rightIcon={<ChevronDownIcon />}>
         {tokenSymbol}
       </MenuButton>
       <MenuList>
-        {paymentTokens.map((p) => {
+        {paymentTokensSource.map((p) => {
           const icon = Icons.token[p.symbol.toUpperCase()];
           return (
             <MenuItem p={0} key={`PriceFilter-chain-${p.symbol}`}>

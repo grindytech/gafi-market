@@ -54,6 +54,7 @@ export default function PriceFilter() {
         />
         <Box w="full">
           <TokenSymbolToken
+            chain={query.chain}
             onChangeToken={(p) => {
               setTokenId(p.id);
             }}

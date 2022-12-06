@@ -26,6 +26,7 @@ import { selectProfile } from "../../store/profileSlice";
 import { convertToContractValue } from "../../utils/utils";
 import PrimaryButton from "../PrimaryButton";
 import nftService from "../../services/nft.service";
+import SwitchNetworkButton from "../SwitchNetworkButton";
 
 export default function CancelBtn({
   nft,
@@ -102,12 +103,14 @@ export default function CancelBtn({
           </ModalBody>
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
-              <Button w="50%" onClick={onClose}>
-                Close
-              </Button>
-              <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
-                Confirm
-              </PrimaryButton>
+              <SwitchNetworkButton
+                symbol={nft.chain.symbol}
+                name={nft.chain.name}
+              >
+                <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
+                  Confirm
+                </PrimaryButton>
+              </SwitchNetworkButton>
             </HStack>
           </ModalFooter>
         </ModalContent>

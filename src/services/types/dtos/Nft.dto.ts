@@ -13,7 +13,11 @@ export class NftDto extends BaseDocumentDto {
   attributes: Attribute[];
   media: MediaDto[];
   image: string;
+  originImage: string;
+  animation_url: string;
+  animationPlayType: "image" | "video" | "glb" | "iframe";
   owner: Users;
+  creator: Users;
   nftContract: string;
   tokenId: string;
   name: string;
@@ -24,4 +28,6 @@ export class NftDto extends BaseDocumentDto {
   lastSold: number;
   lastSoldToken: string;
   chain: ChainDto;
+  description: string;
+  externalUrl: string;
 }

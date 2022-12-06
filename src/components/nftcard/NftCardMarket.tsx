@@ -21,6 +21,7 @@ import Icons from "../../images";
 import SaleButton from "./SaleButton";
 import CancelBtn from "./CancelButton";
 import BuyButton from "./BuyButton";
+import OfferButton from "./OfferButton";
 
 export default function NftCardMarket({
   nft,
@@ -56,7 +57,7 @@ export default function NftCardMarket({
                 <>
                   {!isOwner && (
                     <HStack>
-                      <PrimaryButton>Make offer</PrimaryButton>
+                      <OfferButton nft={nft}>Make offer</OfferButton>
                     </HStack>
                   )}
                   {isOwner && (

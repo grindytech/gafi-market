@@ -29,6 +29,7 @@ import NftsFilter, { NftsFilterMobileBtn } from "../filters/NftsFilter";
 import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
+import NextLink from "next/link";
 
 export default function Nfts({ owner }: { owner?: string }) {
   const [showFilter, setShowFilter] = useState(false);
@@ -235,16 +236,18 @@ export default function Nfts({ owner }: { owner?: string }) {
             {!isLoading &&
               marketNfts.map((nft) => {
                 return nft ? (
-                  <NftCardMarket
-                    onCancelSale={() => {
-                      refetch();
-                    }}
-                    onSale={() => {
-                      refetch();
-                    }}
-                    nft={nft}
-                    key={nft.id}
-                  />
+                  <NextLink href={`/nft/${nft.id}`}>
+                    <NftCardMarket
+                      onCancelSale={() => {
+                        refetch();
+                      }}
+                      onSale={() => {
+                        refetch();
+                      }}
+                      nft={nft}
+                      key={nft.id}
+                    />
+                  </NextLink>
                 ) : (
                   <></>
                 );
@@ -253,11 +256,7 @@ export default function Nfts({ owner }: { owner?: string }) {
             {(isLoading || isFetching) &&
               marketNfts.length === 0 &&
               Array.from(Array(12).keys()).map((k) => (
-                <NftCardMarket
-                  
-                  loading
-                  key={`nft-template-${k}`}
-                />
+                <NftCardMarket loading key={`nft-template-${k}`} />
               ))}
           </SimpleGrid>
           {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}

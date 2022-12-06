@@ -4,7 +4,6 @@ import {
   ButtonProps,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
   Heading,
   HStack,
@@ -17,20 +16,17 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   Select,
   Text,
-  useColorModeValue,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { isError } from "lodash";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import useSwitchNetwork from "../../connectWallet/useSwitchNetwork";
 import { web3Inject } from "../../contracts";
-import erc721Contract from "../../contracts/erc721.contract";
-import mpContract from "../../contracts/marketplace.contract";
+import erc20Contract from "../../contracts/erc20.contract";
 import useCustomToast from "../../hooks/useCustomToast";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
@@ -41,6 +37,7 @@ import { selectProfile } from "../../store/profileSlice";
 import { convertToContractValue } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
+import SwitchNetworkButton from "../SwitchNetworkButton";
 
 export default function OfferButton({
   nft,
@@ -59,6 +56,8 @@ export default function OfferButton({
   const [loading, setLoading] = useState(false);
   const toast = useCustomToast();
   const [period, setPeriod] = useState(SalePeriod.Week);
+  const { isWrongNetwork, changeNetwork } = useSwitchNetwork();
+
   useEffect(() => {
     if (isFirst) {
       setIsFirst(false);
@@ -77,20 +76,28 @@ export default function OfferButton({
   const createSale = async () => {
     try {
       setLoading(true);
-      await erc721Contract.approveForAll(
-        nft.nftContract,
-        user,
-        nft.chain.mpContract
-      );
       const priceContractValue = convertToContractValue({
         amount: Number(price),
         decimal: paymentToken.decimals,
       });
+      const allowance = await erc20Contract.getAllowance(
+        paymentToken.contractAddress,
+        nft.chain.mpContract,
+        user
+      );
+      if (Number(allowance) < Number(priceContractValue)) {
+        await erc20Contract.approve(
+          paymentToken.contractAddress,
+          nft.chain.mpContract,
+          user,
+          priceContractValue
+        );
+      }
       const {
         data: { hashMessage },
       } = await nftService.getNftHashMessage(nft.id, {
         id: nft.id,
-        option: SaleType.Sale,
+        option: SaleType.MakeOffer,
         ownerAccept: true,
         paymentTokenId: paymentToken.id,
         period,
@@ -109,13 +116,13 @@ export default function OfferButton({
       //   nft.chain.mpContract
       // );
       const sign = await web3Inject.eth.personal.sign(hashMessage, user, "");
-      const sale = await nftService.createSale(nft.id, {
+      const sale = await nftService.createOffer(nft.id, {
         paymentTokenId: paymentToken.id,
         period,
-        price: Number(price),
         signedSignature: sign,
+        offerPrice: Number(price),
       });
-      toast.success("Listing successfully.");
+      toast.success("Offer successfully.");
       onClose();
       onSuccess && onSuccess();
     } catch (error) {
@@ -127,22 +134,22 @@ export default function OfferButton({
   };
   return (
     <>
-      <PrimaryButton onClick={onOpen} {...rest}>
+      <Button onClick={onOpen} {...rest}>
         {children}
-      </PrimaryButton>
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={3} pt={5} px={5} w="full">
-              <Heading fontSize="2xl">PUT ON SALE</Heading>
-              <HStack spacing={0}>
-                <Text>You are about sell your&nbsp;</Text>
+              <Heading fontSize="2xl">MAKE OFFER</Heading>
+              <VStack spacing={0}>
+                <Text>You are about make offer for&nbsp;</Text>
                 <Text color="gray">
                   {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
                 </Text>
-              </HStack>
+              </VStack>
               <Box py={3}>
                 <Image
                   w="300px"
@@ -158,9 +165,11 @@ export default function OfferButton({
                     children={
                       <Box w="full">
                         <TokenSymbolToken
+                          chain={nft.chain.id}
                           mr={2}
                           size="sm"
                           onChangeToken={(p) => {
+                            debugger;
                             setPaymentToken(p);
                           }}
                         />
@@ -191,7 +200,7 @@ export default function OfferButton({
                 )}
               </FormControl>
               <FormControl>
-                <FormLabel>Sale period</FormLabel>
+                <FormLabel>Duration</FormLabel>
                 <InputGroup size="lg">
                   <Select
                     variant="filled"
@@ -218,32 +227,24 @@ export default function OfferButton({
                 w="full"
                 fontWeight="semibold"
                 fontSize="sm"
-              >
-                <HStack w="full" justifyContent="space-between">
-                  <Text>Marketplace fee:</Text>
-                  <Text>{marketFee * 100} %</Text>
-                </HStack>
-                {/* <HStack w="full" justifyContent="space-between">
-                  <Text>Collection owner fee:</Text>
-                  <Text>{collectionOwnerFee * 100} %</Text>
-                </HStack> */}
-                <HStack w="full" justifyContent="space-between">
-                  <Text>Your will receive:</Text>
-                  <Text>
-                    {Number(price) -
-                      Number(price) * (marketFee + collectionOwnerFee) || "--"}
-                    &nbsp;
-                    {paymentToken?.symbol}
-                  </Text>
-                </HStack>
-              </VStack>
+              ></VStack>
             </VStack>
           </ModalBody>
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
-              <PrimaryButton isLoading={loading} onClick={createSale} w="full">
-                Confirm
-              </PrimaryButton>
+              <SwitchNetworkButton
+                symbol={nft.chain.symbol}
+                name={nft.chain.name}
+                w="full"
+              >
+                <PrimaryButton
+                  isLoading={loading}
+                  onClick={createSale}
+                  w="full"
+                >
+                  Confirm
+                </PrimaryButton>
+              </SwitchNetworkButton>
             </HStack>
           </ModalFooter>
         </ModalContent>

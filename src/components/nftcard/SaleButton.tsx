@@ -41,6 +41,7 @@ import { selectProfile } from "../../store/profileSlice";
 import { convertToContractValue } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
+import SwitchNetworkButton from "../SwitchNetworkButton";
 
 export default function SaleButton({
   nft,
@@ -137,12 +138,12 @@ export default function SaleButton({
           <ModalBody>
             <VStack spacing={3} pt={5} px={5} w="full">
               <Heading fontSize="2xl">PUT ON SALE</Heading>
-              <HStack spacing={0}>
+              <VStack spacing={0}>
                 <Text>You are about sell your&nbsp;</Text>
                 <Text color="gray">
                   {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
                 </Text>
-              </HStack>
+              </VStack>
               <Box py={3}>
                 <Image
                   w="300px"
@@ -241,9 +242,18 @@ export default function SaleButton({
           </ModalBody>
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
-              <PrimaryButton isLoading={loading} onClick={createSale} w="full">
-                Confirm
-              </PrimaryButton>
+              <SwitchNetworkButton
+                symbol={nft.chain.symbol}
+                name={nft.chain.name}
+              >
+                <PrimaryButton
+                  isLoading={loading}
+                  onClick={createSale}
+                  w="full"
+                >
+                  Confirm
+                </PrimaryButton>
+              </SwitchNetworkButton>
             </HStack>
           </ModalFooter>
         </ModalContent>
