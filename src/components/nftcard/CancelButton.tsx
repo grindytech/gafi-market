@@ -74,7 +74,10 @@ export default function CancelBtn({
         colorScheme="red"
         bg="red.600"
         _hover={{ bg: "red.500" }}
-        onClick={onOpen}
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
         {...rest}
       >
         {children}

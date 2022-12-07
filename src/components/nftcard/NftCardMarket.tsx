@@ -57,7 +57,9 @@ export default function NftCardMarket({
                 <>
                   {!isOwner && (
                     <HStack>
-                      <OfferButton nft={nft}>Make offer</OfferButton>
+                      <PrimaryButton as={OfferButton} nft={nft}>
+                        Make offer
+                      </PrimaryButton>
                     </HStack>
                   )}
                   {isOwner && (

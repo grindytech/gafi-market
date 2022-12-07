@@ -107,7 +107,13 @@ export default function BuyButton({
   };
   return (
     <>
-      <PrimaryButton onClick={onOpen} {...rest}>
+      <PrimaryButton
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
         {children}
       </PrimaryButton>
       <Modal isOpen={isOpen} onClose={onClose}>

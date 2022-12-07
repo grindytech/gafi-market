@@ -134,7 +134,10 @@ export default function OfferButton({
   };
   return (
     <>
-      <Button onClick={onOpen} {...rest}>
+      <Button onClick={(e) => { 
+        e.preventDefault();
+        onOpen();
+      }} {...rest}>
         {children}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>

@@ -1,10 +1,8 @@
 import {
   Box,
-  Button,
   ButtonProps,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
   Heading,
   HStack,
@@ -17,20 +15,16 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   Select,
   Text,
-  useColorModeValue,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { isError } from "lodash";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { web3Inject } from "../../contracts";
 import erc721Contract from "../../contracts/erc721.contract";
-import mpContract from "../../contracts/marketplace.contract";
 import useCustomToast from "../../hooks/useCustomToast";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
@@ -128,7 +122,13 @@ export default function SaleButton({
   };
   return (
     <>
-      <PrimaryButton onClick={onOpen} {...rest}>
+      <PrimaryButton
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
         {children}
       </PrimaryButton>
       <Modal isOpen={isOpen} onClose={onClose}>
