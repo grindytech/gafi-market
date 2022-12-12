@@ -22,6 +22,8 @@ import SaleButton from "./SaleButton";
 import CancelBtn from "./CancelButton";
 import BuyButton from "./BuyButton";
 import OfferButton from "./OfferButton";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
+import { numeralFormat } from "../../utils/utils";
 
 export default function NftCardMarket({
   nft,
@@ -38,6 +40,10 @@ export default function NftCardMarket({
 }) {
   const { user } = useSelector(selectProfile);
   const isOwner = user === nft?.owner.address;
+  const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
+    enabled: !!nft?.sale,
+    paymentSymbol: nft?.sale?.paymentToken.symbol,
+  });
   return (
     <NftCard
       loading={loading}
@@ -108,27 +114,33 @@ export default function NftCardMarket({
         <VStack p={1} w="full" alignItems="start" spacing={1}>
           <Skeleton minW={100} height="1em" isLoaded={!loading}>
             <NextLink href="#">
-              <Text
-                _hover={{
-                  textDecoration: "underline",
-                }}
-                color="primary.50"
-                fontSize="sm"
-                fontWeight="semibold"
-              >
-                {nft?.nftCollection.name}{" "}
+              <HStack spacing={0}>
+                <Box>
+                  <Text
+                    noOfLines={1}
+                    _hover={{
+                      textDecoration: "underline",
+                    }}
+                    color="primary.50"
+                    fontSize="sm"
+                    fontWeight="semibold"
+                    textOverflow="ellipsis"
+                  >
+                    {nft?.nftCollection.name}
+                  </Text>
+                </Box>
                 {nft?.nftCollection.verified && (
                   <Icon color="primary.50" h={4} w={4}>
                     <HiBadgeCheck size="25px" />
                   </Icon>
                 )}
-              </Text>
+              </HStack>
             </NextLink>
           </Skeleton>
           <Skeleton w="full" isLoaded={!loading}>
-            <HStack w="full" justifyContent="space-between">
+            <HStack alignItems="start" w="full" justifyContent="space-between">
               <VStack spacing={0} alignItems="start">
-                <Text fontSize="md" fontWeight="semibold">
+                <Text noOfLines={1} fontSize="md" fontWeight="semibold">
                   {nft?.name || <>&nbsp;</>}
                 </Text>
                 <Text color="gray" fontSize="xs" fontWeight="semibold">
@@ -150,30 +162,57 @@ export default function NftCardMarket({
           justifyContent="space-between"
           rounded="xl"
         >
-          <VStack w="50%" alignItems="start" spacing={0}>
+          <VStack w="full" alignItems="start" spacing={0}>
             <Text fontSize="sm" fontWeight="semibold">
               Price
             </Text>
-            <Skeleton isLoaded={!loading}>
-              <Text fontSize="sm" color="gray.400">
-                {nft?.price > 0
-                  ? `${nft?.price} ${nft?.sale.paymentToken.symbol}`
-                  : "Not for sale"}
-              </Text>
-            </Skeleton>
+            <HStack w="full" alignItems="end">
+              <Skeleton isLoaded={!loading}>
+                <Text
+                  fontWeight="semibold"
+                  noOfLines={1}
+                  fontSize="sm"
+                  color="gray"
+                  title={String(
+                    nft?.price > 0
+                      ? `${nft.price} ${nft?.sale.paymentToken.symbol}`
+                      : ""
+                  )}
+                >
+                  {nft?.price > 0
+                    ? `${numeralFormat(nft?.price)} ${
+                        nft?.sale.paymentToken.symbol
+                      }`
+                    : "Not for sale"}
+                </Text>
+              </Skeleton>
+              {nft?.price && priceAsUsd && (
+                <Text
+                  fontWeight="semibold"
+                  noOfLines={1}
+                  fontSize="xs"
+                  color="gray.500"
+                  textAlign="left"
+                  title={`${prefix}${nft.price * priceAsUsd}`}
+                >
+                  ~{prefix}
+                  {numeralFormat(nft.price * priceAsUsd)}
+                </Text>
+              )}
+            </HStack>
           </VStack>
-          <VStack w="50%" alignItems="start" spacing={0}>
+          {/* <VStack w="50%" alignItems="start" spacing={0}>
             <Text fontSize="sm" fontWeight="semibold">
               Last sold
             </Text>
             <Skeleton isLoaded={!loading}>
-              <Text fontSize="sm" color="gray.400" minW={50}>
+              <Text noOfLines={1} fontSize="sm" color="gray.400" minW={50}>
                 {nft?.lastSold >= 0
                   ? `${nft?.lastSold} ${nft?.lastSoldToken}`
                   : "--"}
               </Text>
             </Skeleton>
-          </VStack>
+          </VStack> */}
         </HStack>
       </VStack>
     </NftCard>

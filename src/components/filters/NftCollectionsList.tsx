@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Box,
   CircularProgress,
   CloseButton,
@@ -9,12 +8,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useMemo, useRef, useState } from "react";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useInfiniteQuery } from "react-query";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import useCustomColors from "../../theme/useCustomColors";
+import Avatar from "../Avatar";
 import SearchBox from "../SearchBox";
 import Skeleton from "../Skeleton";
 import Properties from "./Properties";
@@ -55,12 +54,10 @@ const CollectionItem = ({
           <Avatar
             size="sm"
             src={c?.avatar}
-            icon={
-              <Jazzicon
-                diameter={31}
-                seed={jsNumberForAddress(String(c?.name))}
-              />
-            }
+            jazzicon={{
+              seed: String(c?.name),
+              diameter: 31,
+            }}
           />
         </Skeleton>
         <Skeleton w="full" height="1em" isLoaded={!loading}>

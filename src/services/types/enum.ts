@@ -19,3 +19,18 @@ export enum SaleType {
   Sale = 1,
   MakeOffer = 2,
 }
+
+export enum OfferStatus {
+  pending = "pending",
+  accepted = "accepted",
+  cancelled = "cancelled",
+  expired = "expired"
+}
+
+export enum HistoryType {
+  Mint = "mint",
+  Transfer = "transfer",
+  CreateSale = "createSale",
+  Sale = "sale",
+  Burn = "burn",
+}

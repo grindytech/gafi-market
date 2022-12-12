@@ -230,7 +230,7 @@ export default function Nfts({ owner }: { owner?: string }) {
           <SimpleGrid
             justifyContent="center"
             w="full"
-            columns={showFilter && md ? [1, 1, 2, 3, 4] : [1, 2, 3, 4, 6]}
+            columns={showFilter && md ? [2, 2, 3, 3, 5] : [2, 2, 4, 4, 6]}
             gap="15px"
           >
             {!isLoading &&

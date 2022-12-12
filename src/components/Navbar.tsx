@@ -8,7 +8,6 @@ import {
   SearchIcon,
 } from "@chakra-ui/icons";
 import {
-  Avatar,
   Box,
   Button,
   ButtonProps,
@@ -43,6 +42,7 @@ import useCustomToast from "../hooks/useCustomToast";
 import { selectProfile } from "../store/profileSlice";
 import useCustomColors from "../theme/useCustomColors";
 import { shorten } from "../utils/string.util";
+import Avatar from "./Avatar";
 import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import SearchBox from "./SearchBox";
@@ -174,13 +174,11 @@ export default function Navbar() {
                   >
                     <Avatar
                       size={"sm"}
-                      icon={
-                        <Jazzicon
-                          diameter={31}
-                          seed={jsNumberForAddress(String(user))}
-                        />
-                      }
-                    ></Avatar>
+                      jazzicon={{
+                        diameter: 31,
+                        seed: String(user),
+                      }}
+                    />
                   </MenuButton>
                   <MenuList px={2}>
                     <MenuItemBtn

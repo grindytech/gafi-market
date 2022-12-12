@@ -4,6 +4,7 @@ import {
   ButtonProps,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Heading,
   HStack,
@@ -22,19 +23,21 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import useSwitchNetwork from "../../connectWallet/useSwitchNetwork";
 import { web3Inject } from "../../contracts";
 import erc20Contract from "../../contracts/erc20.contract";
 import useCustomToast from "../../hooks/useCustomToast";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue } from "../../utils/utils";
+import { selectSystem } from "../../store/systemSlice";
+import { convertToContractValue, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
@@ -50,6 +53,7 @@ export default function OfferButton({
   const [price, setPrice] = useState<string>();
   const [isFirst, setIsFirst] = useState(true);
   const [paymentToken, setPaymentToken] = useState<PaymentToken>();
+  const { chains } = useSelector(selectSystem);
   const [marketFee, setMarketFee] = useState(0.05);
   const [collectionOwnerFee, setCollectionOwnerFee] = useState(0.0);
   const { user } = useSelector(selectProfile);
@@ -57,8 +61,11 @@ export default function OfferButton({
   const toast = useCustomToast();
   const [period, setPeriod] = useState(SalePeriod.Week);
   const { isWrongNetwork, changeNetwork } = useSwitchNetwork();
-
-  useEffect(() => {
+  const chain = useMemo(
+    () => chains.find((c) => c.id === paymentToken?.chain),
+    [paymentToken, chains]
+  );
+  const validate = useCallback(async () => {
     if (isFirst) {
       setIsFirst(false);
       return;
@@ -71,8 +78,25 @@ export default function OfferButton({
       setErrorMsg("Please input a valid number");
       return;
     }
+    const balance =
+      chain && user
+        ? await erc20Contract.getErc20Balance(
+            user,
+            paymentToken.contractAddress,
+            chain.symbol.toUpperCase(),
+            paymentToken.decimals
+          )
+        : 0;
+    debugger;
+    if (balance < Number(price)) {
+      setErrorMsg("Insufficient balance");
+      return;
+    }
     setErrorMsg(undefined);
-  }, [price]);
+  }, [price, paymentToken, chain, user]);
+  useEffect(() => {
+    validate();
+  }, [validate]);
   const createSale = async () => {
     try {
       setLoading(true);
@@ -124,6 +148,7 @@ export default function OfferButton({
       });
       toast.success("Offer successfully.");
       onClose();
+      debugger;
       onSuccess && onSuccess();
     } catch (error) {
       console.error(error);
@@ -132,12 +157,19 @@ export default function OfferButton({
       setLoading(false);
     }
   };
+  const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
+    enabled: !!paymentToken,
+    paymentSymbol: paymentToken?.symbol,
+  });
   return (
     <>
-      <Button onClick={(e) => { 
-        e.preventDefault();
-        onOpen();
-      }} {...rest}>
+      <Button
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
         {children}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -172,7 +204,6 @@ export default function OfferButton({
                           mr={2}
                           size="sm"
                           onChangeToken={(p) => {
-                            debugger;
                             setPaymentToken(p);
                           }}
                         />
@@ -194,10 +225,20 @@ export default function OfferButton({
                   />
                 </InputGroup>
                 {!errorMsg ? (
-                  // <FormHelperText>
-                  //   Enter the email you'd like to receive the newsletter on.
-                  // </FormHelperText>
-                  <></>
+                  priceAsUsd &&
+                  price && (
+                    <FormHelperText>
+                      <Text
+                        w="full"
+                        textAlign="right"
+                        fontSize="xs"
+                        color="gray.500"
+                      >
+                        ~{prefix}
+                        {numeralFormat(Number(price) * priceAsUsd)}
+                      </Text>
+                    </FormHelperText>
+                  )
                 ) : (
                   <FormErrorMessage>{errorMsg}</FormErrorMessage>
                 )}
@@ -241,6 +282,7 @@ export default function OfferButton({
                 w="full"
               >
                 <PrimaryButton
+                  disabled={!!errorMsg}
                   isLoading={loading}
                   onClick={createSale}
                   w="full"

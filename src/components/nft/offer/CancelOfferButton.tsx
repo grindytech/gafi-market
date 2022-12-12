@@ -17,23 +17,26 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import mpContract from "../../contracts/marketplace.contract";
-import useCustomToast from "../../hooks/useCustomToast";
-import { Images } from "../../images";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
-import { SaleType } from "../../services/types/enum";
-import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue } from "../../utils/utils";
-import PrimaryButton from "../PrimaryButton";
-import nftService from "../../services/nft.service";
-import SwitchNetworkButton from "../SwitchNetworkButton";
+import mpContract from "../../../contracts/marketplace.contract";
+import useCustomToast from "../../../hooks/useCustomToast";
+import { Images } from "../../../images";
+import nftService from "../../../services/nft.service";
+import { OfferDto } from "../../../services/types/dtos/Offer.dto";
+import { SaleType } from "../../../services/types/enum";
+import { selectProfile } from "../../../store/profileSlice";
+import { convertToContractValue } from "../../../utils/utils";
+import PrimaryButton from "../../PrimaryButton";
+import SwitchNetworkButton from "../../SwitchNetworkButton";
 
-export default function CancelBtn({
-  nft,
+export default function CancelOfferButton({
+  offer,
   children,
   onSuccess,
   ...rest
-}: ButtonProps & { nft: NftDto; onSuccess: () => void }) {
+}: ButtonProps & {
+  offer: OfferDto;
+  onSuccess: () => void;
+}) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const toast = useCustomToast();
@@ -42,39 +45,35 @@ export default function CancelBtn({
     try {
       setLoading(true);
       const contractValue = convertToContractValue({
-        amount: nft.price,
-        decimal: nft.sale.paymentToken.decimals,
+        amount: offer.offerPrice,
+        decimal: offer.paymentToken.decimals,
       });
       const param = {
         contractPrice: contractValue,
-        nftContract: nft.nftContract,
-        ownerAddress: nft.owner.address,
-        paymentContract: nft.sale.paymentToken.contractAddress,
-        period: nft.sale.period,
-        saleOption: SaleType.Sale,
-        saltNonce: Number(nft.sale.saltNonce),
-        signature: nft.sale.signedSignature,
-        tokenId: Number(nft.tokenId),
+        nftContract: offer.nftContract,
+        ownerAddress: offer.seller.address,
+        paymentContract: offer.paymentToken.contractAddress,
+        period: offer.period,
+        saleOption: SaleType.MakeOffer,
+        saltNonce: Number(offer.saltNonce),
+        signature: offer.signature,
+        tokenId: Number(offer.tokenId),
       };
-      await mpContract.cancelMessage(param, nft.chain.mpContract, user);
-      // await nftService.cancelSale(nft.id);
-      toast.success("Cancel listing successfully.");
+      await mpContract.cancelMessage(param, offer.chain?.mpContract, user);
+      await nftService.cancelOffer(offer.id);
+      toast.success("Cancel offer successfully.");
       onClose();
       onSuccess && onSuccess();
     } catch (error) {
       console.error(error);
       error?.message && toast.error(error?.message);
-      onClose();
     } finally {
       setLoading(false);
     }
   };
   return (
     <>
-      <PrimaryButton
-        colorScheme="red"
-        bg="red.600"
-        _hover={{ bg: "red.500" }}
+      <Button
         onClick={(e) => {
           e.preventDefault();
           onOpen();
@@ -82,24 +81,24 @@ export default function CancelBtn({
         {...rest}
       >
         {children}
-      </PrimaryButton>
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
             <VStack pt={5} px={5} w="full">
-              <Heading fontSize="2xl">CANCEL SALE</Heading>
+              <Heading fontSize="2xl">CANCEL OFFER</Heading>
               <VStack spacing={0}>
-                <Text>You are about cancel sell your&nbsp;</Text>
+                <Text>Cancel offer for&nbsp;</Text>
                 <Text color="gray">
-                  {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+                  {offer.name} {offer.tokenId ? `#${offer.tokenId}` : ""}
                 </Text>
               </VStack>
               <Box py={3}>
                 <Image
                   w="300px"
-                  src={nft.image}
+                  src={offer.image}
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>
@@ -111,8 +110,8 @@ export default function CancelBtn({
                 Close
               </Button>
               <SwitchNetworkButton
-                symbol={nft.chain.symbol}
-                name={nft.chain.name}
+                symbol={offer.chain?.symbol}
+                name={offer.chain?.name}
               >
                 <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
                   Confirm

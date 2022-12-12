@@ -135,7 +135,7 @@ const PropertyString = ({ attrMap, onChange, defaultAttr }: PropertyProps) => {
         value={values}
       >
         <VStack w="full" alignItems="start">
-          {attrMap.options?.map((option) => {
+          {attrMap.options?.sort().map((option) => {
             return (
               <Checkbox key={option} value={option}>
                 {option}

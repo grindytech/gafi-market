@@ -17,7 +17,7 @@ export default function Msg({ msg, children, icon, ...rest }: Props) {
       alignItems="center"
       justifyContent="center"
       w="full"
-      height="200"
+      // height="200"
     >
       {React.cloneElement(icon)}
       <Heading fontSize="lg">{msg}</Heading>

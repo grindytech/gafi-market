@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 const LINKS = [
   { href: "/explore/nfts", name: "NFTs" },
   { href: "/explore/collections", name: "Collections" },
-  { href: "/explore/profiles", name: "Profiles" },
+  // { href: "/explore/profiles", name: "Profiles" },
 ];
 export default function ExplorePage({ children, ...rest }: StackProps) {
   const router = useRouter();

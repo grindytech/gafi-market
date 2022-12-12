@@ -97,10 +97,27 @@ const matchTransaction = async (
     .send({ from: user });
 };
 
+const matchOffer = async (
+  param: MatchTransactionParam,
+  user: string,
+  mpContract: string,
+  web3 = web3Inject
+) => {
+  const contract = marketplaceContract(mpContract, web3);
+  await contract.methods
+    .matchOffer(
+      [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
+      [param.tokenId, param.price, param.saltNonce, param.period],
+      param.signature
+    )
+    .send({ from: user });
+};
+
 const mpContract = {
   cancelMessage,
   marketplaceContract,
   getMessageHash,
   matchTransaction,
+  matchOffer
 };
 export default mpContract;

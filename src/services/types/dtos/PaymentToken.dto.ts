@@ -1,4 +1,5 @@
 import { BaseDocumentDto } from "./BaseDocumentDto";
+import { ChainDto } from "./ChainDto";
 
 export class PaymentToken extends BaseDocumentDto {
   name: string;

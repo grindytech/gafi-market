@@ -51,7 +51,6 @@ export default function TokenSymbolToken({
     }
   }, [query.paymentTokenId]);
   useEffect(() => {
-    debugger
     setTokenId(paymentTokensSource[0]?.id);
     paymentTokensSource[0] && onChangeToken(paymentTokensSource[0]);
   }, [paymentTokensSource]);

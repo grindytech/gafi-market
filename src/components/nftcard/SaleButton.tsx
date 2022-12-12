@@ -26,13 +26,14 @@ import { useSelector } from "react-redux";
 import { web3Inject } from "../../contracts";
 import erc721Contract from "../../contracts/erc721.contract";
 import useCustomToast from "../../hooks/useCustomToast";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue } from "../../utils/utils";
+import { convertToContractValue, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
@@ -54,6 +55,10 @@ export default function SaleButton({
   const [loading, setLoading] = useState(false);
   const toast = useCustomToast();
   const [period, setPeriod] = useState(SalePeriod.Week);
+  const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
+    enabled: !!paymentToken,
+    paymentSymbol: paymentToken?.symbol,
+  });
   useEffect(() => {
     if (isFirst) {
       setIsFirst(false);
@@ -120,6 +125,8 @@ export default function SaleButton({
       setLoading(false);
     }
   };
+  const receive = () =>
+    Number(price) - Number(price) * (marketFee + collectionOwnerFee);
   return (
     <>
       <PrimaryButton
@@ -228,14 +235,25 @@ export default function SaleButton({
                   <Text>Collection owner fee:</Text>
                   <Text>{collectionOwnerFee * 100} %</Text>
                 </HStack> */}
-                <HStack w="full" justifyContent="space-between">
-                  <Text>Your will receive:</Text>
-                  <Text>
-                    {Number(price) -
-                      Number(price) * (marketFee + collectionOwnerFee) || "--"}
-                    &nbsp;
-                    {paymentToken?.symbol}
-                  </Text>
+                <HStack
+                  alignItems="start"
+                  w="full"
+                  justifyContent="space-between"
+                >
+                  <Text>You will receive:</Text>
+                  <VStack spacing={0} alignItems="end">
+                    <Text color="gray">
+                      {receive() || "--"}
+                      &nbsp;
+                      {paymentToken?.symbol}
+                    </Text>
+                    {priceAsUsd && price && (
+                      <Text fontSize="xs" color="gray.500">
+                        ~{prefix}
+                        {numeralFormat(receive() * priceAsUsd)}
+                      </Text>
+                    )}
+                  </VStack>
                 </HStack>
               </VStack>
             </VStack>
@@ -250,6 +268,7 @@ export default function SaleButton({
                   isLoading={loading}
                   onClick={createSale}
                   w="full"
+                  disabled={errorMsg}
                 >
                   Confirm
                 </PrimaryButton>

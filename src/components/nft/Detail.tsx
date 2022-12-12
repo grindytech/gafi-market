@@ -46,7 +46,7 @@ import OfferButton from "../nftcard/OfferButton";
 import PrimaryButton from "../PrimaryButton";
 import { useSelector } from "react-redux";
 import { selectProfile } from "../../store/profileSlice";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import CancelBtn from "../nftcard/CancelButton";
 import SaleButton from "../nftcard/SaleButton";
 import Countdown from "react-countdown";
@@ -55,13 +55,22 @@ import CustomTab from "../CustomTab";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import Icons from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
+import NftOffers from "./offer/NftOffers";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
+import NftHistory from "./NftHistory";
+import LoadingPage from "../LoadingPage";
+import { EmptyState, ErrorState } from "../EmptyState";
+import { AxiosResponse } from "axios";
+import ShareButton from "../ShareButton";
 
 export default function Detail({ id }: { id: string }) {
+  const [errorCode, setErrorCode] = useState(0);
   const {
     data: nft,
     isLoading,
     isFetching,
     refetch,
+    isError,
   } = useQuery(
     ["NftDetail", id],
     async () => {
@@ -70,50 +79,150 @@ export default function Detail({ id }: { id: string }) {
     },
     {
       enabled: !!id,
+      onError: (error: AxiosResponse) => {
+        setErrorCode(error?.status || 500);
+      },
     }
   );
   const { user } = useSelector(selectProfile);
   const isOwner = useMemo(() => user === nft?.owner?.address, [user, nft]);
   const { borderColor } = useCustomColors();
   const md = useBreakpointValue({ base: false, md: true });
-
-  return (
-    nft && (
-      <Container maxW="container.lg">
-        <Stack
-          position="relative"
-          direction={{ base: "column", md: "row" }}
-          w="full"
-        >
-          <VStack w="full" spacing={5}>
-            <Box w="full" display="flex" justifyContent="center">
-              <Card display="flex" maxW="full" rounded="lg">
-                <Skeleton isLoaded={!isLoading}>
-                  <CardBody>
-                    <NftViewer nft={nft} />
-                  </CardBody>
-                </Skeleton>
-              </Card>
-            </Box>
-            {md && <NftDetailSection nft={nft} />}
-          </VStack>
-          <VStack
-            position="sticky"
-            height={{ base: "auto", md: 500 }}
-            spacing={5}
-            pl={{ base: 0, md: 10 }}
+  const [loadOfferTime, setLoadOfferRime] = useState(Date.now());
+  return isLoading ? (
+    <LoadingPage />
+  ) : (
+    <>
+      <Box py={100}>
+        {isError && errorCode === 404 && (
+          <Box w="full">
+            <EmptyState msg="Item does not exist of has been burned" />
+          </Box>
+        )}
+        {isError && errorCode !== 404 && (
+          <Box w="full" py={10}>
+            <ErrorState>
+              <Button
+                onClick={() => {
+                  refetch();
+                }}
+              >
+                Try again
+              </Button>
+            </ErrorState>
+          </Box>
+        )}
+      </Box>
+      {nft && (
+        <Container maxW="container.lg">
+          <Stack
+            position="relative"
+            direction={{ base: "column", md: "row" }}
             w="full"
-            top="30px"
           >
-            <PriceSection isOwner={isOwner} nft={nft} refetch={refetch} />
-            {!md && <NftDetailSection nft={nft} />}
-            {/* <NftDetail nft={nft} /> */}
-          </VStack>
-        </Stack>
-      </Container>
-    )
+            <VStack w="full" spacing={5}>
+              <Box w="full" display="flex" justifyContent="center">
+                <Card display="flex" maxW="full" rounded="lg">
+                  <Skeleton isLoaded={!isLoading}>
+                    <CardBody>
+                      <NftViewer nft={nft} />
+                    </CardBody>
+                  </Skeleton>
+                </Card>
+              </Box>
+              {md && <NftDetailSection nft={nft} />}
+              {md && <NftHistorySection nft={nft} />}
+            </VStack>
+            <VStack
+              position="sticky"
+              height={{ base: "auto", md: 610 }}
+              spacing={5}
+              pl={{ base: 0, md: 10 }}
+              w="full"
+              top="30px"
+            >
+              <PriceSection
+                onMakeOffer={() => {
+                  debugger;
+                  setLoadOfferRime(Date.now());
+                }}
+                isOwner={isOwner}
+                nft={nft}
+                refetch={refetch}
+              />
+              {!md && <NftDetailSection nft={nft} />}
+              <NftOfferSection
+                key={`NftOfferSection-${loadOfferTime}`}
+                nft={nft}
+              />
+              {!md && <NftHistorySection nft={nft} />}
+            </VStack>
+          </Stack>
+        </Container>
+      )}
+    </>
   );
 }
+const NftHistorySection = ({ nft }: { nft: NftDto }) => {
+  return (
+    <Box
+      borderTop="none"
+      borderBottom="none"
+      w="full"
+      borderWidth={1}
+      rounded="xl"
+      overflow="hidden"
+    >
+      <Accordion w="full" defaultIndex={[0]} allowToggle>
+        <AccordionItem w="full">
+          <AccordionButton
+            _hover={{ bg: "none" }}
+            w="full"
+            justifyContent="space-between"
+          >
+            <Text fontSize="xl" fontWeight="semibold">
+              Histories
+            </Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel px={2} pb={4} overflow="auto" maxH={400}>
+            <NftHistory nft={nft} />
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
+    </Box>
+  );
+};
+const NftOfferSection = ({ nft }: { nft: NftDto }) => {
+  return (
+    <Box
+      borderTop="none"
+      borderBottom="none"
+      w="full"
+      borderWidth={1}
+      rounded="xl"
+      overflow="hidden"
+    >
+      <Accordion w="full" defaultIndex={[0]} allowToggle>
+        <AccordionItem w="full">
+          <AccordionButton
+            _hover={{ bg: "none" }}
+            w="full"
+            justifyContent="space-between"
+          >
+            <Text fontSize="xl" fontWeight="semibold">
+              Offers
+            </Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel px={2} pb={4} overflow="auto" maxH={200}>
+            <NftOffers nft={nft} />
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
+    </Box>
+  );
+};
 const NftDetailSection = ({ nft }: { nft: NftDto }) => {
   return (
     <Box
@@ -245,17 +354,19 @@ const NftDetail = ({ nft }: { nft: NftDto }) => {
             Open origin&nbsp;
             <ExternalLinkIcon />
           </Button>
-          <Button
-            size="sm"
-            variant="link"
-            fontWeight="normal"
-            as={Link}
-            target="_blank"
-            href={nft.externalUrl}
-          >
-            External link&nbsp;
-            <ExternalLinkIcon />
-          </Button>
+          {nft.externalUrl && (
+            <Button
+              size="sm"
+              variant="link"
+              fontWeight="normal"
+              as={Link}
+              target="_blank"
+              href={nft.externalUrl}
+            >
+              External link&nbsp;
+              <ExternalLinkIcon />
+            </Button>
+          )}
         </HStack>
       </VStack>
     </VStack>
@@ -291,11 +402,17 @@ const PriceSection = ({
   nft,
   refetch,
   isOwner,
+  onMakeOffer,
 }: {
   nft: NftDto;
   refetch: any;
   isOwner: boolean;
+  onMakeOffer?: () => void;
 }) => {
+  const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
+    enabled: !!nft?.sale,
+    paymentSymbol: nft?.sale?.paymentToken.symbol,
+  });
   const { borderColor } = useCustomColors();
   return (
     <VStack spacing={1} w="full" alignItems="start">
@@ -311,11 +428,7 @@ const PriceSection = ({
           </Text>
         </NextLink>
         <HStack>
-          <Tooltip label="Share">
-            <IconButton size="sm" aria-label="share">
-              <FiShare />
-            </IconButton>
-          </Tooltip>
+          <ShareButton />
           <Tooltip label="Refresh metadata">
             <IconButton size="sm" aria-label="refresh metadata">
               <FiRefreshCw />
@@ -356,9 +469,12 @@ const PriceSection = ({
                       {numeralFormat(nft.sale.price)}{" "}
                       {nft.sale.paymentToken.symbol}
                     </Text>
-                    <Text color="gray" fontWeight="semibold" fontSize="sm">
-                      ~ ${numeralFormat(nft.sale.price)}
-                    </Text>
+                    <Skeleton isLoaded={!isPriceAsUsdLoading}>
+                      <Text color="gray" fontWeight="semibold" fontSize="sm">
+                        ~{prefix}
+                        {numeralFormat(nft.sale.price * priceAsUsd)}
+                      </Text>
+                    </Skeleton>
                   </>
                 )}
                 {!nft.sale && (
@@ -372,7 +488,8 @@ const PriceSection = ({
                   {nft.sale && (
                     <CancelBtn
                       w="full"
-                      onSuccess={() => {
+                      onSuccess={async () => {
+                        await nftService.cancelSale(nft.id);
                         refetch();
                       }}
                       nft={nft}
@@ -402,13 +519,26 @@ const PriceSection = ({
                           Buy now
                         </BuyButton>
                       </HStack>
-                      <OfferButton nft={nft} w="full">
+                      <OfferButton
+                        onSuccess={() => {
+                          onMakeOffer && onMakeOffer();
+                        }}
+                        nft={nft}
+                        w="full"
+                      >
                         Make offer
                       </OfferButton>
                     </>
                   )}
                   {!nft.sale && (
-                    <PrimaryButton as={OfferButton} nft={nft} w="full">
+                    <PrimaryButton
+                      onSuccess={() => {
+                        onMakeOffer && onMakeOffer();
+                      }}
+                      as={OfferButton}
+                      nft={nft}
+                      w="full"
+                    >
                       Make offer
                     </PrimaryButton>
                   )}

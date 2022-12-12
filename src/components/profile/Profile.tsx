@@ -1,6 +1,5 @@
 import { CopyIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
   Box,
   Button,
   Heading,
@@ -17,14 +16,13 @@ import {
 } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { FiShare } from "react-icons/fi";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import useCustomToast from "../../hooks/useCustomToast";
 import { accountService } from "../../services/user.service";
 import { selectProfile } from "../../store/profileSlice";
-import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/string.util";
+import Avatar from "../Avatar";
 import Nfts from "../market/Nfts";
 const CustomTab = ({ children, ...rest }: TabProps) => {
   return (
@@ -78,12 +76,10 @@ export default function Profile({ address }: { address?: string }) {
                 <HStack>
                   <Avatar
                     size={"lg"}
-                    icon={
-                      <Jazzicon
-                        diameter={64}
-                        seed={jsNumberForAddress(String(viewAccount))}
-                      />
-                    }
+                    jazzicon={{
+                      diameter: 64,
+                      seed: String(viewAccount),
+                    }}
                     src={viewProfile?.avatar}
                   />
                   <VStack spacing={0}>
@@ -99,7 +95,9 @@ export default function Profile({ address }: { address?: string }) {
                         )}
                       <Button
                         onClick={() => {
-                          navigator.clipboard.writeText(String(user));
+                          navigator.clipboard.writeText(
+                            String(viewProfile?.address)
+                          );
                           toast.success("Copied!");
                         }}
                         rightIcon={<CopyIcon color="gray" />}
