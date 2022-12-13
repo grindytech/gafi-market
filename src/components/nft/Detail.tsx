@@ -62,6 +62,8 @@ import LoadingPage from "../LoadingPage";
 import { EmptyState, ErrorState } from "../EmptyState";
 import { AxiosResponse } from "axios";
 import ShareButton from "../ShareButton";
+import useCustomToast from "../../hooks/useCustomToast";
+import RefreshMetadataButton from "./RefreshMetadataButton";
 
 export default function Detail({ id }: { id: string }) {
   const [errorCode, setErrorCode] = useState(0);
@@ -93,26 +95,24 @@ export default function Detail({ id }: { id: string }) {
     <LoadingPage />
   ) : (
     <>
-      <Box py={100}>
-        {isError && errorCode === 404 && (
-          <Box w="full">
-            <EmptyState msg="Item does not exist of has been burned" />
-          </Box>
-        )}
-        {isError && errorCode !== 404 && (
-          <Box w="full" py={10}>
-            <ErrorState>
-              <Button
-                onClick={() => {
-                  refetch();
-                }}
-              >
-                Try again
-              </Button>
-            </ErrorState>
-          </Box>
-        )}
-      </Box>
+      {isError && errorCode === 404 && (
+        <Box w="full" py={100}>
+          <EmptyState msg="Item does not exist or has been burned" />
+        </Box>
+      )}
+      {isError && errorCode !== 404 && (
+        <Box w="full" py={100}>
+          <ErrorState>
+            <Button
+              onClick={() => {
+                refetch();
+              }}
+            >
+              Try again
+            </Button>
+          </ErrorState>
+        </Box>
+      )}
       {nft && (
         <Container maxW="container.lg">
           <Stack
@@ -143,7 +143,6 @@ export default function Detail({ id }: { id: string }) {
             >
               <PriceSection
                 onMakeOffer={() => {
-                  debugger;
                   setLoadOfferRime(Date.now());
                 }}
                 isOwner={isOwner}
@@ -414,6 +413,7 @@ const PriceSection = ({
     paymentSymbol: nft?.sale?.paymentToken.symbol,
   });
   const { borderColor } = useCustomColors();
+  const toast = useCustomToast();
   return (
     <VStack spacing={1} w="full" alignItems="start">
       <HStack w="full" justifyContent="space-between">
@@ -428,11 +428,13 @@ const PriceSection = ({
           </Text>
         </NextLink>
         <HStack>
-          <ShareButton />
+          <ShareButton
+            aria-label="share button"
+            title={`${nft.nftCollection.name} | ${nft.name}`}
+            link={window.location.href}
+          />
           <Tooltip label="Refresh metadata">
-            <IconButton size="sm" aria-label="refresh metadata">
-              <FiRefreshCw />
-            </IconButton>
+            <RefreshMetadataButton nftId={nft.id} />
           </Tooltip>
         </HStack>
       </HStack>

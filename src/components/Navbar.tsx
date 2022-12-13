@@ -46,7 +46,7 @@ import Avatar from "./Avatar";
 import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import SearchBox from "./SearchBox";
-const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
+export const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
   return (
     <MenuItem
       display="flex"

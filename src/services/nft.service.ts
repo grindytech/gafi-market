@@ -75,12 +75,15 @@ const getHistories = async (
 };
 
 const getPrice = async (symbol: string): Promise<{ price: string }> => {
-
   return await client.get(`/market/api/coin-price`, {
     params: {
       symbol,
     },
   });
+};
+
+const refreshMetaData = async (id: string) => {
+  return await client.post(`/market/api/nft/${id}/sync-nft`);
 };
 
 export default {
@@ -102,4 +105,6 @@ export default {
   getHistories,
 
   getPrice,
+
+  refreshMetaData,
 };
