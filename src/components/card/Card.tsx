@@ -14,4 +14,5 @@ const Card: FC<BoxProps> = (props) => {
   );
 };
 
+
 export default Card;
