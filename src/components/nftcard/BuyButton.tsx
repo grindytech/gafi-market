@@ -1,15 +1,9 @@
 import {
   Box,
   ButtonProps,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   HStack,
   Image,
-  Input,
-  InputGroup,
-  InputRightElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,22 +14,18 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
-import useSwitchNetwork from "../../connectWallet/useSwitchNetwork";
 import { Chain } from "../../contracts";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
-import useCustomToast from "../../hooks/useCustomToast";
+import useSwal from "../../hooks/useSwal";
 import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
-import { SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import { convertToContractValue } from "../../utils/utils";
-import ConnectWalletButton from "../connectWalletButton/ConnectWalletButton";
-import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
@@ -47,8 +37,10 @@ export default function BuyButton({
 }: ButtonProps & { nft: NftDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { user } = useSelector(selectProfile);
-  const toast = useCustomToast();
   const [loading, setLoading] = useState(false);
+  const { swAlert } = useSwal();
+  const router = useRouter();
+
   const {
     data: balance,
     refetch: refetchBalance,
@@ -60,6 +52,7 @@ export default function BuyButton({
     tokenAddress: nft.sale.paymentToken.contractAddress,
     isNative: false,
   });
+
   const buyNftHandle = async () => {
     try {
       setLoading(true);
@@ -94,13 +87,29 @@ export default function BuyButton({
         user,
         nft.chain.mpContract
       );
-
-      toast.success("Transaction successfully.");
       onClose();
       onSuccess && onSuccess();
+      swAlert({
+        title: "COMPLETE",
+        text: `Transaction successfully!`,
+        icon: "success",
+        showCancelButton: true,
+        cancelButtonText: "Close",
+        confirmButtonText: "Inventory",
+      }).then(() => {
+        router.push("/profile");
+      });
     } catch (error) {
+      onClose();
       console.error(error);
-      error?.message && toast.error(error?.message);
+      swAlert({
+        title: "Failed",
+        text:
+          error.message && error.message.length < 200
+            ? error.message
+            : "Transaction failed!",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -154,11 +163,14 @@ export default function BuyButton({
                 name={nft.chain.name}
               >
                 <PrimaryButton
+                  disabled={loading || balance < nft.sale.price}
                   isLoading={loading}
                   onClick={buyNftHandle}
                   w="full"
                 >
-                  Confirm
+                  {balance < nft.sale.price
+                    ? "Insufficient balance"
+                    : "Confirm"}
                 </PrimaryButton>
               </SwitchNetworkButton>
             </HStack>

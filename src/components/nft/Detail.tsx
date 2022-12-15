@@ -447,7 +447,7 @@ const PriceSection = ({
           href={`/profile/${nft.owner.address}`}
           as={NextLink}
         >
-          {nft.owner.name !== "Unnamed"
+          {nft.owner.name && nft.owner.name !== "Unnamed"
             ? nft.owner.name
             : shorten(nft.owner.address, 6, 4)}
         </Link>

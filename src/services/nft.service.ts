@@ -83,7 +83,7 @@ const getPrice = async (symbol: string): Promise<{ price: string }> => {
 };
 
 const refreshMetaData = async (id: string) => {
-  return await client.post(`/market/api/nft/${id}/sync-nft`);
+  return await client.get(`/market/api/nft/${id}/sync-nft`);
 };
 
 export default {

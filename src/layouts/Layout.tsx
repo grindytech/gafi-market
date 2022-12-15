@@ -1,4 +1,4 @@
-import { Box, Container, HStack, StackProps, VStack } from "@chakra-ui/react";
+import { Container, StackProps, VStack } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 

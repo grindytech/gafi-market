@@ -12,4 +12,5 @@ export class GetNfts extends BaseQueryParams {
   game?: string;
   chain?: string;
   paymentTokenId?: string;
+  idList?: string[];
 }

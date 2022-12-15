@@ -15,7 +15,14 @@ export const bagSlice = createSlice({
   reducers: {
     add: (state, { payload }) => {
       const { item } = payload;
-      state.items.push(item);
+      state.items = Array.from([
+        ...state.items.filter((i) => i.id !== item.id),
+        item,
+      ]);
+    },
+    adds: (state, { payload }) => {
+      const { items } = payload;
+      state.items = items;
     },
     remove: (state, { payload }) => {
       const { id } = payload;
@@ -30,7 +37,7 @@ export const bagSlice = createSlice({
   },
 });
 
-export const { add, reset, setIsOpen, remove } = bagSlice.actions;
+export const { add, adds, reset, setIsOpen, remove } = bagSlice.actions;
 
 export const selectBag = (state: any): BagState => state.bag;
 

@@ -15,28 +15,136 @@ import {
   IconButton,
   Image,
   Link,
+  StackProps,
   Text,
-  Tooltip,
   useColorModeValue,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import React from "react";
+import NextLink from "next/link";
+import React, { useEffect, useMemo, useState } from "react";
 import { FiShoppingBag } from "react-icons/fi";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
+import { useBalanceOf } from "../../connectWallet/useBalanceof";
+import { Chain } from "../../contracts";
 import { Images } from "../../images";
-import { remove, reset, selectBag } from "../../store/bagSlice";
-import { numeralFormat } from "../../utils/utils";
-import NextLink from "next/link";
+import nftService from "../../services/nft.service";
+import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { adds, remove, reset, selectBag } from "../../store/bagSlice";
+import { selectProfile } from "../../store/profileSlice";
+import useCustomColors from "../../theme/useCustomColors";
+import { convertToContractValue, numeralFormat } from "../../utils/utils";
 import { EmptyState } from "../EmptyState";
+import erc20Contract from "../../contracts/erc20.contract";
+import mpContract from "../../contracts/marketplace.contract";
+import useCustomToast from "../../hooks/useCustomToast";
+import useSwal from "../../hooks/useSwal";
+import { useRouter } from "next/router";
+import SwitchNetworkButton from "../SwitchNetworkButton";
+import PrimaryButton from "../PrimaryButton";
 
 export default function Cart() {
   const dispatch = useDispatch();
   const { items } = useSelector(selectBag);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
-  
+  const [isLoading, setIsLoading] = useState(false);
+  const realtimeData = async () => {
+    const ids = items.map((i) => i.id);
+    if (ids.length === 0) return [];
+    const rs = await nftService.getNfts({
+      idList: ids,
+    });
+    return rs.data.items;
+  };
+  const [validItems, setValidItems] = useState<NftDto[]>([]);
+  const [soldOutItems, setSoldOutItems] = useState<NftDto[]>([]);
+  const fetchData = async () => {
+    const realTimeItems = await realtimeData();
+    const sold = [];
+    const valid = [];
+    for (const item of items) {
+      const rItem = realTimeItems.find((i) => i.id === item.id);
+      if (!rItem || rItem.sale?.id !== item.sale.id) sold.push(item);
+      else valid.push(item);
+    }
+    setValidItems(valid);
+    setSoldOutItems(sold);
+  };
+  const { user } = useSelector(selectProfile);
+  const {
+    data: balance,
+    refetch: refetchBalance,
+    isLoading: loadingBalance,
+    isFetching: fetchingBalance,
+  } = useBalanceOf({
+    account: user,
+    chain:
+      items.length > 0
+        ? (items[0].chain.symbol.toUpperCase() as Chain)
+        : undefined,
+    tokenAddress:
+      items.length > 0 ? items[0].sale.paymentToken.contractAddress : undefined,
+    isNative: false,
+  });
+
+  const total = useMemo(() => {
+    let total = 0;
+    for (const item of validItems) {
+      total += item.sale.price;
+    }
+    return total;
+  }, [validItems]);
+
+  useEffect(() => {
+    fetchData();
+  }, [items]);
+  const toast = useCustomToast();
+  const { swAlert } = useSwal();
+  const router = useRouter();
+  const checkout = async () => {
+    try {
+      setIsLoading(true);
+      const approvePrice = convertToContractValue({
+        amount: total,
+        decimal: items[0].sale.paymentToken.decimals,
+      });
+      const allowance = await erc20Contract.getAllowance(
+        items[0].sale.paymentToken.contractAddress,
+        items[0].chain.mpContract,
+        user
+      );
+      if (Number(allowance) < Number(approvePrice)) {
+        await erc20Contract.approve(
+          items[0].sale.paymentToken.contractAddress,
+          items[0].chain.mpContract,
+          user,
+          approvePrice
+        );
+      }
+      await mpContract.matchBag(validItems, user, items[0].chain.mpContract);
+      onClose();
+      swAlert({
+        title: "COMPLETE",
+        text: `Transaction successfully!`,
+        icon: "success",
+        showCancelButton: true,
+        cancelButtonText: "Close",
+        confirmButtonText: "Inventory",
+      }).then(() => {
+        router.push("/profile");
+      });
+      dispatch(reset());
+    } catch (error) {
+      console.error(error);
+      toast.error("Transaction failed!");
+      fetchData();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Box position="relative">
       <IconButton
@@ -64,7 +172,7 @@ export default function Cart() {
           justifyContent="center"
           alignItems="center"
         >
-          {items.length}
+          {validItems.length || items.length}
         </Box>
       )}
       <Drawer
@@ -93,9 +201,9 @@ export default function Cart() {
                   </EmptyState>
                 </Box>
               )}
-              {items.length > 0 && (
+              {validItems.length > 0 && (
                 <HStack w="full" justifyContent="space-between">
-                  <Text fontSize="sm">{items.length} items</Text>
+                  <Text fontSize="sm">{validItems.length} items</Text>
                   <Button
                     onClick={() => {
                       dispatch(reset());
@@ -109,68 +217,136 @@ export default function Cart() {
                   </Button>
                 </HStack>
               )}
-              {items.map((item, index) => (
+              {validItems.map((item, index) => (
                 <>
                   {index !== 0 && <Divider />}
-                  <HStack w="full" justifyContent="space-between">
-                    <HStack>
-                      <Image
-                        src={item.image}
-                        rounded="md"
-                        fallbackSrc={Images.Placeholder.src}
-                        w={16}
-                        h={16}
-                      />
-                      <VStack spacing={0} alignItems="start">
-                        <Link
-                          onClick={onClose}
-                          as={NextLink}
-                          href={`/collection/${item.nftCollection.id}}`}
-                        >
-                          <Text
-                            color="primary.50"
-                            fontWeight="semibold"
-                            fontSize="sm"
-                          >
-                            {item?.nftCollection.name}{" "}
-                            {item?.nftCollection.verified && (
-                              <Icon color="primary.50" h={4} w={4}>
-                                <HiBadgeCheck size="25px" />
-                              </Icon>
-                            )}
-                          </Text>
-                        </Link>
-                        <Link
-                          onClick={onClose}
-                          as={NextLink}
-                          href={`/nft/${item.id}`}
-                        >
-                          <Text>{item.name}</Text>
-                        </Link>
-                        <Text color="gray" fontSize="sm">
-                          {numeralFormat(item?.sale.price)}&nbsp;
-                          {item.sale.paymentToken.symbol}
-                        </Text>
-                      </VStack>
-                    </HStack>
-                    <IconButton
-                      aria-label="remove"
-                      onClick={() => {
-                        dispatch(remove({ id: item.id }));
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </HStack>
+                  <NftItem item={item} onClose={onClose} />
                 </>
               ))}
+              {soldOutItems.length > 0 && (
+                <Box pt={3} w="full">
+                  <HStack w="full" justifyContent="space-between">
+                    <Text
+                      w="full"
+                      textAlign="left"
+                      fontWeight="semibold"
+                      fontSize="md"
+                    >
+                      Sold out items
+                    </Text>
+                    <Button
+                      onClick={() => {
+                        dispatch(adds(validItems));
+                        onClose();
+                      }}
+                      color="gray.400"
+                      size="xs"
+                      variant="link"
+                    >
+                      Clear all
+                    </Button>
+                  </HStack>
+                  {soldOutItems.map((item, index) => (
+                    <>
+                      {index !== 0 && <Divider />}
+                      <NftItem opacity={0.6} item={item} onClose={onClose} />
+                    </>
+                  ))}
+                </Box>
+              )}
             </VStack>
           </DrawerBody>
           <DrawerFooter>
-            {items.length > 0 && <Button w="full">Checkout</Button>}
+            {validItems.length > 0 && (
+              <VStack w="full" spacing={3}>
+                <HStack
+                  rounded="lg"
+                  bg="rgba(0,0,0,0.15)"
+                  w="full"
+                  p={3}
+                  justifyContent="space-between"
+                  alignContent="center"
+                >
+                  <Text fontSize="lg" fontWeight="semibold">
+                    Total
+                  </Text>
+                  <Text>
+                    {numeralFormat(total)}{" "}
+                    {validItems[0].sale.paymentToken.symbol}
+                  </Text>
+                </HStack>
+                <SwitchNetworkButton
+                  symbol={validItems[0].chain.symbol}
+                  name={validItems[0].chain.name}
+                >
+                  <PrimaryButton
+                    onClick={checkout}
+                    isLoading={isLoading}
+                    disabled={balance < total || isLoading}
+                    w="full"
+                  >
+                    {balance < total ? "Insufficient balance" : "Checkout"}
+                  </PrimaryButton>
+                </SwitchNetworkButton>
+              </VStack>
+            )}
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </Box>
   );
 }
+
+const NftItem = ({
+  item,
+  onClose,
+  ...rest
+}: { item: NftDto; onClose: () => void } & StackProps) => {
+  const dispatch = useDispatch();
+  return (
+    <HStack {...rest} w="full" justifyContent="space-between">
+      <HStack>
+        <Image
+          src={item.image}
+          rounded="md"
+          fallbackSrc={Images.Placeholder.src}
+          w={16}
+          h={16}
+        />
+        <VStack spacing={0} alignItems="start">
+          <Link
+            onClick={onClose}
+            as={NextLink}
+            href={`/collection/${item.nftCollection.id}}`}
+          >
+            <Text color="primary.50" fontWeight="semibold" fontSize="sm">
+              {item?.nftCollection.name}{" "}
+              {item?.nftCollection.verified && (
+                <Icon color="primary.50" h={4} w={4}>
+                  <HiBadgeCheck size="25px" />
+                </Icon>
+              )}
+            </Text>
+          </Link>
+          <Link onClick={onClose} as={NextLink} href={`/nft/${item.id}`}>
+            <Text>{item.name}</Text>
+          </Link>
+          {item?.sale?.price && (
+            <Text color="gray" fontSize="sm">
+              {numeralFormat(item?.sale?.price)}&nbsp;
+              {item.sale.paymentToken.symbol}
+            </Text>
+          )}
+        </VStack>
+      </HStack>
+      <IconButton
+        aria-label="remove"
+        onClick={() => {
+          dispatch(remove({ id: item.id }));
+        }}
+      >
+        <DeleteIcon />
+      </IconButton>
+    </HStack>
+  );
+};

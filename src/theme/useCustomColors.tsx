@@ -9,7 +9,11 @@ export default function useCustomColors() {
   const navBgColor = useColorModeValue("white", "gray.800");
   const navSubHoverBg = useColorModeValue("gray.100", "gray.700");
   const borderColor = useColorModeValue("gray.100", "gray.700");
+  const swalBg = useColorModeValue("#eee", "#222");
+  const swalText = useColorModeValue("#000", "#fff");
   return {
+    swalBg,
+    swalText,
     linkColor,
     linkHoverColor,
     popoverContentBgColor,

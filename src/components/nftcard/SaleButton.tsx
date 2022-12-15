@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { web3Inject } from "../../contracts";
 import erc721Contract from "../../contracts/erc721.contract";
 import useCustomToast from "../../hooks/useCustomToast";
+import useSwal from "../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
@@ -33,6 +34,7 @@ import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
+import useCustomColors from "../../theme/useCustomColors";
 import { convertToContractValue, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
@@ -54,16 +56,14 @@ export default function SaleButton({
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const toast = useCustomToast();
+  const { borderColor } = useCustomColors();
   const [period, setPeriod] = useState(SalePeriod.Week);
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: !!paymentToken,
     paymentSymbol: paymentToken?.symbol,
   });
+  const { swAlert } = useSwal();
   useEffect(() => {
-    if (isFirst) {
-      setIsFirst(false);
-      return;
-    }
     if (!price) {
       setErrorMsg("Price is required");
       return;
@@ -115,12 +115,22 @@ export default function SaleButton({
         price: Number(price),
         signedSignature: sign,
       });
-      toast.success("Listing successfully.");
+      // toast.success("Listing successfully.");
       onClose();
       onSuccess && onSuccess();
+      swAlert({ title: "Listing successfully", icon: "success" });
     } catch (error) {
       console.error(error);
-      error?.message && toast.error(error?.message);
+
+      swAlert({
+        title: "Failed",
+        text:
+          error.message && error.message.length < 200
+            ? error.message
+            : "Transaction failed!",
+        icon: "error",
+      });
+      onClose();
     } finally {
       setLoading(false);
     }

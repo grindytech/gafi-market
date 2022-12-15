@@ -27,6 +27,7 @@ import { convertToContractValue } from "../../utils/utils";
 import PrimaryButton from "../PrimaryButton";
 import nftService from "../../services/nft.service";
 import SwitchNetworkButton from "../SwitchNetworkButton";
+import useSwal from "../../hooks/useSwal";
 
 export default function CancelBtn({
   nft,
@@ -36,8 +37,9 @@ export default function CancelBtn({
 }: ButtonProps & { nft: NftDto; onSuccess: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const toast = useCustomToast();
   const { user } = useSelector(selectProfile);
+  const { swAlert } = useSwal();
+
   const cancelSale = async () => {
     try {
       setLoading(true);
@@ -57,13 +59,28 @@ export default function CancelBtn({
         tokenId: Number(nft.tokenId),
       };
       await mpContract.cancelMessage(param, nft.chain.mpContract, user);
-      // await nftService.cancelSale(nft.id);
-      toast.success("Cancel listing successfully.");
+      try {
+        await nftService.cancelSale(nft.id);
+      } catch (error) {
+        console.error(error);
+      }
       onClose();
       onSuccess && onSuccess();
+      swAlert({
+        title: "Complete",
+        text: "Cancel listing successfully.",
+        icon: "success",
+      });
     } catch (error) {
       console.error(error);
-      error?.message && toast.error(error?.message);
+      swAlert({
+        title: "Failed",
+        text:
+          error.message && error.message.length < 200
+            ? error.message
+            : "Transaction failed!",
+        icon: "error",
+      });
       onClose();
     } finally {
       setLoading(false);

@@ -50,7 +50,7 @@ export default function NftCardMarket({
   });
   const { items } = useSelector(selectBag);
   const isInCart = useMemo(
-    () => !!items.find((i) => i.id === nft?.id),
+    () => !!items.find((i) => i.id === nft?.id && nft.sale?.id === i.sale.id),
     [items, nft]
   );
   return (
