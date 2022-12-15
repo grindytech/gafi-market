@@ -7,7 +7,7 @@ export default function useCustomColors() {
   const navTextColor = useColorModeValue("gray.600", "white");
   const navBorderColor = useColorModeValue("gray.200", "gray.900");
   const navBgColor = useColorModeValue("white", "gray.800");
-  const navSubHoverBg = useColorModeValue("pink.50", "gray.900");
+  const navSubHoverBg = useColorModeValue("gray.100", "gray.700");
   const borderColor = useColorModeValue("gray.100", "gray.700");
   return {
     linkColor,

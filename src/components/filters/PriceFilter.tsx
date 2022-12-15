@@ -1,22 +1,5 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  HStack,
-  Icon,
-  Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import { useSelector } from "react-redux";
-import Icons from "../../images";
-import { selectSystem, setPaymentTokens } from "../../store/systemSlice";
+import { Box, Button, HStack, Input, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import TokenSymbolToken from "./TokenSymbolButton";
 import { useNftQueryParam } from "./useCustomParam";
 export default function PriceFilter() {

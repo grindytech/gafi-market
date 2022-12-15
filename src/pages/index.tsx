@@ -8,7 +8,6 @@ import RecentlySold from "../components/home/RecentlySold";
 import { useConnectWallet } from "../connectWallet/useWallet";
 
 const Index = () => {
-  const { account } = useConnectWallet();
   return (
     <VStack w="full" spacing={12} mb={5}>
       <Box w="full" rounded="xl" overflow="hidden">

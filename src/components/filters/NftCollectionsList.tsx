@@ -106,7 +106,10 @@ export default function NftCollectionsList() {
     () => data?.pages.flatMap((page) => page.items) || [],
     [data]
   );
-  const selected = () => collections.find((c) => c.id === query.collectionId);
+  const selected = useMemo(
+    () => collections.find((c) => c.id === query.collectionId),
+    [collections, query.collectionId]
+  );
 
   const loadingRef = useRef<HTMLDivElement>(null);
   useIntersectionObserver({
@@ -114,9 +117,9 @@ export default function NftCollectionsList() {
     onIntersect: fetchNextPage,
     enabled: !isFetching && hasNextPage,
   });
-  return selected() ? (
+  return selected ? (
     <VStack w="full">
-      <CollectionItem activated c={selected()}>
+      <CollectionItem activated c={selected}>
         <CloseButton
           onClick={() => {
             setQuery({
@@ -127,7 +130,7 @@ export default function NftCollectionsList() {
           }}
         />
       </CollectionItem>
-      <Properties c={selected()} />
+      <Properties c={selected} />
     </VStack>
   ) : (
     <VStack w="full">

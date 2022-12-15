@@ -6,6 +6,7 @@ import {
   Icon,
   IconButton,
   Text,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import { FiPlus } from "react-icons/fi";
@@ -24,7 +25,10 @@ import BuyButton from "./BuyButton";
 import OfferButton from "./OfferButton";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { numeralFormat } from "../../utils/utils";
-
+import { useMemo } from "react";
+import { selectBag } from "../../store/bagSlice";
+import { BsBagCheck, BsFillBagCheckFill } from "react-icons/bs";
+import { AddToCartButton } from "./AddToCartButton";
 export default function NftCardMarket({
   nft,
   loading,
@@ -44,8 +48,14 @@ export default function NftCardMarket({
     enabled: !!nft?.sale,
     paymentSymbol: nft?.sale?.paymentToken.symbol,
   });
+  const { items } = useSelector(selectBag);
+  const isInCart = useMemo(
+    () => !!items.find((i) => i.id === nft?.id),
+    [items, nft]
+  );
   return (
     <NftCard
+      className={isInCart ? "in-cart" : ""}
       loading={loading}
       image={nft?.image}
       showOnHover={
@@ -100,9 +110,7 @@ export default function NftCardMarket({
                   >
                     Buy now
                   </BuyButton>
-                  <IconButton aria-label="Add to cart">
-                    <FiPlus size="30px" />
-                  </IconButton>
+                  <AddToCartButton nft={nft} />
                 </HStack>
               )}
             </Fade>
@@ -147,11 +155,13 @@ export default function NftCardMarket({
                   #{nft?.tokenId}
                 </Text>
               </VStack>
-              <Icon blur="xl" w={5} h={5}>
-                {Icons.chain[String(nft?.chain?.symbol).toUpperCase()]
-                  ? Icons.chain[String(nft?.chain?.symbol).toUpperCase()]()
-                  : ""}
-              </Icon>
+              <Tooltip label={nft?.chain?.name}>
+                <Icon blur="xl" w={5} h={5}>
+                  {Icons.chain[String(nft?.chain?.symbol).toUpperCase()]
+                    ? Icons.chain[String(nft?.chain?.symbol).toUpperCase()]()
+                    : ""}
+                </Icon>
+              </Tooltip>
             </HStack>
           </Skeleton>
         </VStack>

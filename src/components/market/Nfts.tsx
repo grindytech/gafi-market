@@ -230,7 +230,7 @@ export default function Nfts({ owner }: { owner?: string }) {
           <SimpleGrid
             justifyContent="center"
             w="full"
-            columns={showFilter && md ? [2, 2, 3, 3, 5] : [2, 2, 4, 4, 6]}
+            columns={showFilter && md ? [2, 3, 3, 3, 5] : [2, 3, 4, 5, 6]}
             gap="15px"
           >
             {!isLoading &&
@@ -258,24 +258,17 @@ export default function Nfts({ owner }: { owner?: string }) {
               Array.from(Array(12).keys()).map((k) => (
                 <NftCardMarket loading key={`nft-template-${k}`} />
               ))}
-          </SimpleGrid>
-          {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}
-          <Box my={3}>
+
             {hasNextPage &&
               (isFetchingNextPage ? (
-                <HStack py={3} w="full" justifyContent="center">
-                  <Spinner
-                    thickness="4px"
-                    speed="0.65s"
-                    // emptyColor="gray.200"
-                    // color="blue.500"
-                    size="lg"
-                  />
-                </HStack>
+                Array.from(Array(6).keys()).map((k) => (
+                  <NftCardMarket loading key={`nft-template-${k}`} />
+                ))
               ) : (
                 <></>
               ))}
-          </Box>
+          </SimpleGrid>
+          {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}
         </Box>
       </HStack>
     </VStack>

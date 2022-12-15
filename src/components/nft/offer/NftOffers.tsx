@@ -91,13 +91,26 @@ export default function NftOffers({ buyer, nft, seller }: Props) {
       {!isLoading &&
         nftOffers.map((offer) => (
           <Box p={2} w="full" _hover={{ boxShadow: "md" }}>
-            <OfferListItem nft={nft} isOwner={isOwner} offer={offer} />
+            <OfferListItem
+              refetch={() => {
+                refetch();
+              }}
+              nft={nft}
+              isOwner={isOwner}
+              offer={offer}
+            />
           </Box>
         ))}
       {(isLoading || isFetching) &&
         nftOffers.length === 0 &&
         Array.from(Array(4).keys()).map((k) => (
-          <OfferListItem loading key={`nftOffers-template-${k}`} />
+          <OfferListItem
+            refetch={() => {
+              refetch();
+            }}
+            loading
+            key={`nftOffers-template-${k}`}
+          />
         ))}
       {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}
       <Box my={3}>

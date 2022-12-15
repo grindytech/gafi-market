@@ -141,11 +141,15 @@ function HistoryListItem({
             variant="link"
             as={NextLink}
             textAlign="left"
-            noOfLines={1}
             w="full"
             href={`/profile/${history?.from?.address}`}
           >
-            {history?.from.username || shorten(history?.from?.address || "")}
+            <Text w="full" textAlign="left" noOfLines={1}>
+              {history?.from.username &&
+              history?.from.username !== history?.from.address
+                ? history?.from.username
+                : shorten(history?.from?.address || "")}
+            </Text>
           </Button>
           <Icon color="gray" w={6} h={6} fontSize="lg">
             <FiArrowRight />
@@ -154,11 +158,15 @@ function HistoryListItem({
             as={NextLink}
             variant="link"
             textAlign="right"
-            noOfLines={1}
             w="full"
             href={`/profile/${history?.to?.address}`}
           >
-            {history?.to?.username || shorten(history?.to?.address || "")}
+            <Text w="full" textAlign="right" noOfLines={1}>
+              {history?.to.username &&
+              history?.to.username !== history?.to.address
+                ? history?.to.username
+                : shorten(history?.to?.address || "")}
+            </Text>
           </Button>
         </HStack>
       </Skeleton>

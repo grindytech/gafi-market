@@ -24,7 +24,7 @@ export default function ShareButton({
     <>
       <Menu>
         <MenuButton>
-          <IconButton size="sm" aria-label="share">
+          <IconButton size="sm" aria-label="share" {...rest}>
             <FiShare2 />
           </IconButton>
         </MenuButton>

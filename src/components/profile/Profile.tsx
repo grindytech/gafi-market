@@ -24,6 +24,7 @@ import { selectProfile } from "../../store/profileSlice";
 import { shorten } from "../../utils/string.util";
 import Avatar from "../Avatar";
 import Nfts from "../market/Nfts";
+import ShareButton from "../ShareButton";
 const CustomTab = ({ children, ...rest }: TabProps) => {
   return (
     <Tab
@@ -58,7 +59,8 @@ export default function Profile({ address }: { address?: string }) {
     }
   );
   const toast = useCustomToast();
-
+  const name =
+    viewProfile && (viewProfile?.name ?? shorten(viewProfile?.address, 7, 5));
   return (
     viewProfile && (
       <VStack w="full" alignItems="start" spacing={5}>
@@ -82,11 +84,9 @@ export default function Profile({ address }: { address?: string }) {
                     }}
                     src={viewProfile?.avatar}
                   />
-                  <VStack spacing={0}>
+                  <VStack alignItems="start" spacing={0}>
                     <Heading fontSize={{ base: "xl", md: "3xl" }}>
-                      {viewProfile &&
-                        (viewProfile?.name ??
-                          shorten(viewProfile?.address, 7, 5))}
+                      {name}
                     </Heading>
                     <HStack justifyContent="start" w="full">
                       {viewProfile?.username &&
@@ -115,9 +115,12 @@ export default function Profile({ address }: { address?: string }) {
                 </HStack>
                 <HStack>
                   {isOwner && <Button>Edit</Button>}
-                  <Button>
-                    <FiShare />
-                  </Button>
+                  <ShareButton
+                    size='md'
+                    aria-label="share"
+                    title={name}
+                    link={window.location.href}
+                  />
                 </HStack>
               </HStack>
             </Box>

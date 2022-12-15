@@ -330,7 +330,43 @@
         "type": "bool"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "view", 
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address[3]",
+            "name": "addresses",
+            "type": "address[3]"
+          },
+          {
+            "internalType": "uint256[4]",
+            "name": "values",
+            "type": "uint256[4]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct OverMint.Bag[]",
+        "name": "_bag",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "bag",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

@@ -267,6 +267,7 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
     newAttrs.push(attr);
     setQuery({ ...query, attributes: newAttrs });
   };
+  useEffect(() => {}, [query]);
   return (
     c.attributesMap &&
     c.attributesMap.length > 0 && (
@@ -280,51 +281,63 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
         />
         <VStack w="full">
           <Accordion allowMultiple w="full">
-            {c.attributesMap.map((attr) => {
-              const defaultAttr =
-                (query.attributes &&
-                  query.attributes.find((a) => a.key === c.key)) ??
-                undefined;
-              return (
-                <Box
-                  display={
-                    !search ||
-                    attr.key.toLowerCase().includes(search.toLowerCase()) ||
-                    attr.options?.find((option: string) =>
-                      option.toLowerCase().includes(search.toLowerCase())
-                    )
-                      ? "block"
-                      : "none"
-                  }
-                  key={`${c.id}-${attr.key}`}
-                >
-                  {attr.type === AttributesMapType.String && (
-                    <PropertyString
-                      defaultAttr={defaultAttr}
-                      onChange={filterOnChange}
-                      attrMap={attr}
-                    />
-                  )}
-                  {attr.type === AttributesMapType.Number && (
-                    <PropertyNumber
-                      defaultAttr={defaultAttr}
-                      onChange={filterOnChange}
-                      attrMap={attr}
-                    />
-                  )}
-                  {attr.type === AttributesMapType.Boolean && (
-                    <PropertyBoolean
-                      defaultAttr={defaultAttr}
-                      onChange={filterOnChange}
-                      attrMap={attr}
-                    />
-                  )}
-                </Box>
-              );
-            })}
+            {c.attributesMap.map((attr) => (
+              <Box
+                display={
+                  !search ||
+                  attr.key.toLowerCase().includes(search.toLowerCase()) ||
+                  attr.options?.find((option: string) =>
+                    option.toLowerCase().includes(search.toLowerCase())
+                  )
+                    ? "block"
+                    : "none"
+                }
+                key={`${c.id}-${attr.key}`}
+              >
+                <Property attr={attr} filterOnChange={filterOnChange} />
+              </Box>
+            ))}
           </Accordion>
         </VStack>
       </VStack>
     )
   );
 }
+
+const Property = ({
+  attr,
+  filterOnChange,
+}: {
+  attr: AttributeMap;
+  filterOnChange: (attr: GetNftAttributes) => void;
+}) => {
+  const { query, setQuery } = useNftQueryParam();
+  const defaultAttr =
+    (query.attributes && query.attributes.find((a) => a.key === attr.key)) ??
+    undefined;
+  return (
+    <>
+      {attr.type === AttributesMapType.String && (
+        <PropertyString
+          defaultAttr={defaultAttr}
+          onChange={filterOnChange}
+          attrMap={attr}
+        />
+      )}
+      {attr.type === AttributesMapType.Number && (
+        <PropertyNumber
+          defaultAttr={defaultAttr}
+          onChange={filterOnChange}
+          attrMap={attr}
+        />
+      )}
+      {attr.type === AttributesMapType.Boolean && (
+        <PropertyBoolean
+          defaultAttr={defaultAttr}
+          onChange={filterOnChange}
+          attrMap={attr}
+        />
+      )}
+    </>
+  );
+};

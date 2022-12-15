@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import NextLink from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import useCustomToast from "../../../hooks/useCustomToast";
 import { useTokenUSDPrice } from "../../../hooks/useTokenUSDPrice";
@@ -30,17 +30,21 @@ export default function OfferListItem({
   loading,
   isOwner,
   nft,
+  refetch,
 }: {
   loading?: boolean;
   offer?: OfferDto;
   isOwner?: boolean;
   nft?: NftDto;
+  refetch: () => void;
 }) {
-  const toast = useCustomToast();
-  const buyerName =
-    offer?.buyer.name !== "Unnamed"
-      ? offer?.buyer.name
-      : shorten(offer?.buyer.address, 6, 4);
+  const buyerName = useMemo(
+    () =>
+      offer?.buyer.username && offer?.buyer.username !== offer?.buyer.address
+        ? offer?.buyer.username
+        : shorten(offer?.buyer.address || "", 6, 4),
+    [offer?.buyer]
+  );
   const { user } = useSelector(selectProfile);
   const { priceAsUsd, prefix, isPriceAsUsdLoading } = useTokenUSDPrice({
     paymentSymbol: offer?.paymentToken.symbol,
@@ -52,19 +56,6 @@ export default function OfferListItem({
       user.toLowerCase() === String(offer?.buyer.address).toLowerCase(),
     [user, offer]
   );
-  const [canceling, setCanceling] = useState(false);
-  const [loadingAccept, setLoadingAccept] = useState(false);
-  const cancelOffer = async () => {
-    try {
-      setCanceling(true);
-      await nftService.cancelOffer(offer.id);
-      toast.success("Cancel offer successfully!");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setCanceling(false);
-    }
-  };
   return (
     <HStack w="full" justifyContent="space-between">
       <HStack spacing={2} alignItems="center">
@@ -126,6 +117,7 @@ export default function OfferListItem({
                   offer={offer}
                   onSuccess={() => {
                     offer.status = OfferStatus.cancelled;
+                    refetch();
                   }}
                 >
                   Cancel
@@ -135,10 +127,11 @@ export default function OfferListItem({
                 <AcceptOfferButton
                   nft={nft}
                   offer={offer}
-                  isLoading={loadingAccept}
                   onSuccess={async () => {
                     await nftService.acceptOffer(offer.id);
                     offer.status = OfferStatus.accepted;
+                    refetch();
+                    debugger
                   }}
                   color="green.300"
                   size="xs"

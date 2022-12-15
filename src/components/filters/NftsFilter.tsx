@@ -8,10 +8,13 @@ import {
   Box,
   Button,
   ButtonProps,
-  Card,
-  CardBody,
-  CardHeader,
-  CloseButton,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Heading,
   HStack,
   Icon,
@@ -24,7 +27,6 @@ import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useSelector } from "react-redux";
 import Icons from "../../images";
 import { ChainDto } from "../../services/types/dtos/ChainDto";
-import { selectProfile } from "../../store/profileSlice";
 import { selectSystem } from "../../store/systemSlice";
 import PrimaryButton from "../PrimaryButton";
 import SearchBox from "../SearchBox";
@@ -71,7 +73,7 @@ export default function NftsFilter() {
   const { chains } = useSelector(selectSystem);
 
   return (
-    <VStack w="full" h="full" p={5} overflow="auto">
+    <VStack p={3} w="full" h="full" overflow="auto">
       <HStack w="full" mb={1} justifyContent="space-between">
         <SearchBox
           placeHolder="Search..."
@@ -173,66 +175,49 @@ export default function NftsFilter() {
 export function NftsFilterMobileBtn({ children, ...rest }: ButtonProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { reset } = useNftQueryParam();
+  const btnRef = React.useRef();
   return (
     <Box>
-      <Button {...rest} onClick={onOpen}>
+      <Button ref={btnRef} {...rest} onClick={onOpen}>
         {children}
       </Button>
-      <VStack
-        display={isOpen ? "block" : "none"}
-        position="fixed"
-        zIndex={100}
-        w="100vw"
-        h="full"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        bg={useColorModeValue("gray.50", "gray.900")}
+      <Drawer
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+        size="full"
       >
-        <HStack
-          h="60px"
-          alignItems="center"
-          boxShadow="md"
-          px={5}
-          w="full"
-          justifyContent="space-between"
-        >
-          <Heading fontSize="xl">FILTER</Heading>
-          <CloseButton onClick={onClose} />
-        </HStack>
-        <Box w="full" h="calc( 100vh - 60px )" overflow="auto">
-          <Box mb="100px">
-            <NftsFilter />
-          </Box>
-        </Box>
-        <HStack
-          p={3}
-          w="full"
-          justifyContent="center"
-          alignItems="center"
-          bg={useColorModeValue("rgba(255,255,255,0.9)", "gray.900")}
-          position="absolute"
-          bottom={0}
-          left={0}
-          height="100px"
-          spacing={5}
-        >
-          <Button
-            rounded="full"
-            size="lg"
-            onClick={() => {
-              reset();
-              onClose();
-            }}
-          >
-            Reset all
-          </Button>
-          <PrimaryButton size="lg" rounded="full" onClick={onClose}>
-            View result
-          </PrimaryButton>
-        </HStack>
-      </VStack>
+        <DrawerOverlay />
+        <DrawerContent bg={useColorModeValue("gray.50", "gray.900")}>
+          <DrawerCloseButton />
+          <DrawerHeader>FILTER</DrawerHeader>
+
+          <DrawerBody>
+            <Box>
+              <NftsFilter />
+            </Box>
+          </DrawerBody>
+
+          <DrawerFooter>
+            <HStack w="full" justifyContent="center">
+              <Button
+                rounded="full"
+                size="lg"
+                onClick={() => {
+                  reset();
+                  onClose();
+                }}
+              >
+                Reset all
+              </Button>
+              <PrimaryButton size="lg" rounded="full" onClick={onClose}>
+                View result
+              </PrimaryButton>
+            </HStack>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 }

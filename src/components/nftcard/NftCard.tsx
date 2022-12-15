@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   Heading,
   HStack,
   useColorModeValue,
@@ -18,6 +19,7 @@ type Props = {
   children?: any;
   showOnHover?: any;
   loading?: boolean;
+  mask?: any;
 };
 
 export default function NftCard({
@@ -26,7 +28,9 @@ export default function NftCard({
   videoUri,
   children,
   showOnHover,
-}: Props) {
+  mask,
+  ...rest
+}: Props & BoxProps) {
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
   const videoRef = useRef<any>(null);
@@ -47,46 +51,69 @@ export default function NftCard({
           if (!videoRef?.current) return;
           videoRef.current.load();
         }}
+        {...rest}
       >
         <CardBody>
           <VStack w="full" spacing={0}>
             <Box
-              overflow="visible"
-              m={2}
-              rounded="xl"
-              pos={"relative"}
-              h={[200, 220, 280]}
-              justifyContent="center"
-              alignItems="center"
-              display="flex"
+              overflow="hidden"
+              w="full"
+              paddingTop="100%"
+              position="relative"
             >
-              {showOnHover && !loading && (
-                <HStack
-                  className="hover-show"
+              <Skeleton isLoaded={!loading}>
+                <Box
                   position="absolute"
-                  top={0}
-                  left={0}
+                  rounded="xl"
                   w="full"
                   h="full"
-                  zIndex={2}
+                  top={0}
+                  left={0}
+                  bottom={0}
+                  right={0}
+                  justifyContent="center"
+                  alignItems="center"
+                  display="flex"
                 >
-                  {showOnHover}
-                </HStack>
-              )}
+                  <HStack
+                    position="absolute"
+                    top={0}
+                    left={0}
+                    w="full"
+                    h="full"
+                    zIndex={2}
+                  >
+                    {mask}
+                  </HStack>
+                  {showOnHover && !loading && (
+                    <HStack
+                      className="hover-show"
+                      position="absolute"
+                      top={0}
+                      left={0}
+                      w="full"
+                      h="full"
+                      zIndex={3}
+                    >
+                      {showOnHover}
+                    </HStack>
+                  )}
 
-              <LazyImage
-                className={videoUri && "hover-hidden"}
-                data-component-name="NFTImage"
-                __css={imageStyles}
-                src={image}
-                w="full"
-                objectFit="contain"
-              />
-              {videoUri && (
-                <video className="hover-show" ref={videoRef} height="280px">
-                  <source src={videoUri} />
-                </video>
-              )}
+                  <LazyImage
+                    className={videoUri && "hover-hidden"}
+                    data-component-name="NFTImage"
+                    __css={imageStyles}
+                    src={image}
+                    h="full"
+                    objectFit="contain"
+                  />
+                  {videoUri && (
+                    <video className="hover-show" ref={videoRef} height="280px">
+                      <source src={videoUri} />
+                    </video>
+                  )}
+                </Box>
+              </Skeleton>
             </Box>
             <VStack w="full" spacing={0} alignItems="start">
               {children}

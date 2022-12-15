@@ -57,6 +57,7 @@ const styles = {
     ".chakra-ui-dark ::-webkit-scrollbar-thumb": {
       bg: "gray.900",
     },
+    
   },
 };
 
@@ -105,6 +106,12 @@ const NFTCard: ComponentStyleConfig = {
     overflow: "hidden",
     cursor: "pointer",
     boxShadow: "sm",
+    "&.in-cart": {
+      borderColor: "primary.300",
+      borderWidth: "3px",
+      rounded: "xl",
+      overflow: "hidden",
+    },
     ".hover-show": {
       display: "none",
     },
@@ -132,7 +139,6 @@ const NFTCard: ComponentStyleConfig = {
     '[data-component-name="NFTImage"]': {
       transition: "all ease 0.5s",
     },
-    transition: "all ease 0.5s",
     w: "fit-content",
   },
 };
