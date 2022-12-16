@@ -88,7 +88,7 @@ export default function NftCard({
                   >
                     {mask}
                   </HStack>
-                  {md && showOnHover && !loading && (
+                  {showOnHover && !loading && (
                     <HStack
                       className="hover-show"
                       position="absolute"

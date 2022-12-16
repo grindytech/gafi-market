@@ -9,30 +9,30 @@ import {
   useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FiArrowLeft, FiFilter, FiRefreshCw } from "react-icons/fi";
 import { useInfiniteQuery } from "react-query";
-
-import NextLink from "next/link";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
-import { MarketType } from "../../services/types/enum";
 import useCustomColors from "../../theme/useCustomColors";
 import { EmptyState, ErrorState } from "../EmptyState";
-import NftsFilter, { NftsFilterMobileBtn, NFTS_FILTER_OPTIONS } from "../filters/NftsFilter";
+import NftsFilter, {
+  COLLECTIONS_FILTER_OPTIONS,
+  NftsFilterMobileBtn,
+} from "../filters/NftsFilter";
 import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
-import NftCardMarket from "../nftcard/NftCardMarket";
-
-export default function Nfts({ owner }: { owner?: string }) {
+import NextLink from "next/link";
+import NftCollectionCard from "./NftCollectionCard";
+export default function Collections() {
+  const { query, setQuery, fixedProperties } = useNftQueryParam();
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
-  const { query, setQuery, fixedProperties } = useNftQueryParam();
   const countFilter = () =>
     Object.keys(query).filter((k) => !!query[k]).length - fixedProperties;
   const {
-    data: nftsRsp,
+    data,
     isFetching,
     fetchNextPage,
     isFetchingNextPage,
@@ -41,23 +41,16 @@ export default function Nfts({ owner }: { owner?: string }) {
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", JSON.stringify(query), owner],
+    ["Nfts", JSON.stringify(query)],
     async ({ pageParam = 1 }) => {
-      const rs = await nftService.getNfts({
+      const rs = await nftService.getNftCollections({
         desc: query.desc as "desc" | "asc",
         orderBy: query.orderBy,
         page: pageParam,
         search: query.search,
         size: query.size,
-        attributes: query.attributes,
         chain: query.chain,
-        collectionId: query.collectionId,
         game: query.game,
-        marketType: query.marketType as MarketType,
-        maxPrice: query.maxPrice,
-        minPrice: query.minPrice,
-        paymentTokenId: query.paymentTokenId,
-        owner: owner,
       });
       return rs.data;
     },
@@ -72,11 +65,10 @@ export default function Nfts({ owner }: { owner?: string }) {
       },
     }
   );
-  const marketNfts = useMemo(
-    () => nftsRsp?.pages.flatMap((page) => page.items) || [],
-    [nftsRsp]
+  const nftCollections = useMemo(
+    () => data?.pages.flatMap((page) => page.items) || [],
+    [data]
   );
-
   const loadingRef = useRef<HTMLDivElement>(null);
   useIntersectionObserver({
     target: loadingRef,
@@ -85,18 +77,9 @@ export default function Nfts({ owner }: { owner?: string }) {
   });
 
   const isEmpty = useMemo(
-    () => !isError && !isLoading && !isFetching && marketNfts.length === 0,
-    [isError, isLoading, isFetching, marketNfts.length]
+    () => !isError && !isLoading && !isFetching && nftCollections.length === 0,
+    [isError, isLoading, isFetching, nftCollections.length]
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 30000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
   const { bgColor, textColor } = useCustomColors();
 
   return (
@@ -116,7 +99,7 @@ export default function Nfts({ owner }: { owner?: string }) {
           mr={3}
           overflow="hidden"
         >
-          <NftsFilter options={NFTS_FILTER_OPTIONS} />
+          <NftsFilter options={COLLECTIONS_FILTER_OPTIONS} />
         </Box>
         <VStack w="full" p={0}>
           <Stack
@@ -159,7 +142,7 @@ export default function Nfts({ owner }: { owner?: string }) {
               )}
               {!md && (
                 <NftsFilterMobileBtn
-                  options={NFTS_FILTER_OPTIONS}
+                  options={COLLECTIONS_FILTER_OPTIONS}
                   lineHeight="base"
                 >
                   <HStack>
@@ -190,9 +173,7 @@ export default function Nfts({ owner }: { owner?: string }) {
                         size: 18,
                         desc: "desc",
                         orderBy: "price",
-                        attributes: [],
                         chain: "",
-                        marketType: "",
                       },
                       "replace"
                     );
@@ -213,7 +194,7 @@ export default function Nfts({ owner }: { owner?: string }) {
               >
                 <FiRefreshCw />
               </IconButton>
-              <Sort option="nft"/>
+              <Sort option="collection" />
             </HStack>
           </Stack>
           <Box w="full">
@@ -248,27 +229,15 @@ export default function Nfts({ owner }: { owner?: string }) {
               <SimpleGrid
                 justifyContent="center"
                 w="full"
-                columns={showFilter && md ? [2, 3, 3, 3, 5] : [2, 3, 4, 5, 6]}
+                columns={showFilter && md ? [2, 2, 3, 3, 5] : [2, 2, 3, 4, 5]}
                 gap="15px"
                 px={1}
               >
                 {!isLoading &&
-                  marketNfts.map((nft) => {
-                    return nft ? (
-                      <NextLink key={nft.id} href={`/nft/${nft.id}`}>
-                        <NftCardMarket
-                          onCancelSale={() => {
-                            refetch();
-                          }}
-                          onSale={() => {
-                            refetch();
-                          }}
-                          onBuy={() => {
-                            refetch();
-                          }}
-                          nft={nft}
-                          key={nft.id}
-                        />
+                  nftCollections.map((c) => {
+                    return c ? (
+                      <NextLink key={c.id} href={`/collection/${c.id}`}>
+                        <NftCollectionCard collection={c} />
                       </NextLink>
                     ) : (
                       <></>
@@ -276,15 +245,15 @@ export default function Nfts({ owner }: { owner?: string }) {
                   })}
 
                 {(isLoading || isFetching) &&
-                  marketNfts.length === 0 &&
+                  nftCollections.length === 0 &&
                   Array.from(Array(12).keys()).map((k) => (
-                    <NftCardMarket loading key={`nft-template-${k}`} />
+                    <NftCollectionCard isLoading key={`nft-template-${k}`} />
                   ))}
 
                 {hasNextPage &&
                   (isFetchingNextPage ? (
                     Array.from(Array(6).keys()).map((k) => (
-                      <NftCardMarket loading key={`nft-template-${k}`} />
+                      <NftCollectionCard isLoading key={`nft-template-${k}`} />
                     ))
                   ) : (
                     <></>

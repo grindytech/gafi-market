@@ -2,8 +2,11 @@ import { CopyIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  ButtonGroup,
   Heading,
   HStack,
+  IconButton,
+  Stack,
   Tab,
   TabList,
   TabPanel,
@@ -16,10 +19,18 @@ import {
 } from "@chakra-ui/react";
 import { isEmpty, isError } from "lodash";
 import { useMemo } from "react";
+import {
+  FaDiscord,
+  FaFacebook,
+  FaGlobe,
+  FaTelegram,
+  FaTwitter,
+} from "react-icons/fa";
 import { FiShare } from "react-icons/fi";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import useCustomToast from "../../hooks/useCustomToast";
+import { Socials } from "../../services/types/dtos/Socials";
 import { accountService } from "../../services/user.service";
 import { selectProfile } from "../../store/profileSlice";
 import { shorten } from "../../utils/string.util";
@@ -65,67 +76,75 @@ export default function Profile({ address }: { address?: string }) {
   return (
     viewProfile && (
       <VStack w="full" alignItems="start" spacing={5}>
-        <VStack w="full">
+        <VStack w="full" position="relative">
           <Box
             rounded="xl"
             bgImage={viewProfile?.cover}
-            bg={useColorModeValue("gray.50", "gray.800")}
+            bg={useColorModeValue("gray.200", "gray.800")}
             w="full"
-            height={300}
+            pt="25%"
+            minH="200px"
             position="relative"
           >
-            <Box position="absolute" w="full" bottom={0} left={0}>
-              <HStack justifyContent="space-between" p={5} w="full">
-                <HStack>
-                  <Avatar
-                    size={"lg"}
-                    jazzicon={{
-                      diameter: 64,
-                      seed: String(viewAccount),
-                    }}
-                    src={viewProfile?.avatar}
-                  />
-                  <VStack alignItems="start" spacing={0}>
-                    <Heading fontSize={{ base: "xl", md: "3xl" }}>
-                      {name}
-                    </Heading>
-                    <HStack justifyContent="start" w="full">
-                      {viewProfile?.username &&
-                        viewProfile?.username !== viewProfile?.address && (
-                          <Text size="sm">@{viewProfile.username}</Text>
-                        )}
-                      <Button
-                        onClick={() => {
-                          navigator.clipboard.writeText(
-                            String(viewProfile?.address)
-                          );
-                          toast.success("Copied!");
-                        }}
-                        rightIcon={<CopyIcon color="gray" />}
-                        variant="link"
-                        _hover={{
-                          textDecoration: "none",
-                        }}
-                      >
-                        <Text size="sm" color="gray">
-                          {shorten(viewProfile?.address, 5, 3)}
-                        </Text>
-                      </Button>
-                    </HStack>
-                  </VStack>
+            <Box position="absolute" w="full" h="full" top={0} left={0}>
+              <VStack h="full" w="full" alignItems="start" justifyContent="end">
+                <HStack justifyContent="space-between" p={3} w="full">
+                  <Box></Box>
+                  <HStack>
+                    <Social socials={viewProfile?.socials} />
+                    <ShareButton
+                      rounded="full"
+                      size="sm"
+                      aria-label="share"
+                      title={name}
+                      link={window.location.href}
+                    />
+                  </HStack>
                 </HStack>
-                <HStack>
-                  {isOwner && <Button>Edit</Button>}
-                  <ShareButton
-                    size="md"
-                    aria-label="share"
-                    title={name}
-                    link={window.location.href}
-                  />
-                </HStack>
-              </HStack>
+              </VStack>
             </Box>
           </Box>
+          <VStack position="relative" px={3} pt={2} w="full" alignItems="start">
+            <Box position="absolute" px={3} left={0} top={-14}>
+              <Avatar
+                size={"lg"}
+                jazzicon={{
+                  diameter: 64,
+                  seed: String(viewAccount),
+                }}
+                src={viewProfile?.avatar}
+              />
+            </Box>
+            <VStack alignItems="start" w="full">
+              <VStack alignItems="start" spacing={0}>
+                <Heading fontSize={{ base: "xl", md: "3xl" }}>{name}</Heading>
+                <HStack justifyContent="start" w="full">
+                  {viewProfile?.username &&
+                    viewProfile?.username !== viewProfile?.address && (
+                      <Text size="sm">@{viewProfile.username}</Text>
+                    )}
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        String(viewProfile?.address)
+                      );
+                      toast.success("Copied!");
+                    }}
+                    rightIcon={<CopyIcon color="gray" />}
+                    variant="link"
+                    _hover={{
+                      textDecoration: "none",
+                    }}
+                  >
+                    <Text size="sm" color="gray">
+                      {shorten(viewProfile?.address, 5, 3)}
+                    </Text>
+                  </Button>
+                </HStack>
+              </VStack>
+              {viewProfile.bio && <Text size="sm">{viewProfile.bio}</Text>}
+            </VStack>
+          </VStack>
         </VStack>
 
         <Tabs variant="enclosed" w="full" pt={5}>
@@ -144,3 +163,35 @@ export default function Profile({ address }: { address?: string }) {
     )
   );
 }
+
+const SOCIAL_ITEMS_ICONS = {
+  facebook: FaFacebook,
+  twitter: FaTwitter,
+  discord: FaDiscord,
+  telegram: FaTelegram,
+  website: FaGlobe,
+};
+const SOCIAL_ITEMS = ["facebook", "twitter", "discord", "telegram", "website"];
+const Social = ({ socials }: { socials: Socials }) => {
+  return (
+    <HStack>
+      {SOCIAL_ITEMS.map((item) => {
+        const social = socials ? socials[item] : undefined;
+        return (
+          social && (
+            <IconButton
+              onClick={() => {
+                window.open(social, "_blank");
+              }}
+              rounded="full"
+              size="sm"
+              aria-label=""
+            >
+              {SOCIAL_ITEMS_ICONS[item] ? SOCIAL_ITEMS_ICONS[item]() : <></>}
+            </IconButton>
+          )
+        );
+      })}
+    </HStack>
+  );
+};

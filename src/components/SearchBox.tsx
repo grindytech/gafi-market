@@ -39,7 +39,7 @@ export default function SearchBox({
           borderColor: "primary.300",
           borderWidth: "1px",
         }}
-        // value={value}
+        defaultValue={value}
         onChange={_.debounce((e) => {
           onChange && onChange(e.target.value);
         }, 300)}

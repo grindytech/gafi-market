@@ -68,7 +68,24 @@ const STATUS_OPTIONS = [
   },
 ];
 
-export default function NftsFilter() {
+type Option =
+  | "search"
+  | "chain"
+  | "price"
+  | "attribute"
+  | "marketStatus"
+  | "collection";
+export const NFTS_FILTER_OPTIONS: Option[] = [
+  "search",
+  "chain",
+  "price",
+  "attribute",
+  "marketStatus",
+  "collection",
+];
+export const COLLECTIONS_FILTER_OPTIONS: Option[] = ["search", "chain"];
+
+export default function NftsFilter({ options }: { options: Option[] }) {
   const { query, setQuery } = useNftQueryParam();
   const { chains } = useSelector(selectSystem);
 
@@ -84,95 +101,107 @@ export default function NftsFilter() {
         />
       </HStack>
       <Accordion w="full" defaultIndex={[0, 1, 2, 3]} allowMultiple>
-        <AccordionItem borderTop="none">
-          <AccordionButton>
-            <Heading fontSize="lg">Blockchain</Heading>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel pb={4} px={0}>
-            <RadioCardGroup
-              value={query.chain}
-              onChange={(v: any) => {
-                setQuery({ ...query, chain: v });
-              }}
-              direction="row"
-              flexWrap="wrap"
-              spacing={0}
-              options={[
-                {
-                  label: "All chain",
-                  value: "",
-                  icon: <></>,
-                },
-                ,
-                ...chains.map((chain: ChainDto) => {
-                  const icon = Icons.chain[chain.symbol.toUpperCase()];
-                  return {
-                    label: chain.name,
-                    value: chain.id,
-                    icon: icon ? (
-                      <Icon w={5} h={5}>
-                        {icon()}
-                      </Icon>
-                    ) : (
-                      <Jazzicon
-                        diameter={20}
-                        seed={jsNumberForAddress(String(chain.symbol))}
-                      />
-                    ),
-                  };
-                }),
-              ]}
-            />
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <AccordionButton py={4}>
-            <Heading fontSize="lg">Price</Heading>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel pb={4} px={0}>
-            <PriceFilter />
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <AccordionButton py={4}>
-            <Heading fontSize="lg">Status</Heading>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel pb={4} px={0}>
-            <RadioCardGroup
-              value={query.marketType}
-              onChange={(v: any) => {
-                setQuery({
-                  ...query,
-                  marketType: v,
-                });
-              }}
-              direction="row"
-              flexWrap="wrap"
-              defaultValue="all"
-              defaultChecked={true}
-              spacing={0}
-              options={STATUS_OPTIONS}
-            />
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem borderBottom="none">
-          <AccordionButton py={4}>
-            <Heading fontSize="lg">Collection</Heading>
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel overflow="auto" pb={4} p={0}>
-            <NftCollectionsList />
-          </AccordionPanel>
-        </AccordionItem>
+        {options.includes("search") && (
+          <AccordionItem borderTop="none">
+            <AccordionButton>
+              <Heading fontSize="lg">Blockchain</Heading>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel pb={4} px={0}>
+              <RadioCardGroup
+                value={query.chain}
+                onChange={(v: any) => {
+                  setQuery({ ...query, chain: v });
+                }}
+                direction="row"
+                flexWrap="wrap"
+                spacing={0}
+                options={[
+                  {
+                    label: "All chain",
+                    value: "",
+                    icon: <></>,
+                  },
+                  ,
+                  ...chains.map((chain: ChainDto) => {
+                    const icon = Icons.chain[chain.symbol.toUpperCase()];
+                    return {
+                      label: chain.name,
+                      value: chain.id,
+                      icon: icon ? (
+                        <Icon w={5} h={5}>
+                          {icon()}
+                        </Icon>
+                      ) : (
+                        <Jazzicon
+                          diameter={20}
+                          seed={jsNumberForAddress(String(chain.symbol))}
+                        />
+                      ),
+                    };
+                  }),
+                ]}
+              />
+            </AccordionPanel>
+          </AccordionItem>
+        )}
+        {options.includes("price") && (
+          <AccordionItem>
+            <AccordionButton py={4}>
+              <Heading fontSize="lg">Price</Heading>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel pb={4} px={0}>
+              <PriceFilter />
+            </AccordionPanel>
+          </AccordionItem>
+        )}
+        {options.includes("marketStatus") && (
+          <AccordionItem>
+            <AccordionButton py={4}>
+              <Heading fontSize="lg">Status</Heading>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel pb={4} px={0}>
+              <RadioCardGroup
+                value={query.marketType}
+                onChange={(v: any) => {
+                  setQuery({
+                    ...query,
+                    marketType: v,
+                  });
+                }}
+                direction="row"
+                flexWrap="wrap"
+                defaultValue="all"
+                defaultChecked={true}
+                spacing={0}
+                options={STATUS_OPTIONS}
+              />
+            </AccordionPanel>
+          </AccordionItem>
+        )}
+        {options.includes("collection") && (
+          <AccordionItem borderBottom="none">
+            <AccordionButton py={4}>
+              <Heading fontSize="lg">Collection</Heading>
+              <AccordionIcon />
+            </AccordionButton>
+            <AccordionPanel overflow="auto" pb={4} p={0}>
+              <NftCollectionsList />
+            </AccordionPanel>
+          </AccordionItem>
+        )}
       </Accordion>
     </VStack>
   );
 }
 
-export function NftsFilterMobileBtn({ children, ...rest }: ButtonProps) {
+export function NftsFilterMobileBtn({
+  options,
+  children,
+  ...rest
+}: { options: Option[] } & ButtonProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { reset } = useNftQueryParam();
   const btnRef = React.useRef();
@@ -195,7 +224,7 @@ export function NftsFilterMobileBtn({ children, ...rest }: ButtonProps) {
 
           <DrawerBody>
             <Box>
-              <NftsFilter />
+              <NftsFilter options={options} />
             </Box>
           </DrawerBody>
 

@@ -1,4 +1,5 @@
 import { BaseDocumentDto } from "./BaseDocumentDto";
+import { Socials } from "./Socials";
 
 export class UserDto extends BaseDocumentDto {
   isVerified: boolean;
@@ -10,4 +11,6 @@ export class UserDto extends BaseDocumentDto {
   avatar: string;
   cover: string;
   name: string;
+  socials?: Socials;
+  bio?: string;
 }

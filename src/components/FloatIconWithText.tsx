@@ -13,12 +13,11 @@ export default function FloatIconWithText({
 }) {
   return (
     <HStack
-      title={title}
       transition="all ease 1s"
       spacing={0}
       h={h}
       p={1}
-      bg={useColorModeValue("rgba(255, 255, 255, 0.7)", "rgba(0, 0, 0, 0.6)")}
+      bg={useColorModeValue("rgba(255, 255, 255, 0.7)", "rgba(0, 0, 0, 0.2)")}
       rounded="full"
       position="relative"
       overflow="hidden"
@@ -37,7 +36,7 @@ export default function FloatIconWithText({
       {children}
       {title && (
         <Text
-          pl={1}
+          px={1}
           textOverflow="ellipsis"
           className="text"
           position="absolute"

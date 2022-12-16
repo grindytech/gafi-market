@@ -28,7 +28,7 @@ export default function ShareButton({
             <FiShare2 />
           </IconButton>
         </MenuButton>
-        <MenuList>
+        <MenuList zIndex={99}>
           <MenuItem
             onClick={() => {
               navigator.clipboard.writeText(link);

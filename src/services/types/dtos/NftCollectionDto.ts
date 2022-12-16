@@ -12,4 +12,5 @@ export class NftCollectionDto extends BaseDocumentDto {
   verified: boolean;
   chain: ChainDto;
   description: string;
+  featureImage: string;
 }

@@ -12,7 +12,7 @@ import NextLink from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import Icons from "../../images";
 import ScrollSlide from "../hScroll/ScrollSlide";
-import NftCollectionCard from "../NftCollectionCard";
+import NftCollectionCard from "../collections/NftCollectionCard";
 export default function HotCollections() {
   const sliderBox = useStyleConfig("SliderBox");
 
@@ -48,9 +48,13 @@ export default function HotCollections() {
       <Box w="full" position="relative" __css={sliderBox}>
         <ScrollSlide>
           {Array.from(Array(12).keys()).map((k) => (
-            <Link href="#" key={`TopCollection-${k + 1}`}>
-              <NftCollectionCard top={k + 1} />
-            </Link>
+            <Box py={3} pr={3}>
+              <Link href="#" key={`TopCollection-${k + 1}`}>
+                <Box w="300px" maxW="80vw">
+                  <NftCollectionCard top={k + 1} />
+                </Box>
+              </Link>
+            </Box>
           ))}
         </ScrollSlide>
       </Box>
