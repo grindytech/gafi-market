@@ -96,8 +96,8 @@ export default function BuyButton({
         showCancelButton: true,
         cancelButtonText: "Close",
         confirmButtonText: "Inventory",
-      }).then(() => {
-        router.push("/profile");
+      }).then(({ isConfirmed }) => {
+        if (isConfirmed) router.push("/profile");
       });
     } catch (error) {
       onClose();

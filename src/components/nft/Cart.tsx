@@ -43,6 +43,7 @@ import useSwal from "../../hooks/useSwal";
 import { useRouter } from "next/router";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 import PrimaryButton from "../PrimaryButton";
+import CartCheckoutButton from "./CartCheckoutButton";
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -65,7 +66,7 @@ export default function Cart() {
     const sold = [];
     const valid = [];
     for (const item of items) {
-      const rItem = realTimeItems.find((i) => i.id === item.id);
+      const rItem = realTimeItems?.find((i) => i.id === item.id);
       if (!rItem || rItem.sale?.id !== item.sale.id) sold.push(item);
       else valid.push(item);
     }
@@ -100,50 +101,6 @@ export default function Cart() {
   useEffect(() => {
     fetchData();
   }, [items]);
-  const toast = useCustomToast();
-  const { swAlert } = useSwal();
-  const router = useRouter();
-  const checkout = async () => {
-    try {
-      setIsLoading(true);
-      const approvePrice = convertToContractValue({
-        amount: total,
-        decimal: items[0].sale.paymentToken.decimals,
-      });
-      const allowance = await erc20Contract.getAllowance(
-        items[0].sale.paymentToken.contractAddress,
-        items[0].chain.mpContract,
-        user
-      );
-      if (Number(allowance) < Number(approvePrice)) {
-        await erc20Contract.approve(
-          items[0].sale.paymentToken.contractAddress,
-          items[0].chain.mpContract,
-          user,
-          approvePrice
-        );
-      }
-      await mpContract.matchBag(validItems, user, items[0].chain.mpContract);
-      onClose();
-      swAlert({
-        title: "COMPLETE",
-        text: `Transaction successfully!`,
-        icon: "success",
-        showCancelButton: true,
-        cancelButtonText: "Close",
-        confirmButtonText: "Inventory",
-      }).then(() => {
-        router.push("/profile");
-      });
-      dispatch(reset());
-    } catch (error) {
-      console.error(error);
-      toast.error("Transaction failed!");
-      fetchData();
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <Box position="relative">
@@ -220,7 +177,7 @@ export default function Cart() {
               {validItems.map((item, index) => (
                 <>
                   {index !== 0 && <Divider />}
-                  <NftItem item={item} onClose={onClose} />
+                  <NftItem showRemove={true} item={item} onClose={onClose} />
                 </>
               ))}
               {soldOutItems.length > 0 && (
@@ -249,7 +206,12 @@ export default function Cart() {
                   {soldOutItems.map((item, index) => (
                     <>
                       {index !== 0 && <Divider />}
-                      <NftItem opacity={0.6} item={item} onClose={onClose} />
+                      <NftItem
+                        showRemove={true}
+                        opacity={0.6}
+                        item={item}
+                        onClose={onClose}
+                      />
                     </>
                   ))}
                 </Box>
@@ -279,14 +241,17 @@ export default function Cart() {
                   symbol={validItems[0].chain.symbol}
                   name={validItems[0].chain.name}
                 >
-                  <PrimaryButton
-                    onClick={checkout}
-                    isLoading={isLoading}
+                  <CartCheckoutButton
+                    onSuccess={onClose}
+                    onError={onClose}
+                    refetch={fetchData}
+                    nfts={validItems}
                     disabled={balance < total || isLoading}
                     w="full"
+                    total={total}
                   >
                     {balance < total ? "Insufficient balance" : "Checkout"}
-                  </PrimaryButton>
+                  </CartCheckoutButton>
                 </SwitchNetworkButton>
               </VStack>
             )}
@@ -297,11 +262,16 @@ export default function Cart() {
   );
 }
 
-const NftItem = ({
+export const NftItem = ({
   item,
   onClose,
+  showRemove,
   ...rest
-}: { item: NftDto; onClose: () => void } & StackProps) => {
+}: {
+  item: NftDto;
+  onClose: () => void;
+  showRemove?: boolean;
+} & StackProps) => {
   const dispatch = useDispatch();
   return (
     <HStack {...rest} w="full" justifyContent="space-between">
@@ -339,14 +309,16 @@ const NftItem = ({
           )}
         </VStack>
       </HStack>
-      <IconButton
-        aria-label="remove"
-        onClick={() => {
-          dispatch(remove({ id: item.id }));
-        }}
-      >
-        <DeleteIcon />
-      </IconButton>
+      {showRemove && (
+        <IconButton
+          aria-label="remove"
+          onClick={() => {
+            dispatch(remove({ id: item.id }));
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      )}
     </HStack>
   );
 };

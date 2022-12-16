@@ -19,6 +19,7 @@ export default function PriceFilter() {
     <VStack w="full" spacing={3} p={1}>
       <HStack w="full">
         <Input
+          w="full"
           value={min}
           onChange={(e) => {
             setMin(e.target.value);
@@ -28,6 +29,7 @@ export default function PriceFilter() {
         />
         <Text colorScheme="gray">-</Text>
         <Input
+          w="full"
           value={max}
           onChange={(e) => {
             setMax(e.target.value);
@@ -35,7 +37,7 @@ export default function PriceFilter() {
           type="number"
           placeholder="Max"
         />
-        <Box w="full">
+        <Box>
           <TokenSymbolToken
             chain={query.chain}
             onChangeToken={(p) => {

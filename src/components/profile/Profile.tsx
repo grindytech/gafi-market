@@ -14,6 +14,7 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
+import { isEmpty, isError } from "lodash";
 import { useMemo } from "react";
 import { FiShare } from "react-icons/fi";
 import { useQuery } from "react-query";
@@ -116,7 +117,7 @@ export default function Profile({ address }: { address?: string }) {
                 <HStack>
                   {isOwner && <Button>Edit</Button>}
                   <ShareButton
-                    size='md'
+                    size="md"
                     aria-label="share"
                     title={name}
                     link={window.location.href}
@@ -134,7 +135,7 @@ export default function Profile({ address }: { address?: string }) {
           </TabList>
           <TabPanels>
             <TabPanel px={0}>
-              {viewAccount && <Nfts owner={viewAccount} />}
+              <Nfts owner={viewAccount} />
             </TabPanel>
             <TabPanel></TabPanel>
           </TabPanels>

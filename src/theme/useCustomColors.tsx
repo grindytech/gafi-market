@@ -11,7 +11,12 @@ export default function useCustomColors() {
   const borderColor = useColorModeValue("gray.100", "gray.700");
   const swalBg = useColorModeValue("#eee", "#222");
   const swalText = useColorModeValue("#000", "#fff");
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const textColor = useColorModeValue("gray.900", "gray.50");
+
   return {
+    bgColor,
+    textColor,
     swalBg,
     swalText,
     linkColor,

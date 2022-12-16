@@ -3,6 +3,7 @@ import {
   BoxProps,
   Heading,
   HStack,
+  useBreakpointValue,
   useColorModeValue,
   useStyleConfig,
   VStack,
@@ -34,6 +35,8 @@ export default function NftCard({
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
   const videoRef = useRef<any>(null);
+  const md = useBreakpointValue({ base: false, md: true });
+
   return (
     <Box w="full">
       <Card
@@ -85,7 +88,7 @@ export default function NftCard({
                   >
                     {mask}
                   </HStack>
-                  {showOnHover && !loading && (
+                  {md && showOnHover && !loading && (
                     <HStack
                       className="hover-show"
                       position="absolute"

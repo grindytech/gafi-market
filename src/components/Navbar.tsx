@@ -5,7 +5,6 @@ import {
   CloseIcon,
   CopyIcon,
   HamburgerIcon,
-  SearchIcon,
 } from "@chakra-ui/icons";
 import {
   Box,
@@ -13,6 +12,13 @@ import {
   ButtonProps,
   Collapse,
   Container,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   HStack,
   Icon,
@@ -32,12 +38,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useEffect, useState } from "react";
-import { FiEdit, FiLogOut, FiShoppingBag, FiUser } from "react-icons/fi";
+import React, { useState } from "react";
+import { FiEdit, FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useConnectWallet } from "../connectWallet/useWallet";
 import useCustomToast from "../hooks/useCustomToast";
-import { selectBag, setIsOpen } from "../store/bagSlice";
+import { selectBag } from "../store/bagSlice";
 import { selectProfile } from "../store/profileSlice";
 import useCustomColors from "../theme/useCustomColors";
 import { shorten } from "../utils/string.util";
@@ -63,7 +69,7 @@ export const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
 };
 
 export default function Navbar() {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle, onClose } = useDisclosure();
   const { user } = useSelector(selectProfile);
   const { nav } = useCustomColors();
   const { reset, waitToConnect } = useConnectWallet();
@@ -73,6 +79,7 @@ export default function Navbar() {
   const toast = useCustomToast();
   const dispatch = useDispatch();
   const { isOpen: isOpenBag } = useSelector(selectBag);
+  const btnMenuRef = React.useRef();
   return (
     <Box
       w="full"
@@ -81,16 +88,13 @@ export default function Navbar() {
       borderColor={nav.navBorderColor}
       bg={nav.navBgColor}
       color={nav.navTextColor}
-      // h={"60px"}
-      // position="sticky"
-      // top={0}
-      // zIndex={99}
     >
       <Container maxW="container.xl">
         <HStack h={"60px"} py={{ base: 2 }}>
           <Flex flex={{ base: 1 }} justify="start">
             <Flex mr={2} display={{ base: "block", md: "none" }}>
               <IconButton
+                ref={btnMenuRef}
                 onClick={onToggle}
                 icon={
                   isOpen ? (
@@ -138,9 +142,9 @@ export default function Navbar() {
             direction={"row"}
             spacing={3}
           >
-            {!md && (
+            {/* {!md && (
               <IconButton
-                onClick={() => {
+                onClick={() => {cell
                   setShowSearchBox(!showSearchBox);
                 }}
                 variant="ghost"
@@ -149,7 +153,7 @@ export default function Navbar() {
               >
                 <SearchIcon />
               </IconButton>
-            )}
+            )} */}
             <DarkModeSwitch />
 
             <Cart />
@@ -166,58 +170,90 @@ export default function Navbar() {
                   </Icon>
                 }
               />
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar
-                    size={"sm"}
-                    jazzicon={{
-                      diameter: 31,
-                      seed: String(user),
-                    }}
-                  />
-                </MenuButton>
-                <MenuList px={2}>
-                  <MenuItemBtn
-                    onClick={() => {
-                      navigator.clipboard.writeText(String(user));
-                      toast.success("Copied!");
-                    }}
-                    rightIcon={<CopyIcon color="gray" />}
+              {md && (
+                <Menu>
+                  <MenuButton
+                    as={Button}
+                    rounded={"full"}
+                    variant={"link"}
+                    cursor={"pointer"}
+                    minW={0}
                   >
-                    {shorten(user, 7, 5)}
-                  </MenuItemBtn>
-                  <MenuDivider />
-                  <NextLink href="/profile">
-                    <MenuItemBtn leftIcon={<FiUser />}>Profile</MenuItemBtn>
-                  </NextLink>
-                  <MenuItemBtn leftIcon={<FiEdit />}>Edit Profile</MenuItemBtn>
-                  <MenuItemBtn
-                    color="gray"
-                    leftIcon={<FiLogOut />}
-                    onClick={reset}
-                  >
-                    Disconnect
-                  </MenuItemBtn>
-                </MenuList>
-              </Menu>
+                    <Avatar
+                      size={"sm"}
+                      jazzicon={{
+                        diameter: 31,
+                        seed: String(user),
+                      }}
+                    />
+                  </MenuButton>
+                  <MenuList px={2}>
+                    <MenuItemBtn
+                      onClick={() => {
+                        navigator.clipboard.writeText(String(user));
+                        toast.success("Copied!");
+                      }}
+                      rightIcon={<CopyIcon color="gray" />}
+                    >
+                      {shorten(user, 7, 5)}
+                    </MenuItemBtn>
+                    <MenuDivider />
+                    <NextLink href="/profile">
+                      <MenuItemBtn leftIcon={<FiUser />}>Profile</MenuItemBtn>
+                    </NextLink>
+                    <MenuItemBtn leftIcon={<FiEdit />}>
+                      Edit Profile
+                    </MenuItemBtn>
+                    <MenuItemBtn
+                      color="gray"
+                      leftIcon={<FiLogOut />}
+                      onClick={reset}
+                    >
+                      Disconnect
+                    </MenuItemBtn>
+                  </MenuList>
+                </Menu>
+              )}
             </>
           ) : (
-            <ConnectWalletButton size="md" isLoading={waitToConnect} />
+            md && <ConnectWalletButton size="md" isLoading={waitToConnect} />
           )}
         </HStack>
       </Container>
-
-      <Collapse in={isOpen} animateOpacity>
-        <Box onClick={onToggle}>
-          <MobileNav />
-        </Box>
-      </Collapse>
+      <Drawer
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        finalFocusRef={btnMenuRef}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader>
+            <Link display="flex" as={NextLink} href="/">
+              <Text
+                fontFamily={"heading"}
+                color={nav.navTextColor}
+                fontWeight="bold"
+                textTransform="uppercase"
+              >
+                Marketplace
+              </Text>
+            </Link>
+            <DrawerCloseButton />
+          </DrawerHeader>
+          <DrawerBody>
+            <MobileNav onClose={onClose} />
+          </DrawerBody>
+          <DrawerFooter>
+            {!user && <ConnectWalletButton leftIcon={<FiLogIn />} w="full" />}
+            {user && (
+              <Button onClick={reset} leftIcon={<FiLogOut />} w="full">
+                Disconnect
+              </Button>
+            )}
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 }
@@ -309,38 +345,40 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
-  const { nav } = useCustomColors();
+const MobileNav = ({ onClose }: { onClose: () => void }) => {
   return (
-    <Stack bg={nav.navBgColor} p={4} display={{ md: "none" }}>
-      {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
+    <Stack>
+      {MOBILE_NAV_ITEMS.map((navItem) => (
+        <MobileNavItem onClose={onClose} key={navItem.label} {...navItem} />
       ))}
     </Stack>
   );
 };
 
-const MobileNavItem = ({ label, children, href }: NavItem) => {
+const MobileNavItem = ({
+  label,
+  children,
+  href,
+  onClose,
+}: NavItem & { onClose?: () => void }) => {
   const { isOpen, onToggle, onOpen } = useDisclosure();
   const { nav } = useCustomColors();
-  useEffect(onOpen, []);
   return (
     <Stack spacing={4}>
-      <Flex
+      <Link
         onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
           children && onToggle();
+          !children && onClose();
         }}
         py={2}
-        as={Button}
-        variant="link"
-        // href="#"
-        justify={"space-between"}
-        align={"center"}
+        as={NextLink}
         _hover={{
           textDecoration: "none",
         }}
+        href={!children ? href : "#"}
+        w="full"
+        display="flex"
+        justifyContent="space-between"
       >
         <Text fontWeight={600} color={nav.navTextColor}>
           {label}
@@ -355,10 +393,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
             color={"gray"}
           />
         )}
-      </Flex>
+      </Link>
       <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
         <Stack
-          mt={2}
+          pt={0}
+          mt={0}
           pl={4}
           borderLeft={1}
           borderStyle={"solid"}
@@ -367,7 +406,13 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         >
           {children &&
             children.map((child) => (
-              <Link as={NextLink} key={child.label} py={2} href={child.href}>
+              <Link
+                onClick={onClose}
+                as={NextLink}
+                key={child.label}
+                py={2}
+                href={child.href}
+              >
                 {child.label}
               </Link>
             ))}
@@ -382,47 +427,11 @@ interface NavItem {
   subLabel?: string;
   children?: Array<NavItem>;
   href?: string;
+  icons?: any;
+  onClick?: () => void;
 }
 
 const NAV_ITEMS: Array<NavItem> = [
-  // {
-  //   label: "Inspiration",
-  //   children: [
-  //     {
-  //       label: "Explore Design Work",
-  //       subLabel: "Trending Design to inspire you",
-  //       href: "#",
-  //     },
-  //     {
-  //       label: "New & Noteworthy",
-  //       subLabel: "Up-and-coming Designers",
-  //       href: "#",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Find Work",
-  //   children: [
-  //     {
-  //       label: "Job Board",
-  //       subLabel: "Find your dream design job",
-  //       href: "#",
-  //     },
-  //     {
-  //       label: "Freelance Projects",
-  //       subLabel: "An exclusive list for contract work",
-  //       href: "#",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Learn Design",
-  //   href: "#",
-  // },
-  // {
-  //   label: "Explore",
-  //   href: "/explore/nfts",
-  // },
   {
     label: "Explore",
     href: "/explore/nfts",
@@ -434,22 +443,40 @@ const NAV_ITEMS: Array<NavItem> = [
       },
       {
         label: "NFT collections",
-        // subLabel: "Up-and-coming Designers",
         href: "/explore/collections",
       },
       {
         label: "Games",
-        // subLabel: "Up-and-coming Designers",
         href: "/explore/games",
       },
     ],
   },
-  // {
-  //   label: "Games",
-  //   href: "/game",
-  // },
-  // {
-  //   label: "Nft Collections",
-  //   href: "/nft-collection",
-  // },
+];
+
+const MOBILE_NAV_ITEMS: Array<NavItem> = [
+  {
+    label: "Account",
+    children: [
+      {
+        label: "Profile",
+        href: "/profile",
+      },
+      {
+        label: "Edit profile",
+        href: "/explore/collections",
+      },
+    ],
+  },
+  {
+    label: "NFTs",
+    href: "/explore/nfts",
+  },
+  {
+    label: "NFT collections",
+    href: "/explore/collections",
+  },
+  {
+    label: "Games",
+    href: "/explore/games",
+  },
 ];

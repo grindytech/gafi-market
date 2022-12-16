@@ -60,7 +60,7 @@ export default function Sort() {
       <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
         {OPTIONS[query.sort].label}
       </MenuButton>
-      <MenuList>
+      <MenuList zIndex={99}>
         {OPTIONS.map((o, index) => (
           <MenuItem key={`sort-${index}`} onClick={o.onClick}>
             {o.label}

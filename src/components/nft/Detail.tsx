@@ -64,6 +64,7 @@ import { AxiosResponse } from "axios";
 import ShareButton from "../ShareButton";
 import useCustomToast from "../../hooks/useCustomToast";
 import RefreshMetadataButton from "./RefreshMetadataButton";
+import { AddToCartButton } from "../nftcard/AddToCartButton";
 
 export default function Detail({ id }: { id: string }) {
   const [errorCode, setErrorCode] = useState(0);
@@ -520,6 +521,7 @@ const PriceSection = ({
                         <BuyButton w="full" nft={nft}>
                           Buy now
                         </BuyButton>
+                        <AddToCartButton nft={nft} />
                       </HStack>
                       <OfferButton
                         onSuccess={() => {
