@@ -1,11 +1,11 @@
+import { MarketType } from "../enum";
 import { Attribute } from "./Attribute";
 import { BaseDocumentDto } from "./BaseDocumentDto";
-import { MarketType } from "../enum";
+import { ChainDto } from "./ChainDto";
 import { MediaDto } from "./Media.dto";
 import { NftCollectionDto } from "./NftCollectionDto";
 import { SalesDto } from "./SalesDto";
-import { Users } from "./Users";
-import { ChainDto } from "./ChainDto";
+import { UserDto } from "./UserDto";
 
 export class NftDto extends BaseDocumentDto {
   marketType: MarketType;
@@ -16,8 +16,8 @@ export class NftDto extends BaseDocumentDto {
   originImage: string;
   animation_url: string;
   animationPlayType: "image" | "video" | "glb" | "iframe";
-  owner: Users;
-  creator: Users;
+  owner: UserDto;
+  creator: UserDto;
   nftContract: string;
   tokenId: string;
   name: string;
