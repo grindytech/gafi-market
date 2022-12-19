@@ -19,18 +19,37 @@ import nftService from "../../services/nft.service";
 import { MarketType } from "../../services/types/enum";
 import useCustomColors from "../../theme/useCustomColors";
 import { EmptyState, ErrorState } from "../EmptyState";
-import NftsFilter, { NftsFilterMobileBtn, NFTS_FILTER_OPTIONS } from "../filters/NftsFilter";
+import NftsFilter, {
+  NftsFilterMobileBtn,
+  NFTS_FILTER_OPTIONS,
+} from "../filters/NftsFilter";
 import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
 
-export default function Nfts({ owner }: { owner?: string }) {
+export default function Nfts({
+  owner,
+  enableFilter,
+  hideLoadMore,
+  size,
+  status,
+}: {
+  owner?: string;
+  enableFilter?: boolean;
+  hideLoadMore?: boolean;
+  size?: number;
+  status?: MarketType;
+}) {
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
-  const { query, setQuery, fixedProperties } = useNftQueryParam();
-  const countFilter = () =>
-    Object.keys(query).filter((k) => !!query[k]).length - fixedProperties;
+  const containerRef = useRef(null);
+  const {
+    query,
+    setQuery,
+    countFilter,
+    reset: resetQuery,
+  } = useNftQueryParam();
   const {
     data: nftsRsp,
     isFetching,
@@ -48,12 +67,12 @@ export default function Nfts({ owner }: { owner?: string }) {
         orderBy: query.orderBy,
         page: pageParam,
         search: query.search,
-        size: query.size,
+        size: size || query.size,
         attributes: query.attributes,
         chain: query.chain,
         collectionId: query.collectionId,
         game: query.game,
-        marketType: query.marketType as MarketType,
+        marketType: status || (query.marketType as MarketType),
         maxPrice: query.maxPrice,
         minPrice: query.minPrice,
         paymentTokenId: query.paymentTokenId,
@@ -89,133 +108,112 @@ export default function Nfts({ owner }: { owner?: string }) {
     [isError, isLoading, isFetching, marketNfts.length]
   );
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, 30000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
   const { bgColor, textColor } = useCustomColors();
 
   return (
     <VStack px={0} spacing={5} w="full" alignItems="start">
       <HStack w="full" alignItems="start" spacing={0}>
-        <Box
-          display={md && showFilter ? "block" : "none"}
-          position="sticky"
-          border="1px solid"
-          borderColor={borderColor}
-          rounded="xl"
-          minW="350px"
-          w="350px"
-          top="65px"
-          height="calc( 100vh - 60px )"
-          minH={500}
-          mr={3}
-          overflow="hidden"
-        >
-          <NftsFilter options={NFTS_FILTER_OPTIONS} />
-        </Box>
-        <VStack w="full" p={0}>
-          <Stack
-            zIndex={10}
+        {enableFilter && (
+          <Box
+            display={md && showFilter ? "block" : "none"}
             position="sticky"
-            top="60px"
-            h="60px"
-            direction="row"
-            w="full"
-            justifyContent="space-between"
-            bg={bgColor}
+            border="1px solid"
+            borderColor={borderColor}
+            rounded="xl"
+            minW="350px"
+            w="350px"
+            top="65px"
+            height="calc( 100vh - 60px )"
+            minH={500}
+            mr={3}
+            overflow="hidden"
           >
-            <HStack>
-              {md && (
-                <Button
+            <NftsFilter options={NFTS_FILTER_OPTIONS} />
+          </Box>
+        )}
+        <VStack w="full" p={0}>
+          {enableFilter && (
+            <Stack
+              zIndex={10}
+              position="sticky"
+              top="60px"
+              h="60px"
+              direction="row"
+              w="full"
+              justifyContent="space-between"
+              bg={bgColor}
+            >
+              <HStack>
+                {md && (
+                  <Button
+                    onClick={() => {
+                      setShowFilter(!showFilter);
+                    }}
+                    leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
+                    lineHeight="base"
+                  >
+                    <HStack>
+                      <Text>Filter</Text>
+                      {countFilter() && (
+                        <Box
+                          w="1.5em"
+                          h="1.5em"
+                          justifyContent="center"
+                          alignItems="center"
+                          fontSize="xs"
+                          rounded="full"
+                          bg="gray"
+                          color="white"
+                        >
+                          {countFilter()}
+                        </Box>
+                      )}
+                    </HStack>
+                  </Button>
+                )}
+                {!md && (
+                  <NftsFilterMobileBtn
+                    options={NFTS_FILTER_OPTIONS}
+                    lineHeight="base"
+                  >
+                    <HStack>
+                      <Text>Filter</Text>
+                      {countFilter() && (
+                        <Box
+                          w="1.5em"
+                          h="1.5em"
+                          justifyContent="center"
+                          alignItems="center"
+                          fontSize="xs"
+                          rounded="full"
+                          bg="gray"
+                          color="white"
+                        >
+                          {countFilter()}
+                        </Box>
+                      )}
+                    </HStack>
+                  </NftsFilterMobileBtn>
+                )}
+                {countFilter() && (
+                  <Button onClick={resetQuery}>Reset all</Button>
+                )}
+              </HStack>
+              <HStack>
+                <IconButton
+                  isLoading={isFetching}
                   onClick={() => {
-                    setShowFilter(!showFilter);
+                    setQuery({ ...query, page: 1 });
+                    refetch();
                   }}
-                  leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
-                  lineHeight="base"
+                  aria-label="refresh"
                 >
-                  <HStack>
-                    <Text>Filter</Text>
-                    {countFilter() && (
-                      <Box
-                        w="1.5em"
-                        h="1.5em"
-                        justifyContent="center"
-                        alignItems="center"
-                        fontSize="xs"
-                        rounded="full"
-                        bg="gray"
-                        color="white"
-                      >
-                        {countFilter()}
-                      </Box>
-                    )}
-                  </HStack>
-                </Button>
-              )}
-              {!md && (
-                <NftsFilterMobileBtn
-                  options={NFTS_FILTER_OPTIONS}
-                  lineHeight="base"
-                >
-                  <HStack>
-                    <Text>Filter</Text>
-                    {countFilter() && (
-                      <Box
-                        w="1.5em"
-                        h="1.5em"
-                        justifyContent="center"
-                        alignItems="center"
-                        fontSize="xs"
-                        rounded="full"
-                        bg="gray"
-                        color="white"
-                      >
-                        {countFilter()}
-                      </Box>
-                    )}
-                  </HStack>
-                </NftsFilterMobileBtn>
-              )}
-              {countFilter() && (
-                <Button
-                  onClick={() => {
-                    setQuery(
-                      {
-                        page: 1,
-                        size: 18,
-                        desc: "desc",
-                        orderBy: "price",
-                        attributes: [],
-                        chain: "",
-                        marketType: "",
-                      },
-                      "replace"
-                    );
-                  }}
-                >
-                  Reset all
-                </Button>
-              )}
-            </HStack>
-            <HStack>
-              <IconButton
-                isLoading={isFetching}
-                onClick={() => {
-                  setQuery({ ...query, page: 1 });
-                  refetch();
-                }}
-                aria-label="refresh"
-              >
-                <FiRefreshCw />
-              </IconButton>
-              <Sort option="nft"/>
-            </HStack>
-          </Stack>
+                  <FiRefreshCw />
+                </IconButton>
+                <Sort option="nft" />
+              </HStack>
+            </Stack>
+          )}
           <Box w="full">
             {isEmpty && (
               <Box w="full" py={10}>
@@ -246,6 +244,7 @@ export default function Nfts({ owner }: { owner?: string }) {
             )}
             {!isError && !isEmpty && (
               <SimpleGrid
+                ref={containerRef}
                 justifyContent="center"
                 w="full"
                 columns={showFilter && md ? [2, 3, 3, 3, 5] : [2, 3, 4, 5, 6]}
@@ -255,7 +254,10 @@ export default function Nfts({ owner }: { owner?: string }) {
                 {!isLoading &&
                   marketNfts.map((nft) => {
                     return nft ? (
-                      <NextLink key={nft.id} href={`/nft/${nft.id}`}>
+                      <NextLink
+                        key={nft.id}
+                        href={`/nft/${nft.nftContract}:${nft.tokenId}`}
+                      >
                         <NftCardMarket
                           onCancelSale={() => {
                             refetch();
@@ -291,7 +293,7 @@ export default function Nfts({ owner }: { owner?: string }) {
                   ))}
               </SimpleGrid>
             )}
-            {!isLoading && !isFetching && hasNextPage && (
+            {!hideLoadMore && !isLoading && !isFetching && hasNextPage && (
               <div ref={loadingRef} />
             )}
           </Box>

@@ -39,7 +39,7 @@ import NftViewer from "./NftViewer";
 import NextLink from "next/link";
 import { shorten } from "../../utils/string.util";
 import { FiClock, FiRefreshCcw, FiRefreshCw, FiShare } from "react-icons/fi";
-import { formatDate, numeralFormat } from "../../utils/utils";
+import { formatDate, getUserName, numeralFormat } from "../../utils/utils";
 import useCustomColors from "../../theme/useCustomColors";
 import BuyButton from "../nftcard/BuyButton";
 import OfferButton from "../nftcard/OfferButton";
@@ -414,7 +414,7 @@ const PriceSection = ({
     paymentSymbol: nft?.sale?.paymentToken.symbol,
   });
   const { borderColor } = useCustomColors();
-  const toast = useCustomToast();
+  const { user } = useSelector(selectProfile);
   return (
     <VStack spacing={1} w="full" alignItems="start">
       <HStack w="full" justifyContent="space-between">
@@ -448,9 +448,7 @@ const PriceSection = ({
           href={`/profile/${nft.owner.address}`}
           as={NextLink}
         >
-          {nft.owner.name && nft.owner.name !== "Unnamed"
-            ? nft.owner.name
-            : shorten(nft.owner.address, 6, 4)}
+          {getUserName(nft.owner, user)}
         </Link>
       </Text>
       <Box pt={3} w="full">

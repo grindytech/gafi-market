@@ -18,7 +18,7 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import mpContract from "../../../contracts/marketplace.contract";
-import useCustomToast from "../../../hooks/useCustomToast";
+import useSwal from "../../../hooks/useSwal";
 import { Images } from "../../../images";
 import nftService from "../../../services/nft.service";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
@@ -39,8 +39,8 @@ export default function CancelOfferButton({
 }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const toast = useCustomToast();
   const { user } = useSelector(selectProfile);
+  const { swAlert } = useSwal();
   const cancelSale = async () => {
     try {
       setLoading(true);
@@ -61,12 +61,24 @@ export default function CancelOfferButton({
       };
       await mpContract.cancelMessage(param, offer.chain?.mpContract, user);
       await nftService.cancelOffer(offer.id);
-      toast.success("Cancel offer successfully.");
+      swAlert({
+        title: "COMPLETE",
+        text: `Cancel offer successfully!`,
+        icon: "success",
+      });
       onClose();
       onSuccess && onSuccess();
     } catch (error) {
+      onClose();
       console.error(error);
-      error?.message && toast.error(error?.message);
+      swAlert({
+        title: "Failed",
+        text:
+          error.message && error.message.length < 200
+            ? error.message
+            : "Transaction failed!",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }

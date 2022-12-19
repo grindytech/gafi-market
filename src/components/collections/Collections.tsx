@@ -25,12 +25,16 @@ import { useNftQueryParam } from "../filters/useCustomParam";
 import NextLink from "next/link";
 import NftCollectionCard from "./NftCollectionCard";
 export default function Collections() {
-  const { query, setQuery, fixedProperties } = useNftQueryParam();
+  const {
+    query,
+    setQuery,
+    countFilter,
+    reset: resetQuery,
+  } = useNftQueryParam();
+  console.log(query);
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
-  const countFilter = () =>
-    Object.keys(query).filter((k) => !!query[k]).length - fixedProperties;
   const {
     data,
     isFetching,
@@ -164,24 +168,7 @@ export default function Collections() {
                   </HStack>
                 </NftsFilterMobileBtn>
               )}
-              {countFilter() && (
-                <Button
-                  onClick={() => {
-                    setQuery(
-                      {
-                        page: 1,
-                        size: 18,
-                        desc: "desc",
-                        orderBy: "price",
-                        chain: "",
-                      },
-                      "replace"
-                    );
-                  }}
-                >
-                  Reset all
-                </Button>
-              )}
+              {countFilter() && <Button onClick={resetQuery}>Reset all</Button>}
             </HStack>
             <HStack>
               <IconButton

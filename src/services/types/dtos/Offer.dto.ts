@@ -1,11 +1,12 @@
 import { OfferStatus } from "../enum";
+import { BaseDocumentDto } from "./BaseDocumentDto";
 import { ChainDto } from "./ChainDto";
 import { NftDto } from "./Nft.dto";
 import { NftCollectionDto } from "./NftCollectionDto";
 import { PaymentToken } from "./PaymentToken.dto";
 import { UserDto } from "./UserDto";
 
-export class OfferDto {
+export class OfferDto extends BaseDocumentDto {
   nft: NftDto;
   offerPrice: number;
   saltNonce: number;

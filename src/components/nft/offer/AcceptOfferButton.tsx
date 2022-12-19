@@ -2,15 +2,9 @@ import {
   Box,
   Button,
   ButtonProps,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   HStack,
   Image,
-  Input,
-  InputGroup,
-  InputRightElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -22,13 +16,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
-import { useBalanceOf } from "../../../connectWallet/useBalanceof";
-import { Chain } from "../../../contracts";
 import erc721Contract from "../../../contracts/erc721.contract";
 import mpContract from "../../../contracts/marketplace.contract";
-import useCustomToast from "../../../hooks/useCustomToast";
+import useSwal from "../../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../../hooks/useTokenUSDPrice";
 import { Images } from "../../../images";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
@@ -47,8 +38,8 @@ export default function AcceptOfferButton({
 }: ButtonProps & { nft: NftDto; offer: OfferDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { user } = useSelector(selectProfile);
-  const toast = useCustomToast();
   const [loading, setLoading] = useState(false);
+  const { swAlert } = useSwal();
   const [marketFee, setMarketFee] = useState(0.05);
   const [collectionOwnerFee, setCollectionOwnerFee] = useState(0.0);
   const receive = () =>
@@ -80,13 +71,24 @@ export default function AcceptOfferButton({
         user,
         nft.chain.mpContract
       );
-
-      toast.success("Transaction successfully.");
+      swAlert({
+        title: "COMPLETE",
+        text: `Transaction successfully!`,
+        icon: "success",
+      });
       onClose();
       onSuccess && onSuccess();
     } catch (error) {
+      onClose();
       console.error(error);
-      error?.message && toast.error(error?.message);
+      swAlert({
+        title: "Failed",
+        text:
+          error.message && error.message.length < 200
+            ? error.message
+            : "Transaction failed!",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -128,7 +130,11 @@ export default function AcceptOfferButton({
               </Box>
 
               <VStack spacing={2} p={1} w="full" fontWeight="semibold">
-                <HStack alignItems='start' w="full" justifyContent="space-between">
+                <HStack
+                  alignItems="start"
+                  w="full"
+                  justifyContent="space-between"
+                >
                   <Text>You will receive</Text>
                   <VStack spacing={0} alignItems="end">
                     <Text color="gray">

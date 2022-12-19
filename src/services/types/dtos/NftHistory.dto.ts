@@ -8,6 +8,7 @@ import { UserDto } from "./UserDto";
 
 export class NftHistoryDto extends BaseDocumentDto {
   nftContract: string;
+  name: string;
   tokenId: string;
   txHash: string;
   attributes: Attribute[];
@@ -20,4 +21,5 @@ export class NftHistoryDto extends BaseDocumentDto {
   price: number;
   priceInUsd: number;
   type: HistoryType;
+  image?: string;
 }

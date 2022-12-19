@@ -52,12 +52,15 @@ const styles = {
       "-webkit-box-shadow": "inset 0 0 6px rgba(200, 200, 200, 0.3)",
     },
     "::-webkit-scrollbar-thumb": {
-      bg: "gray.100",
+      bg: "gray.300",
+      borderRadius: 'xl'
+    },
+    ".chakra-ui-dark ::-webkit-scrollbar-track": {
+      "-webkit-box-shadow": "inset 0 0 6px rgba(50, 50, 50, 0.9)",
     },
     ".chakra-ui-dark ::-webkit-scrollbar-thumb": {
-      bg: "gray.900",
+      bg: "gray.700",
     },
-    
   },
 };
 

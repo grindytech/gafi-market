@@ -20,7 +20,7 @@ import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { OfferStatus } from "../../../services/types/enum";
 import { selectProfile } from "../../../store/profileSlice";
 import { shorten } from "../../../utils/string.util";
-import { numeralFormat } from "../../../utils/utils";
+import { getUserName, numeralFormat } from "../../../utils/utils";
 import Avatar from "../../Avatar";
 import AcceptOfferButton from "./AcceptOfferButton";
 import CancelOfferButton from "./CancelOfferButton";
@@ -38,14 +38,12 @@ export default function OfferListItem({
   nft?: NftDto;
   refetch: () => void;
 }) {
+  const { user } = useSelector(selectProfile);
+
   const buyerName = useMemo(
-    () =>
-      offer?.buyer.username && offer?.buyer.username !== offer?.buyer.address
-        ? offer?.buyer.username
-        : shorten(offer?.buyer.address || "", 6, 4),
+    () => getUserName(offer?.buyer, user),
     [offer?.buyer]
   );
-  const { user } = useSelector(selectProfile);
   const { priceAsUsd, prefix, isPriceAsUsdLoading } = useTokenUSDPrice({
     paymentSymbol: offer?.paymentToken.symbol,
   });
@@ -131,7 +129,7 @@ export default function OfferListItem({
                     await nftService.acceptOffer(offer.id);
                     offer.status = OfferStatus.accepted;
                     refetch();
-                    debugger
+                    debugger;
                   }}
                   color="green.300"
                   size="xs"

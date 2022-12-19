@@ -77,7 +77,7 @@ export default function Sort({ option }: { option: "nft" | "collection" }) {
   return (
     <Menu>
       <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-        {options[query.sort].label}
+        {options[query.sort || 0].label}
       </MenuButton>
       <MenuList zIndex={99}>
         {options.map((o, index) => (

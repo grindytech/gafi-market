@@ -31,13 +31,18 @@ export const useNftQueryParam = () => {
         page: 1,
         size: 18,
         desc: "desc",
-        orderBy: "price",
+        orderBy: "updatedAt",
         attributes: [],
         chain: "",
         marketType: "",
+        sort: 0,
       },
       "replace"
     );
   };
-  return { query, setQuery, fixedProperties: 5, reset };
+  const fixedProperties = 6;
+  const countFilter = () =>
+    Object.keys(query).filter((k) => query[k] !== undefined && query[k] !== "")
+      .length - fixedProperties;
+  return { query, setQuery, countFilter, reset };
 };

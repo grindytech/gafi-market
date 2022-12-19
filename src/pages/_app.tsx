@@ -9,13 +9,13 @@ import theme from "../theme/theme";
 
 import { NextAdapter } from "next-query-params";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { PersistGate } from "redux-persist/integration/react";
 import { QueryParamProvider } from "use-query-params";
 import "../../node_modules/slick-carousel/slick/slick-theme.css";
 import "../../node_modules/slick-carousel/slick/slick.css";
 import SEO from "../components/Seo";
 import { Images } from "../images";
 import "../styles/styles.scss";
-import { PersistGate } from "redux-persist/integration/react";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

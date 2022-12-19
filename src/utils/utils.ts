@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import numeral from "numeral";
+import { UserDto } from "../services/types/dtos/UserDto";
 
 interface ContractValueParams {
   amount: number;
@@ -188,4 +189,12 @@ export function formatDate(date?: number | Date) {
 
 export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function getUserName(user: UserDto, you?: string) {
+  return you && user?.address === you
+    ? "you"
+    : user?.username && user?.username !== user?.address
+    ? user?.username
+    : shorten(user?.address || "", 6, 4);
 }

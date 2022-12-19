@@ -1,18 +1,8 @@
 ::-webkit-scrollbar {
   width: 6px;
-}
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(200, 200, 200, 0.3);
-  border-radius: 50px;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: gray;
-  -webkit-box-shadow: inset 0 0 6px rgba(200, 200, 200, 0.5);
-}
-.react-horizontal-scrolling-menu--scroll-container::-webkit-scrollbar {
   height: 6px;
 }
+
 .react-horizontal-scrolling-menu--scroll-container {
   -ms-overflow-style: 0; /* IE and Edge */
   scrollbar-width: 0; /* Firefox */

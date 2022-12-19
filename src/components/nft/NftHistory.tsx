@@ -11,19 +11,20 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
+import NextLink from "next/link";
 import { useMemo, useRef } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { useInfiniteQuery } from "react-query";
+import { useSelector } from "react-redux";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
-import { shorten } from "../../utils/string.util";
-import { numeralFormat } from "../../utils/utils";
+import { HistoryType } from "../../services/types/enum";
+import { selectProfile } from "../../store/profileSlice";
+import { getUserName, numeralFormat } from "../../utils/utils";
 import { EmptyState, ErrorState } from "../EmptyState";
 import Skeleton from "../Skeleton";
-import NextLink from "next/link";
-import { HistoryType } from "../../services/types/enum";
 
 export default function NftHistory({ nft }: { nft: NftDto }) {
   const {
@@ -133,6 +134,7 @@ function HistoryListItem({
   loading?: boolean;
   history?: NftHistoryDto;
 }) {
+  const { user } = useSelector(selectProfile);
   return (
     <VStack w="full" spacing={0}>
       <Skeleton w="full" isLoaded={!loading}>
@@ -145,10 +147,7 @@ function HistoryListItem({
             href={`/profile/${history?.from?.address}`}
           >
             <Text w="full" textAlign="left" noOfLines={1}>
-              {history?.from.username &&
-              history?.from.username !== history?.from.address
-                ? history?.from.username
-                : shorten(history?.from?.address || "")}
+              {getUserName(history?.from, user)}
             </Text>
           </Button>
           <Icon color="gray" w={6} h={6} fontSize="lg">
@@ -162,10 +161,7 @@ function HistoryListItem({
             href={`/profile/${history?.to?.address}`}
           >
             <Text w="full" textAlign="right" noOfLines={1}>
-              {history?.to.username &&
-              history?.to.username !== history?.to.address
-                ? history?.to.username
-                : shorten(history?.to?.address || "")}
+              {getUserName(history?.to, user)}
             </Text>
           </Button>
         </HStack>
