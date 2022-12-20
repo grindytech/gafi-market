@@ -201,9 +201,12 @@ export default function Navbar() {
                     <NextLink href="/profile">
                       <MenuItemBtn leftIcon={<FiUser />}>Profile</MenuItemBtn>
                     </NextLink>
-                    <MenuItemBtn leftIcon={<FiEdit />}>
-                      Edit Profile
-                    </MenuItemBtn>
+                    <NextLink href="/profile/edit">
+                      <MenuItemBtn leftIcon={<FiEdit />}>
+                        Edit Profile
+                      </MenuItemBtn>
+                    </NextLink>
+
                     <MenuItemBtn
                       color="gray"
                       leftIcon={<FiLogOut />}
@@ -364,7 +367,7 @@ const MobileNavItem = ({
   const { isOpen, onToggle, onOpen } = useDisclosure();
   const { nav } = useCustomColors();
   return (
-    <Stack spacing={4}>
+    <Stack spacing={1}>
       <Link
         onClick={(e) => {
           children && onToggle();
@@ -394,16 +397,11 @@ const MobileNavItem = ({
           />
         )}
       </Link>
-      <Collapse in={isOpen} animateOpacity style={{ marginTop: "0!important" }}>
-        <Stack
-          pt={0}
-          mt={0}
-          pl={4}
-          borderLeft={1}
-          borderStyle={"solid"}
-          borderColor={nav.navTextColor}
-          align={"start"}
-        >
+      <Collapse
+        in={isOpen}
+        animateOpacity
+      >
+        <Stack pt={0} mt={0} pl={4} align={"start"}>
           {children &&
             children.map((child) => (
               <Link
@@ -438,7 +436,6 @@ const NAV_ITEMS: Array<NavItem> = [
     children: [
       {
         label: "NFTs",
-        // subLabel: "Trending Design to inspire you",
         href: "/explore/nfts",
       },
       {
@@ -463,7 +460,7 @@ const MOBILE_NAV_ITEMS: Array<NavItem> = [
       },
       {
         label: "Edit profile",
-        href: "/explore/collections",
+        href: "/profile/edit",
       },
     ],
   },

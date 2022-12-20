@@ -33,8 +33,8 @@ export function EmptyState({ msg, icon, children, ...rest }: Props) {
     <Msg
       textColor={textColor}
       {...rest}
-      msg={msg ?? "No result found."}
-      icon={icon ?? <Icon as={AiOutlineInbox} w={20} h={20} />}
+      msg={msg || "No result found."}
+      icon={icon || <Icon as={AiOutlineInbox} w={20} h={20} />}
     >
       {children}
     </Msg>

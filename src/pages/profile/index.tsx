@@ -1,5 +1,8 @@
 import Profile from "../../components/profile/Profile";
+import withAuth from "../../components/withAuth";
 
-export default function ProfilePage() {
+function ProfilePage() {
   return <Profile />;
 }
+
+export default withAuth(ProfilePage);

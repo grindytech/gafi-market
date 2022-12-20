@@ -49,7 +49,7 @@ export default function Profile({ address }: { address?: string }) {
     () => (address || user)?.toLowerCase(),
     [address, user]
   );
-  const { data: viewProfile } = useQuery(
+  const { data: viewProfile, isLoading } = useQuery(
     ["Profile", viewAccount],
     async () => {
       const rs = await accountService.profileByAddress(viewAccount);
@@ -65,17 +65,19 @@ export default function Profile({ address }: { address?: string }) {
   const TABS = [
     {
       title: "NFTs",
-      panel: () => <Nfts owner={viewAccount} enableFilter={true} />,
+      panel: () => <Nfts owner={viewProfile.address} enableFilter={true} />,
       key: "nfts",
     },
     {
       title: "Activities",
-      panel: () => <UserActivities address={viewAccount} />,
+      panel: () => <UserActivities address={viewProfile.address} />,
       key: "activities",
     },
     {
       title: "Offers made",
-      panel: () => <OfferMade key={`OfferMade-made`} address={viewAccount} />,
+      panel: () => (
+        <OfferMade key={`OfferMade-made`} address={viewProfile.address} />
+      ),
       key: "offers-made",
     },
     {
@@ -92,50 +94,41 @@ export default function Profile({ address }: { address?: string }) {
   ];
   const tabIndex = tab ? TABS.findIndex((t) => t.key === tab) : 0;
 
-  return viewProfile ? (
-    <VStack w="full" alignItems="start" spacing={5}>
-      <ProfileHeader
-        address={viewProfile.address}
-        name={name}
-        avatar={viewProfile.avatar}
-        cover={viewProfile.cover}
-        socials={viewProfile.socials}
-        username={viewProfile.username}
-        description={viewProfile.bio}
-      />
-      <Tabs defaultIndex={tabIndex || 0} variant="enclosed" w="full" pt={5}>
-        <TabList p={1} overflow="auto">
-          {TABS.map((t, index) => (
-            <CustomTab
-              onClick={() => {
-                setTab(t.key);
-              }}
-              pl={index === 0 ? 0 : 3}
-              key={`tab-${t.key}`}
-            >
-              {t.title}
-            </CustomTab>
-          ))}
-        </TabList>
-        <TabPanels>
-          {TABS.map((t, index) => (
-            <TabPanel key={`panel-${t.key}`} px={0}>
-              {t.panel()}
-            </TabPanel>
-          ))}
-        </TabPanels>
-      </Tabs>
-    </VStack>
-  ) : (
-    !address && (
-      <Box py={10}>
-        <EmptyState
-          title="No connect yet"
-          msg="Connect wallet to see your profile!"
-        >
-          <ConnectWalletButton />
-        </EmptyState>
-      </Box>
+  return (
+    viewProfile && (
+      <VStack w="full" alignItems="start" spacing={5}>
+        <ProfileHeader
+          address={viewProfile.address}
+          name={name}
+          avatar={viewProfile.avatar}
+          cover={viewProfile.cover}
+          socials={viewProfile.socials}
+          username={viewProfile.username}
+          description={viewProfile.about}
+        />
+        <Tabs defaultIndex={tabIndex || 0} variant="enclosed" w="full" pt={5}>
+          <TabList p={1} overflow="auto">
+            {TABS.map((t, index) => (
+              <CustomTab
+                onClick={() => {
+                  setTab(t.key);
+                }}
+                pl={index === 0 ? 0 : 3}
+                key={`tab-${t.key}`}
+              >
+                {t.title}
+              </CustomTab>
+            ))}
+          </TabList>
+          <TabPanels>
+            {TABS.map((t, index) => (
+              <TabPanel key={`panel-${t.key}`} px={0}>
+                {t.panel()}
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      </VStack>
     )
   );
 }

@@ -53,13 +53,21 @@ const styles = {
     },
     "::-webkit-scrollbar-thumb": {
       bg: "gray.300",
-      borderRadius: 'xl'
+      borderRadius: "xl",
     },
     ".chakra-ui-dark ::-webkit-scrollbar-track": {
       "-webkit-box-shadow": "inset 0 0 6px rgba(50, 50, 50, 0.9)",
     },
     ".chakra-ui-dark ::-webkit-scrollbar-thumb": {
       bg: "gray.700",
+    },
+    ".hover-wrapper": {
+      "&:hover .hover-content": {
+        display: "block",
+      },
+      ".hover-content": {
+        display: "none",
+      },
     },
   },
 };

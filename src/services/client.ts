@@ -4,21 +4,21 @@ import toast from "../hooks/useCustomToast";
 import store from "../store";
 import { logout } from "../store/profileSlice";
 
-const onError = ({ response }: any) => {
+const onError = (error: any) => {
+  const { response } = error;
   if (response) {
     const { data, status } = response;
-    // if (status === 404) {
-    //   return Promise.reject(response);
-    // }
-    // if (status === 401) {
-    //   // store.dispatch(logout());
-    // } else {
-
-    // }
-    const msg = data.errors?.message || data.message;
-    if (msg) toast().error(`${status} - ${msg}`);
+    if (status === 404) {
+      return Promise.reject(response);
+    }
+    if (status === 401) {
+      store.dispatch(logout());
+    } else {
+      const msg = data.errors?.message || data.message;
+      if (msg) toast().error(`${status} - ${msg}`);
+    }
   } else {
-    toast().error(`Cannot connect to Server`);
+    toast().error(`Cannot connect to Server. ${error.code}`);
   }
   return Promise.reject(response);
 };

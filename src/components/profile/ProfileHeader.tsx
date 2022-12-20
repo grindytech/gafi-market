@@ -50,8 +50,8 @@ export default function ProfileHeader({
       >
         <Box
           bgImage={cover}
-          bgRepeat='no-repeat'
-          bgSize='cover'
+          bgRepeat="no-repeat"
+          bgSize="cover"
           position="absolute"
           w="full"
           h="full"
@@ -77,15 +77,18 @@ export default function ProfileHeader({
           </VStack>
         </Box>
       </Box>
-      <VStack position="relative" px={3} pt={2} w="full" alignItems="start">
-        <Box position="absolute" px={3} left={0} top={-14}>
+      <VStack position="relative" px={3} pt={3} w="full" alignItems="start">
+        <Box position="absolute" px={3} left={0} top={-20}>
           <Avatar
-            size={"lg"}
+            size={"xl"}
             jazzicon={{
-              diameter: 64,
+              diameter: 96,
               seed: String(address),
             }}
             src={avatar}
+            bgColor={useColorModeValue("white", "black")}
+            borderColor={useColorModeValue("primary.50", "primary.700")}
+            borderWidth={1}
           />
         </Box>
         <Stack
@@ -110,10 +113,9 @@ export default function ProfileHeader({
                 _hover={{
                   textDecoration: "none",
                 }}
+                size="sm"
               >
-                <Text size="sm" color="gray">
-                  {shorten(address, 5, 3)}
-                </Text>
+                <Text color="gray">{shorten(address, 5, 3)}</Text>
               </Button>
             </HStack>
             {description && <Text size="sm">{description}</Text>}
