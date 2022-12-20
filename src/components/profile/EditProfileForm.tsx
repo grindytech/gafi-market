@@ -141,6 +141,14 @@ export default function EditProfileForm() {
         <FormControl isInvalid={!!errors.about}>
           <FormLabel>About</FormLabel>
           <Textarea
+            _focusVisible={{
+              borderColor: "primary.200",
+              boxShadow: "primary.200",
+            }}
+            _hover={{
+              borderColor: "primary.200",
+              boxShadow: "primary.200",
+            }}
             defaultValue={profile.about}
             {...register("about", {
               maxLength: {

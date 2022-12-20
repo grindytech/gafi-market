@@ -180,10 +180,32 @@ const SliderBox: ComponentStyleConfig = {
   },
 };
 const Input: ComponentStyleConfig = {
-  baseStyle: {
-    _focusVisible: {
-      borderColor: "primary.200",
-      boxShadow: "primary.200",
+  variants: {
+    outline: {
+      field: {
+        _focusVisible: {
+          borderColor: "primary.200",
+          boxShadow: "primary.200",
+        },
+        _hover: {
+          borderColor: "primary.200",
+          boxShadow: "primary.200",
+        },
+      },
+    },
+  },
+};
+const TextArea: ComponentStyleConfig = {
+  variants: {
+    outline: {
+      _focusVisible: {
+        borderColor: "primary.200",
+        boxShadow: "primary.200",
+      },
+      _hover: {
+        borderColor: "primary.200",
+        boxShadow: "primary.200",
+      },
     },
   },
 };
@@ -214,6 +236,7 @@ const components = {
   NFTCard,
   NFTCardImage,
   Input,
+  TextArea,
 };
 const theme = extendTheme({
   styles,
