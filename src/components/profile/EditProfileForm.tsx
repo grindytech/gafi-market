@@ -23,32 +23,78 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { UserDto } from "../../services/types/dtos/UserDto";
+import * as yup from "yup";
+import useYupValidationResolver from "../../hooks/useYupValidationResolver";
 import { accountService } from "../../services/user.service";
 import { selectProfile, userData } from "../../store/profileSlice";
 import PrimaryButton from "../PrimaryButton";
+
+const validationSchema = (defaultUsername: string) =>
+  yup.object({
+    name: yup.string().nullable().notRequired().max(200),
+    username: yup
+      .string()
+      .nullable()
+      .notRequired()
+      .max(50)
+      .matches(/^[\w\d_]+$/, {
+        message:
+          'Username must only contain alphanumeric characters and symbol "_"',
+        excludeEmptyString: true,
+      })
+      .test("validUsername", "Already used by someone", async (username) => {
+        if (!username || username === defaultUsername) return true;
+        let valid = true;
+        try {
+          await accountService.profileByAddress(username);
+          valid = false;
+        } catch (error) {}
+        return valid;
+      }),
+    about: yup.string().max(200),
+    email: yup.string().email(),
+    twitter: yup
+      .string()
+      .max(200)
+      .matches(/^(https:\/\/twitter.com\/).+$/, {
+        message: "Invalid twitter url",
+        excludeEmptyString: true,
+      }),
+    facebook: yup
+      .string()
+      .max(200)
+      .matches(/^(https:\/\/facebook.com\/).+$/, {
+        message: "Invalid facebook url",
+        excludeEmptyString: true,
+      }),
+    discord: yup
+      .string()
+      .max(200)
+      .matches(/^(https:\/\/discord.com\/).+$/, {
+        message: "Invalid discord url",
+        excludeEmptyString: true,
+      }),
+    telegram: yup
+      .string()
+      .max(200)
+      .matches(/^(https:\/\/t.me\/).+$/, {
+        message: "Invalid telegram url",
+        excludeEmptyString: true,
+      }),
+    website: yup.string().max(200).url(),
+  });
+
 export default function EditProfileForm() {
   const dispatch = useDispatch();
   const { profile } = useSelector(selectProfile);
+
   const [loading, setLoading] = useState(false);
+  const resolver = useYupValidationResolver(validationSchema(profile.username));
   const {
-    register,
     handleSubmit,
-    watch,
+    register,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: profile.name,
-      username: profile.username,
-      email: profile.email,
-      about: profile.about,
-      twitter: profile.socials?.twitter,
-      facebook: profile.socials?.facebook,
-      discord: profile.socials?.discord,
-      website: profile.socials?.website,
-      telegram: profile.socials?.telegram,
-    },
-  });
+  } = useForm({ resolver });
   const router = useRouter();
   const onSubmit = async ({
     name,
@@ -91,10 +137,7 @@ export default function EditProfileForm() {
           <FormLabel>Name</FormLabel>
           <Input
             defaultValue={profile.name}
-            {...register("name", {
-              minLength: 1,
-              maxLength: 200,
-            })}
+            {...register("name",)}
             type="text"
             placeholder="Enter your display name"
           />
@@ -110,26 +153,7 @@ export default function EditProfileForm() {
             <InputLeftElement children="@" />
             <Input
               defaultValue={profile.username}
-              {...register("username", {
-                maxLength: {
-                  value: 50,
-                  message: "Max length is 50",
-                },
-                pattern: {
-                  value: /^[\w\d_]+$/i,
-                  message:
-                    'Username must only contain alphanumeric characters and symbol "_"',
-                },
-                validate: async (username) => {
-                  if (!username || username === profile.username) return true;
-                  let exist = undefined;
-                  try {
-                    await accountService.profileByAddress(username);
-                    exist = "Already used by someone";
-                  } catch (error) {}
-                  return exist;
-                },
-              })}
+              {...register("username")}
               type="text"
               placeholder="enter your username"
             />
@@ -150,13 +174,7 @@ export default function EditProfileForm() {
               boxShadow: "primary.200",
             }}
             defaultValue={profile.about}
-            {...register("about", {
-              maxLength: {
-                value: 200,
-                message: "Max length is 200",
-              },
-            })}
-            maxLength={200}
+            {...register("about")}
             placeholder="Tell about yourself"
           />
           {errors.about && (
@@ -169,16 +187,7 @@ export default function EditProfileForm() {
           <FormLabel>Email</FormLabel>
           <Input
             defaultValue={profile.email}
-            {...register("email", {
-              maxLength: {
-                value: 100,
-                message: "Max length is 100 characters",
-              },
-              pattern: {
-                value: /^[\d\w]+@[\d\w\.]+$/g,
-                message: "Email invalid",
-              },
-            })}
+            {...register("email")}
             type="email"
             placeholder="Enter your email"
           />
@@ -204,12 +213,7 @@ export default function EditProfileForm() {
               <Input
                 defaultValue={profile.socials?.twitter}
                 type="text"
-                {...register("twitter", {
-                  pattern: {
-                    value: /^(https:\/\/twitter.com\/).+$/i,
-                    message: "Invalid twitter url",
-                  },
-                })}
+                {...register("twitter")}
                 placeholder="https://twitter.com/"
               />
             </InputGroup>
@@ -222,12 +226,7 @@ export default function EditProfileForm() {
             <InputGroup>
               <InputLeftElement children={<FaFacebook />} />
               <Input
-                {...register("facebook", {
-                  pattern: {
-                    value: /^(https:\/\/facebook.com\/).+$/i,
-                    message: "Invalid facebook url",
-                  },
-                })}
+                {...register("facebook")}
                 defaultValue={profile.socials?.facebook}
                 type="text"
                 placeholder="https://facebook.com/"
@@ -242,12 +241,7 @@ export default function EditProfileForm() {
             <InputGroup>
               <InputLeftElement children={<FaDiscord />} />
               <Input
-                {...register("discord", {
-                  pattern: {
-                    value: /^(https:\/\/discord.com\/).+$/i,
-                    message: "Invalid discord url",
-                  },
-                })}
+                {...register("discord")}
                 defaultValue={profile.socials?.discord}
                 type="text"
                 placeholder="https://discord.com/"
@@ -262,12 +256,7 @@ export default function EditProfileForm() {
             <InputGroup>
               <InputLeftElement children={<FaTelegram />} />
               <Input
-                {...register("telegram", {
-                  pattern: {
-                    value: /^(https:\/\/telegram.com\/).+$/i,
-                    message: "Invalid telegram url",
-                  },
-                })}
+                {...register("telegram")}
                 defaultValue={profile.socials?.telegram}
                 type="text"
                 placeholder="https://t.me/"
@@ -282,12 +271,7 @@ export default function EditProfileForm() {
             <InputGroup>
               <InputLeftElement children={<FaGlobe />} />
               <Input
-                {...register("website", {
-                  pattern: {
-                    value: /^(ftp|http|https):\/\/[^ "]+$/i,
-                    message: "Invalid website url",
-                  },
-                })}
+                {...register("website")}
                 defaultValue={profile.socials?.website}
                 type="text"
                 placeholder="https://"
@@ -301,7 +285,6 @@ export default function EditProfileForm() {
       </Box>
       <PrimaryButton
         isLoading={loading}
-        disabled={Object.keys(errors).length > 0 || loading}
         onClick={handleSubmit(onSubmit)}
       >
         Save change

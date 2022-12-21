@@ -9,7 +9,7 @@ import { useConnectWallet } from "../connectWallet/useWallet";
 
 const Index = () => {
   return (
-    <VStack w="full" spacing={12} mb={5}>
+    <VStack id="main" w="full" spacing={12} mb={5}>
       <Box w="full" rounded="xl" overflow="hidden">
         <HomeSlide />
       </Box>
@@ -17,7 +17,7 @@ const Index = () => {
       <FeaturedGames />
       <RecentlySold />
       <NftExplore />
-      <Blogs/>
+      <Blogs />
     </VStack>
   );
 };

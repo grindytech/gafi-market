@@ -33,6 +33,6 @@ const configs: Configs = {
     },
   },
   DEFAULT_CHAIN: "BSC",
-  API_URL: "http://115.79.142.60:8086/",
+  API_URL: "http://localhost:8086/",
 };
 export default configs;

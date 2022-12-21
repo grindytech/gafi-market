@@ -1,27 +1,17 @@
-import {
-  Badge,
-  Box,
-  Button,
-  HStack,
-  Link,
-  Skeleton,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Badge, Box, HStack, Link, Text, VStack } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
 import NextLink from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
-import useCustomToast from "../../../hooks/useCustomToast";
 import { useTokenUSDPrice } from "../../../hooks/useTokenUSDPrice";
 import nftService from "../../../services/nft.service";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { OfferStatus } from "../../../services/types/enum";
 import { selectProfile } from "../../../store/profileSlice";
-import { shorten } from "../../../utils/string.util";
 import { getUserName, numeralFormat } from "../../../utils/utils";
 import Avatar from "../../Avatar";
+import Skeleton from "../../Skeleton";
 import AcceptOfferButton from "./AcceptOfferButton";
 import CancelOfferButton from "./CancelOfferButton";
 

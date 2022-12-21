@@ -11,7 +11,16 @@ export default function Layout({ children, ...rest }: StackProps) {
   const containerRef = useRef(null);
   useEffect(() => {
     const handleRouteChange = () => {
-      containerRef?.current?.scrollTo(0, 0);
+      // containerRef?.current?.scrollTo(0, 0);
+      // document.getElementById("main")?.scrollIntoView();
+      const main = document.getElementById("main");
+      if (main) {
+        var scrollDiv = main.offsetTop - 180;
+        containerRef.current?.scrollTo({
+          top: scrollDiv,
+          behavior: "smooth",
+        });
+      }
     };
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => {

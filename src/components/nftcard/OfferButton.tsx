@@ -25,10 +25,8 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import useSwitchNetwork from "../../connectWallet/useSwitchNetwork";
 import { web3Inject } from "../../contracts";
 import erc20Contract from "../../contracts/erc20.contract";
-import useCustomToast from "../../hooks/useCustomToast";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
@@ -42,6 +40,11 @@ import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import useSwal from "../../hooks/useSwal";
+import useYupValidationResolver from "../../hooks/useYupValidationResolver";
+
 export default function OfferButton({
   nft,
   children,
@@ -50,54 +53,49 @@ export default function OfferButton({
 }: ButtonProps & { nft: NftDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [errorMsg, setErrorMsg] = useState<string>();
-  const [price, setPrice] = useState<string>();
   const [isFirst, setIsFirst] = useState(true);
   const [paymentToken, setPaymentToken] = useState<PaymentToken>();
   const { chains } = useSelector(selectSystem);
-  const [marketFee, setMarketFee] = useState(0.05);
-  const [collectionOwnerFee, setCollectionOwnerFee] = useState(0.0);
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
-  const toast = useCustomToast();
   const [period, setPeriod] = useState(SalePeriod.Week);
-  const { isWrongNetwork, changeNetwork } = useSwitchNetwork();
+  const { swAlert } = useSwal();
   const chain = useMemo(
     () => chains.find((c) => c.id === paymentToken?.chain),
     [paymentToken, chains]
   );
-  const validate = useCallback(async () => {
-    if (isFirst) {
-      setIsFirst(false);
-      return;
-    }
-    if (!price) {
-      setErrorMsg("Price is required");
-      return;
-    }
-    if (Number(price) <= 0) {
-      setErrorMsg("Please input a valid number");
-      return;
-    }
-    const balance =
-      chain && user
-        ? await erc20Contract.getErc20Balance(
-            user,
-            paymentToken.contractAddress,
-            chain.symbol.toUpperCase(),
-            paymentToken.decimals
-          )
-        : 0;
-    debugger;
-    if (balance < Number(price)) {
-      setErrorMsg("Insufficient balance");
-      return;
-    }
-    setErrorMsg(undefined);
-  }, [price, paymentToken, chain, user]);
-  useEffect(() => {
-    validate();
-  }, [validate]);
-  const createSale = async () => {
+  const validationSchema = yup.object({
+    price: yup
+      .number()
+      .transform((value) => (isNaN(value) ? undefined : value))
+      .required("Required")
+      .moreThan(0)
+      .max(999999999)
+      .test("isValidBalance", "Insufficient balance", async (value) => {
+        const balance =
+          chain && user
+            ? await erc20Contract.getErc20Balance(
+                user,
+                paymentToken.contractAddress,
+                chain.symbol.toUpperCase(),
+                paymentToken.decimals
+              )
+            : 0;
+        if (balance < Number(value)) {
+          return false;
+        }
+        return true;
+      }),
+  });
+  const resolver = useYupValidationResolver(validationSchema);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    watch,
+  } = useForm({ resolver });
+
+  const createSale = async ({ price }) => {
     try {
       setLoading(true);
       const priceContractValue = convertToContractValue({
@@ -146,13 +144,20 @@ export default function OfferButton({
         signedSignature: sign,
         offerPrice: Number(price),
       });
-      toast.success("Offer successfully.");
       onClose();
-      debugger;
       onSuccess && onSuccess();
+      swAlert({ title: "Offer successfully.", icon: "success" });
     } catch (error) {
+      onClose();
       console.error(error);
-      error?.message && toast.error(error?.message);
+      swAlert({
+        title: "Failed",
+        text:
+          error.message && error.message.length < 200
+            ? error.message
+            : "Transaction failed!",
+        icon: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -161,6 +166,7 @@ export default function OfferButton({
     enabled: !!paymentToken,
     paymentSymbol: paymentToken?.symbol,
   });
+  const price = watch("price");
   return (
     <>
       <Button
@@ -192,7 +198,7 @@ export default function OfferButton({
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>
-              <FormControl isInvalid={!!errorMsg}>
+              <FormControl isInvalid={!!errors.price}>
                 <FormLabel>Price</FormLabel>
                 <InputGroup size="lg">
                   <InputRightElement
@@ -211,6 +217,7 @@ export default function OfferButton({
                     }
                   />
                   <Input
+                    {...register("price")}
                     type="number"
                     variant="filled"
                     placeholder={"0.0"}
@@ -218,13 +225,9 @@ export default function OfferButton({
                       borderColor: "primary.300",
                       borderWidth: "1px",
                     }}
-                    value={price}
-                    onChange={(e) => {
-                      setPrice(e.target.value);
-                    }}
                   />
                 </InputGroup>
-                {!errorMsg ? (
+                {!errors.price ? (
                   priceAsUsd &&
                   price && (
                     <FormHelperText>
@@ -240,7 +243,9 @@ export default function OfferButton({
                     </FormHelperText>
                   )
                 ) : (
-                  <FormErrorMessage>{errorMsg}</FormErrorMessage>
+                  <FormErrorMessage>
+                    {errors.price?.message?.toString()}
+                  </FormErrorMessage>
                 )}
               </FormControl>
               <FormControl>
@@ -282,9 +287,8 @@ export default function OfferButton({
                 w="full"
               >
                 <PrimaryButton
-                  disabled={!!errorMsg}
                   isLoading={loading}
-                  onClick={createSale}
+                  onClick={handleSubmit(createSale)}
                   w="full"
                 >
                   Confirm

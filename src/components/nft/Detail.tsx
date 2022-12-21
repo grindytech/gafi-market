@@ -1,70 +1,56 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Avatar,
   Box,
   Button,
-  ButtonGroup,
   Container,
   Divider,
   Heading,
   HStack,
   Icon,
-  IconButton,
   Link,
   SimpleGrid,
   Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
   Tooltip,
   useBreakpointValue,
-  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
+import { AxiosResponse } from "axios";
+import NextLink from "next/link";
+import { useMemo, useState } from "react";
+import Countdown from "react-countdown";
+import { FiClock } from "react-icons/fi";
 import { HiBadgeCheck } from "react-icons/hi";
-import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { useQuery } from "react-query";
+import { useSelector } from "react-redux";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import nftService from "../../services/nft.service";
+import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { selectProfile } from "../../store/profileSlice";
+import useCustomColors from "../../theme/useCustomColors";
+import { shorten } from "../../utils/string.util";
+import { getUserName, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
-import Skeleton from "../Skeleton";
-import NftViewer from "./NftViewer";
-import NextLink from "next/link";
-import { shorten } from "../../utils/string.util";
-import { FiClock, FiRefreshCcw, FiRefreshCw, FiShare } from "react-icons/fi";
-import { formatDate, getUserName, numeralFormat } from "../../utils/utils";
-import useCustomColors from "../../theme/useCustomColors";
-import BuyButton from "../nftcard/BuyButton";
-import OfferButton from "../nftcard/OfferButton";
-import PrimaryButton from "../PrimaryButton";
-import { useSelector } from "react-redux";
-import { selectProfile } from "../../store/profileSlice";
-import { useMemo, useState } from "react";
-import CancelBtn from "../nftcard/CancelButton";
-import SaleButton from "../nftcard/SaleButton";
-import Countdown from "react-countdown";
-import { formatDistance } from "date-fns";
-import CustomTab from "../CustomTab";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import Icons from "../../images";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
-import NftOffers from "./offer/NftOffers";
-import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
-import NftHistory from "./NftHistory";
-import LoadingPage from "../LoadingPage";
 import { EmptyState, ErrorState } from "../EmptyState";
-import { AxiosResponse } from "axios";
-import ShareButton from "../ShareButton";
-import useCustomToast from "../../hooks/useCustomToast";
-import RefreshMetadataButton from "./RefreshMetadataButton";
+import LoadingPage from "../LoadingPage";
 import { AddToCartButton } from "../nftcard/AddToCartButton";
+import BuyButton from "../nftcard/BuyButton";
+import CancelBtn from "../nftcard/CancelButton";
+import OfferButton from "../nftcard/OfferButton";
+import SaleButton from "../nftcard/SaleButton";
+import PrimaryButton from "../PrimaryButton";
+import ShareButton from "../ShareButton";
+import Skeleton from "../Skeleton";
+import NftHistory from "./NftHistory";
+import NftViewer from "./NftViewer";
+import NftOffers from "./offer/NftOffers";
+import RefreshMetadataButton from "./RefreshMetadataButton";
 
 export default function Detail({ id }: { id: string }) {
   const [errorCode, setErrorCode] = useState(0);
@@ -140,7 +126,7 @@ export default function Detail({ id }: { id: string }) {
               spacing={5}
               pl={{ base: 0, md: 10 }}
               w="full"
-              top="30px"
+              top="90px"
             >
               <PriceSection
                 onMakeOffer={() => {

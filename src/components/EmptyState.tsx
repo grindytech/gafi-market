@@ -19,7 +19,7 @@ export default function Msg({ msg, children, icon, ...rest }: Props) {
       w="full"
       // height="200"
     >
-      {React.cloneElement(icon)}
+      {/* {icon()} */}
       <Heading fontSize="lg">{msg}</Heading>
       {children}
     </VStack>

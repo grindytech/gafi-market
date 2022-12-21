@@ -4,7 +4,6 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Badge,
   Box,
   Button,
   Checkbox,
@@ -18,8 +17,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { StringParam, useQueryParam } from "use-query-params";
+import { useMemo, useState } from "react";
 import { AttributeMap } from "../../services/types/dtos/AttributeMap";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import { AttributesMapType } from "../../services/types/enum";
@@ -261,16 +259,16 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
   const [search, setSearch] = useState<string>();
   const { query, setQuery } = useNftQueryParam();
   const filterOnChange = (attr: GetNftAttributes) => {
-    const newAttrs = Array.from(query.attributes).filter(
+    const newAttrs = Array.from(query.attributes || []).filter(
       (old: GetNftAttributes) => old.key !== attr.key
     );
-    newAttrs.push(attr);
+    if (!!attr.value) newAttrs.push(attr);
     setQuery({ ...query, attributes: newAttrs });
   };
-  useEffect(() => {}, [query]);
+  const attributesMap = useMemo(() => c.attributesMap, [c, query.attributes]);
   return (
-    c.attributesMap &&
-    c.attributesMap.length > 0 && (
+    attributesMap &&
+    attributesMap.length > 0 && (
       <VStack w="full">
         <SearchBox
           placeHolder="Properties..."
@@ -281,7 +279,7 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
         />
         <VStack w="full">
           <Accordion allowMultiple w="full">
-            {c.attributesMap.map((attr) => (
+            {attributesMap.map((attr) => (
               <Box
                 display={
                   !search ||
@@ -292,7 +290,7 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
                     ? "block"
                     : "none"
                 }
-                key={`${c.id}-${attr.key}`}
+                key={`${c.id}-${attr.key}-${!!query.attributes}`}
               >
                 <Property attr={attr} filterOnChange={filterOnChange} />
               </Box>
@@ -313,7 +311,7 @@ const Property = ({
 }) => {
   const { query, setQuery } = useNftQueryParam();
   const defaultAttr =
-    (query.attributes && query.attributes.find((a) => a.key === attr.key)) ??
+    (query.attributes && query.attributes?.find((a) => a.key === attr.key)) ??
     undefined;
   return (
     <>

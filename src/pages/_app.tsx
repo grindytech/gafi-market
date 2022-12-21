@@ -16,6 +16,15 @@ import "../../node_modules/slick-carousel/slick/slick.css";
 import SEO from "../components/Seo";
 import { Images } from "../images";
 import "../styles/styles.scss";
+
+import Router from "next/router";
+import NProgress from "nprogress"; //nprogress module
+// import "nprogress/nprogress.css"; //styles of nprogress
+//Route Events.
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeError", () => NProgress.done());
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

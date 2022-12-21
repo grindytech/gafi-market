@@ -18,29 +18,12 @@ import { accountService } from "../../services/user.service";
 import { selectProfile } from "../../store/profileSlice";
 import { shorten } from "../../utils/string.util";
 import ConnectWalletButton from "../connectWalletButton/ConnectWalletButton";
+import CustomTab from "../CustomTab";
 import { EmptyState } from "../EmptyState";
 import Nfts from "../market/Nfts";
 import UserActivities from "./Activities";
 import OfferMade from "./OfferMade";
 import ProfileHeader from "./ProfileHeader";
-const CustomTab = ({ children, ...rest }: TabProps) => {
-  return (
-    <Tab
-      {...rest}
-      _selected={{ color: useColorModeValue("black", "white") }}
-      color="gray.500"
-      overflow="visible"
-    >
-      <Heading
-        whiteSpace="nowrap"
-        noOfLines={1}
-        fontSize={{ base: "lg", md: "xl" }}
-      >
-        {children}
-      </Heading>
-    </Tab>
-  );
-};
 
 export default function Profile({ address }: { address?: string }) {
   const { user } = useSelector(selectProfile);
@@ -65,7 +48,11 @@ export default function Profile({ address }: { address?: string }) {
   const TABS = [
     {
       title: "NFTs",
-      panel: () => <Nfts owner={viewProfile.address} enableFilter={true} />,
+      panel: () => (
+        <Box w="full" id="main">
+          <Nfts owner={viewProfile.address} enableFilter={true} />
+        </Box>
+      ),
       key: "nfts",
     },
     {
@@ -107,7 +94,7 @@ export default function Profile({ address }: { address?: string }) {
           description={viewProfile.about}
         />
         <Tabs defaultIndex={tabIndex || 0} variant="enclosed" w="full" pt={5}>
-          <TabList p={1} overflow="auto">
+          <TabList  p={1} overflow="auto">
             {TABS.map((t, index) => (
               <CustomTab
                 onClick={() => {

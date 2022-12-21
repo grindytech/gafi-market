@@ -69,9 +69,16 @@ const CollectionItem = ({
   );
 };
 
-export default function NftCollectionsList() {
+export default function NftCollectionsList({
+  nftCollection,
+  disableChange,
+}: {
+  nftCollection?: string;
+  disableChange?: boolean;
+}) {
   const [search, setSearch] = useState<string>();
   const { query, setQuery } = useNftQueryParam();
+  const collectionId = nftCollection || query.collectionId;
   const {
     data,
     isFetching,
@@ -84,11 +91,24 @@ export default function NftCollectionsList() {
   } = useInfiniteQuery(
     ["NftCollectionsList", search],
     async ({ pageParam = 1 }) => {
-      const rs = await nftService.getNftCollections({
-        search,
-        page: pageParam,
-      });
-      return rs.data;
+      if (!collectionId) {
+        const rs = await nftService.getNftCollections({
+          search,
+          page: pageParam,
+        });
+        return rs.data;
+      } else {
+        const rs = await nftService.getNftCollection(collectionId);
+        return {
+          total: 1,
+          currentPage: 1,
+          size: 1,
+          pages: 1,
+          hasNext: false,
+          hasPrevious: false,
+          items: [rs.data],
+        };
+      }
     },
     {
       getNextPageParam: (lastPage) =>
@@ -107,8 +127,8 @@ export default function NftCollectionsList() {
     [data]
   );
   const selected = useMemo(
-    () => collections.find((c) => c.id === query.collectionId),
-    [collections, query.collectionId]
+    () => collections.find((c) => c.id === collectionId),
+    [collections, collectionId]
   );
 
   const loadingRef = useRef<HTMLDivElement>(null);
@@ -120,28 +140,31 @@ export default function NftCollectionsList() {
   return selected ? (
     <VStack w="full">
       <CollectionItem activated c={selected}>
-        <CloseButton
-          onClick={() => {
-            setQuery({
-              ...query,
-              collectionId: undefined,
-              attributes: [],
-            });
-          }}
-        />
+        {!disableChange && (
+          <CloseButton
+            onClick={() => {
+              setQuery({
+                collectionId: undefined,
+                attributes: undefined,
+              });
+            }}
+          />
+        )}
       </CollectionItem>
       <Properties c={selected} />
     </VStack>
   ) : (
     <VStack w="full">
-      <SearchBox
-        placeHolder="Search collections"
-        value={search}
-        onChange={(v) => {
-          setSearch(v);
-        }}
-        isLoading={isLoading || isFetching}
-      />
+      {!disableChange && (
+        <SearchBox
+          placeHolder="Search collections"
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+          }}
+          isLoading={isLoading || isFetching}
+        />
+      )}
       <VStack w="full" spacing={2} overflow="auto" maxH={300}>
         <VStack w="full">
           {(isLoading || isFetching) &&
@@ -155,7 +178,6 @@ export default function NftCollectionsList() {
                 <CollectionItem
                   onClick={() => {
                     setQuery({
-                      ...query,
                       collectionId: c?.id,
                     });
                   }}

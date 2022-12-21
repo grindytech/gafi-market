@@ -85,7 +85,16 @@ export const NFTS_FILTER_OPTIONS: Option[] = [
 ];
 export const COLLECTIONS_FILTER_OPTIONS: Option[] = ["search", "chain"];
 
-export default function NftsFilter({ options }: { options: Option[] }) {
+export default function NftsFilter({
+  options,
+  collectionProps,
+}: {
+  options: Option[];
+  collectionProps?: {
+    nftCollection?: string;
+    disableChange?: boolean;
+  };
+}) {
   const { query, setQuery } = useNftQueryParam();
   const { chains } = useSelector(selectSystem);
 
@@ -96,7 +105,7 @@ export default function NftsFilter({ options }: { options: Option[] }) {
           placeHolder="Search..."
           value={query.search}
           onChange={(v) => {
-            setQuery({ ...query, search: v });
+            setQuery({ search: v });
           }}
         />
       </HStack>
@@ -111,7 +120,7 @@ export default function NftsFilter({ options }: { options: Option[] }) {
               <RadioCardGroup
                 value={query.chain}
                 onChange={(v: any) => {
-                  setQuery({ ...query, chain: v });
+                  setQuery({ chain: v });
                 }}
                 direction="row"
                 flexWrap="wrap"
@@ -167,7 +176,6 @@ export default function NftsFilter({ options }: { options: Option[] }) {
                 value={query.marketType}
                 onChange={(v: any) => {
                   setQuery({
-                    ...query,
                     marketType: v,
                   });
                 }}
@@ -188,7 +196,10 @@ export default function NftsFilter({ options }: { options: Option[] }) {
               <AccordionIcon />
             </AccordionButton>
             <AccordionPanel overflow="auto" pb={4} p={0}>
-              <NftCollectionsList />
+              <NftCollectionsList
+                disableChange={collectionProps?.disableChange}
+                nftCollection={collectionProps?.nftCollection}
+              />
             </AccordionPanel>
           </AccordionItem>
         )}
@@ -200,8 +211,15 @@ export default function NftsFilter({ options }: { options: Option[] }) {
 export function NftsFilterMobileBtn({
   options,
   children,
+  collectionProps,
   ...rest
-}: { options: Option[] } & ButtonProps) {
+}: {
+  options: Option[];
+  collectionProps?: {
+    nftCollection?: string;
+    disableChange?: boolean;
+  };
+} & ButtonProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { reset } = useNftQueryParam();
   const btnRef = React.useRef();
@@ -224,7 +242,7 @@ export function NftsFilterMobileBtn({
 
           <DrawerBody>
             <Box>
-              <NftsFilter options={options} />
+              <NftsFilter collectionProps={collectionProps} options={options} />
             </Box>
           </DrawerBody>
 

@@ -45,14 +45,13 @@ export default function Collections() {
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", JSON.stringify(query)],
+    ["Nfts", query],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNftCollections({
-        desc: query.desc as "desc" | "asc",
-        orderBy: query.orderBy,
+        desc: query.sort?.desc as "desc" | "asc",
+        orderBy: query.sort?.orderBy,
         page: pageParam,
         search: query.search,
-        size: query.size,
         chain: query.chain,
         game: query.game,
       });
@@ -174,7 +173,6 @@ export default function Collections() {
               <IconButton
                 isLoading={isFetching}
                 onClick={() => {
-                  setQuery({ ...query, page: 1 });
                   refetch();
                 }}
                 aria-label="refresh"
@@ -223,7 +221,7 @@ export default function Collections() {
                 {!isLoading &&
                   nftCollections.map((c) => {
                     return c ? (
-                      <NextLink key={c.id} href={`/collection/${c.id}`}>
+                      <NextLink key={c.id} href={`/collection/${c.key}`}>
                         <NftCollectionCard collection={c} />
                       </NextLink>
                     ) : (

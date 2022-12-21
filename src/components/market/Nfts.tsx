@@ -31,19 +31,25 @@ export default function Nfts({
   owner,
   enableFilter,
   hideLoadMore,
-  size,
+  row,
   status,
+  nftCollection,
 }: {
   owner?: string;
   enableFilter?: boolean;
   hideLoadMore?: boolean;
-  size?: number;
+  row?: number;
   status?: MarketType;
+  nftCollection?: string;
 }) {
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
   const containerRef = useRef(null);
+  const col = useBreakpointValue(
+    showFilter && md ? [2, 3, 3, 3, 5] : [2, 3, 4, 5, 6]
+  );
+  const size = (row || 3) * col;
   const {
     query,
     setQuery,
@@ -60,17 +66,17 @@ export default function Nfts({
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", JSON.stringify(query), owner],
+    ["Nfts", query, owner, nftCollection, status, size, hideLoadMore],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNfts({
-        desc: query.desc as "desc" | "asc",
-        orderBy: query.orderBy,
+        desc: query.sort?.desc as "desc" | "asc",
+        orderBy: query.sort?.orderBy,
         page: pageParam,
         search: query.search,
-        size: size || query.size,
+        size: size,
         attributes: query.attributes,
         chain: query.chain,
-        collectionId: query.collectionId,
+        collectionId: nftCollection || query.collectionId,
         game: query.game,
         marketType: status || (query.marketType as MarketType),
         maxPrice: query.maxPrice,
@@ -128,7 +134,15 @@ export default function Nfts({
             mr={3}
             overflow="hidden"
           >
-            <NftsFilter options={NFTS_FILTER_OPTIONS} />
+            <NftsFilter
+              collectionProps={
+                nftCollection && {
+                  disableChange: true,
+                  nftCollection: nftCollection,
+                }
+              }
+              options={NFTS_FILTER_OPTIONS}
+            />
           </Box>
         )}
         <VStack w="full" p={0}>
@@ -173,6 +187,12 @@ export default function Nfts({
                 )}
                 {!md && (
                   <NftsFilterMobileBtn
+                    collectionProps={
+                      nftCollection && {
+                        disableChange: true,
+                        nftCollection: nftCollection,
+                      }
+                    }
                     options={NFTS_FILTER_OPTIONS}
                     lineHeight="base"
                   >
@@ -203,7 +223,6 @@ export default function Nfts({
                 <IconButton
                   isLoading={isFetching}
                   onClick={() => {
-                    setQuery({ ...query, page: 1 });
                     refetch();
                   }}
                   aria-label="refresh"
@@ -247,7 +266,7 @@ export default function Nfts({
                 ref={containerRef}
                 justifyContent="center"
                 w="full"
-                columns={showFilter && md ? [2, 3, 3, 3, 5] : [2, 3, 4, 5, 6]}
+                columns={col}
                 gap="15px"
                 px={1}
               >
@@ -279,13 +298,13 @@ export default function Nfts({
 
                 {(isLoading || isFetching) &&
                   marketNfts.length === 0 &&
-                  Array.from(Array(12).keys()).map((k) => (
+                  Array.from(Array(col).keys()).map((k) => (
                     <NftCardMarket loading key={`nft-template-${k}`} />
                   ))}
 
                 {hasNextPage &&
                   (isFetchingNextPage ? (
-                    Array.from(Array(6).keys()).map((k) => (
+                    Array.from(Array(col).keys()).map((k) => (
                       <NftCardMarket loading key={`nft-template-${k}`} />
                     ))
                   ) : (

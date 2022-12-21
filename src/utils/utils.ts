@@ -198,3 +198,6 @@ export function getUserName(user: UserDto, you?: string) {
     ? user?.username
     : shorten(user?.address || "", 6, 4);
 }
+
+export const toFindDuplicates = (arr: any[]) =>
+  arr.filter((item, index) => arr.indexOf(item) !== index);

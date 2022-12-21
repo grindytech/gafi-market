@@ -21,7 +21,7 @@ export default function NftExplore() {
           View all
         </Button>
       </HStack>
-      <Nfts hideLoadMore={true} size={20} />
+      <Nfts hideLoadMore={true} row={3} />
     </VStack>
   );
 }

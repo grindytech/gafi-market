@@ -1,6 +1,7 @@
 import { AttributeMap } from "./AttributeMap";
 import { BaseDocumentDto } from "./BaseDocumentDto";
 import { ChainDto } from "./ChainDto";
+import { Socials } from "./Socials";
 
 export class NftCollectionDto extends BaseDocumentDto {
   name: string;
@@ -13,4 +14,5 @@ export class NftCollectionDto extends BaseDocumentDto {
   chain: ChainDto;
   description: string;
   featureImage: string;
+  socials: Socials;
 }

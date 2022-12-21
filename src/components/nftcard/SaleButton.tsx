@@ -21,24 +21,34 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import * as yup from "yup";
 import { web3Inject } from "../../contracts";
 import erc721Contract from "../../contracts/erc721.contract";
-import useCustomToast from "../../hooks/useCustomToast";
 import useSwal from "../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
+import useYupValidationResolver from "../../hooks/useYupValidationResolver";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import useCustomColors from "../../theme/useCustomColors";
 import { convertToContractValue, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
+
+const validationSchema = yup.object({
+  price: yup
+    .number()
+    .transform((value) => (isNaN(value) ? undefined : value))
+    .required("Required")
+    .moreThan(0)
+    .max(999999999),
+});
 
 export default function SaleButton({
   nft,
@@ -46,35 +56,26 @@ export default function SaleButton({
   onSuccess,
   ...rest
 }: ButtonProps & { nft: NftDto; onSuccess?: () => void }) {
+  const resolver = useYupValidationResolver(validationSchema);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    watch,
+  } = useForm({ resolver });
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [errorMsg, setErrorMsg] = useState<string>();
-  const [price, setPrice] = useState<string>();
-  const [isFirst, setIsFirst] = useState(true);
   const [paymentToken, setPaymentToken] = useState<PaymentToken>();
   const [marketFee, setMarketFee] = useState(0.05);
   const [collectionOwnerFee, setCollectionOwnerFee] = useState(0.0);
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
-  const toast = useCustomToast();
-  const { borderColor } = useCustomColors();
   const [period, setPeriod] = useState(SalePeriod.Week);
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: !!paymentToken,
     paymentSymbol: paymentToken?.symbol,
   });
   const { swAlert } = useSwal();
-  useEffect(() => {
-    if (!price) {
-      setErrorMsg("Price is required");
-      return;
-    }
-    if (Number(price) <= 0) {
-      setErrorMsg("Please input a valid number");
-      return;
-    }
-    setErrorMsg(undefined);
-  }, [price]);
-  const createSale = async () => {
+  const createSale = async ({ price }) => {
     try {
       setLoading(true);
       await erc721Contract.approveForAll(
@@ -121,7 +122,6 @@ export default function SaleButton({
       swAlert({ title: "Listing successfully", icon: "success" });
     } catch (error) {
       console.error(error);
-
       swAlert({
         title: "Failed",
         text:
@@ -135,6 +135,7 @@ export default function SaleButton({
       setLoading(false);
     }
   };
+  const price = watch("price");
   const receive = () =>
     Number(price) - Number(price) * (marketFee + collectionOwnerFee);
   return (
@@ -168,7 +169,7 @@ export default function SaleButton({
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>
-              <FormControl isInvalid={!!errorMsg}>
+              <FormControl isInvalid={!!errors.price}>
                 <FormLabel>Price</FormLabel>
                 <InputGroup size="lg">
                   <InputRightElement
@@ -186,6 +187,7 @@ export default function SaleButton({
                     }
                   />
                   <Input
+                    {...register("price")}
                     type="number"
                     variant="filled"
                     placeholder={"0.0"}
@@ -193,20 +195,11 @@ export default function SaleButton({
                       borderColor: "primary.300",
                       borderWidth: "1px",
                     }}
-                    value={price}
-                    onChange={(e) => {
-                      setPrice(e.target.value);
-                    }}
                   />
                 </InputGroup>
-                {!errorMsg ? (
-                  // <FormHelperText>
-                  //   Enter the email you'd like to receive the newsletter on.
-                  // </FormHelperText>
-                  <></>
-                ) : (
-                  <FormErrorMessage>{errorMsg}</FormErrorMessage>
-                )}
+                <FormErrorMessage>
+                  {errors.price?.message?.toString()}
+                </FormErrorMessage>
               </FormControl>
               <FormControl>
                 <FormLabel>Sale period</FormLabel>
@@ -276,9 +269,8 @@ export default function SaleButton({
               >
                 <PrimaryButton
                   isLoading={loading}
-                  onClick={createSale}
+                  onClick={handleSubmit(createSale)}
                   w="full"
-                  disabled={errorMsg}
                 >
                   Confirm
                 </PrimaryButton>

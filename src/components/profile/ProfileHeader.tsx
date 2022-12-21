@@ -77,7 +77,13 @@ export default function ProfileHeader({
           </VStack>
         </Box>
       </Box>
-      <VStack position="relative" px={3} pt={3} w="full" alignItems="start">
+      <VStack
+        position="relative"
+        px={[3, 5]}
+        pt={3}
+        w="full"
+        alignItems="start"
+      >
         <Box position="absolute" px={3} left={0} top={-20}>
           <Avatar
             size={"xl"}
@@ -118,7 +124,14 @@ export default function ProfileHeader({
                 <Text color="gray">{shorten(address, 5, 3)}</Text>
               </Button>
             </HStack>
-            {description && <Text size="sm">{description}</Text>}
+
+            {description && (
+              <Box pt={3}>
+                <Text color="gray.400" size="sm">
+                  {description}
+                </Text>
+              </Box>
+            )}
           </VStack>
           {children}
         </Stack>

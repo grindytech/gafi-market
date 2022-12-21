@@ -103,8 +103,8 @@ export default function OfferMade({
   return (
     <VStack w="full">
       {isEmpty && (
-        <Box w="full">
-          <EmptyState msg="No histories found" />
+        <Box w="full" py={10}>
+          <EmptyState msg="No offers found" />
         </Box>
       )}
       {isError && (

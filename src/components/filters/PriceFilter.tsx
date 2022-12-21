@@ -50,7 +50,6 @@ export default function PriceFilter() {
       <Button
         onClick={() => {
           setQuery({
-            ...query,
             minPrice: min ? Number(min) : undefined,
             maxPrice: max ? Number(max) : undefined,
             paymentTokenId: tokenId,

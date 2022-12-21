@@ -11,49 +11,28 @@ export default function Sort({ option }: { option: "nft" | "collection" }) {
       label: "Newest",
       onClick: () => {
         setQuery({
-          ...query,
-          orderBy: "updatedAt",
-          desc: "desc",
-          sort: 0,
-          marketType: "",
+          sort: { orderBy: "updatedAt", desc: "desc" },
         });
       },
-    },
-    {
-      label: "Recently listed",
-      onClick: () => {
-        setQuery({
-          ...query,
-          orderBy: "updatedAt",
-          desc: "desc",
-          marketType: MarketType.OnSale,
-          sort: 1,
-        });
-      },
+      key: "updatedAt_desc",
     },
     {
       label: "Price: low to high",
       onClick: () => {
         setQuery({
-          ...query,
-          orderBy: "price",
-          desc: "asc",
-          marketType: MarketType.OnSale,
-          sort: 2,
+          sort: { orderBy: "price", desc: "asc" },
         });
       },
+      key: "price_asc",
     },
     {
       label: "Price: high to low",
       onClick: () => {
         setQuery({
-          ...query,
-          orderBy: "price",
-          desc: "desc",
-          marketType: MarketType.OnSale,
-          sort: 3,
+          sort: { orderBy: "price", desc: "desc" },
         });
       },
+      key: "price_desc",
     },
   ];
   const OPTIONS_COLLECTION = [
@@ -61,23 +40,27 @@ export default function Sort({ option }: { option: "nft" | "collection" }) {
       label: "Newest",
       onClick: () => {
         setQuery({
-          ...query,
-          orderBy: "updatedAt",
-          desc: "desc",
-          sort: 0,
-          marketType: "",
+          sort: { orderBy: "updatedAt", desc: "desc" },
         });
       },
+      key: "updatedAt_desc",
     },
   ];
   const options = useMemo(
     () => (option === "nft" ? OPTIONS : OPTIONS_COLLECTION),
     [option]
   );
+  const currentOption = useMemo(
+    () =>
+      options.find(
+        (o) => o.key === `${query.sort?.orderBy}_${query.sort?.desc}`
+      ) || options[0],
+    [options, query.sort]
+  );
   return (
     <Menu>
       <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-        {options[query.sort || 0].label}
+        {currentOption?.label}
       </MenuButton>
       <MenuList zIndex={99}>
         {options.map((o, index) => (

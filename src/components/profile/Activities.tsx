@@ -37,7 +37,13 @@ import { getUserName, numeralFormat } from "../../utils/utils";
 import EmptyState, { ErrorState } from "../EmptyState";
 import Skeleton from "../Skeleton";
 
-export default function UserActivities({ address }: { address: string }) {
+export default function UserActivities({
+  address,
+  collection,
+}: {
+  address?: string;
+  collection?: string;
+}) {
   const {
     data,
     isFetching,
@@ -48,13 +54,14 @@ export default function UserActivities({ address }: { address: string }) {
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["NftHistory", address],
+    ["NftHistory", address, collection],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getHistories({
         page: pageParam,
         orderBy: "createdAt",
         desc: "desc",
         userAddress: address,
+        nftCollection: collection,
         type: [
           HistoryType.Burn,
           HistoryType.Sale,
@@ -65,7 +72,7 @@ export default function UserActivities({ address }: { address: string }) {
       return rs.data;
     },
     {
-      enabled: !!address,
+      enabled: !!address || !!collection,
       getNextPageParam: (lastPage) =>
         lastPage.hasNext ? lastPage.currentPage + 1 : undefined,
       getPreviousPageParam: (firstPage) =>
@@ -120,9 +127,9 @@ export default function UserActivities({ address }: { address: string }) {
         </Box>
       )}
 
-      {!isLoading && md && (
+      {!isLoading && md && !isEmpty && !isError && (
         <TableContainer overflow="auto" w="full">
-          <Table>
+          <Table variant='simple'>
             <Thead>
               <Tr>
                 <Th>Item</Th>
