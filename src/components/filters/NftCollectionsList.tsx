@@ -191,7 +191,7 @@ export default function NftCollectionsList({
             <Text textColor="gray">No collections found</Text>
           )}
         </VStack>
-        <div ref={loadingRef} />
+        {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}
         <Box my={3}>
           {hasNextPage && (isFetchingNextPage ? <CircularProgress /> : <></>)}
         </Box>

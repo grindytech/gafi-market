@@ -201,3 +201,16 @@ export function getUserName(user: UserDto, you?: string) {
 
 export const toFindDuplicates = (arr: any[]) =>
   arr.filter((item, index) => arr.indexOf(item) !== index);
+
+export function checkIfFilesAreTooBig(files?: [File], mb = 5): boolean {
+  let valid = true;
+  if (files) {
+    Object.values(files).map((file) => {
+      const size = file.size / 1024 / 1024;
+      if (size > mb) {
+        valid = false;
+      }
+    });
+  }
+  return valid;
+}

@@ -177,7 +177,7 @@ function OfferListItem({
     [user, offer]
   );
   return (
-    <Tr>
+    <Tr className="highlight-hover">
       <Td>
         <Skeleton w="full" isLoaded={!loading}>
           <HStack w="full">

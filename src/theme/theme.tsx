@@ -69,6 +69,15 @@ const styles = {
         display: "none",
       },
     },
+    ".highlight-hover": {
+      transition: "all ease 0.1s",
+      _hover: {
+        bg: "rgba(100,100,100,0.03)",
+        _dark: {
+          bg: "rgba(1,1,1,0.3)",
+        },
+      },
+    },
   },
 };
 
@@ -195,6 +204,22 @@ const Input: ComponentStyleConfig = {
     },
   },
 };
+const Select: ComponentStyleConfig = {
+  variants: {
+    outline: {
+      field: {
+        _focusVisible: {
+          borderColor: "primary.200",
+          boxShadow: "primary.200",
+        },
+        _hover: {
+          borderColor: "primary.200",
+          boxShadow: "primary.200",
+        },
+      },
+    },
+  },
+};
 const TextArea: ComponentStyleConfig = {
   variants: {
     outline: {
@@ -237,6 +262,7 @@ const components = {
   NFTCardImage,
   Input,
   TextArea,
+  Select,
 };
 const theme = extendTheme({
   styles,

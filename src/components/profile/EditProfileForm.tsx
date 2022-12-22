@@ -137,13 +137,13 @@ export default function EditProfileForm() {
           <FormLabel>Name</FormLabel>
           <Input
             defaultValue={profile.name}
-            {...register("name",)}
+            {...register("name")}
             type="text"
             placeholder="Enter your display name"
           />
           {errors.name && (
             <FormErrorMessage>
-              {errors.name.message.toString()}
+              {errors.name?.message?.toString()}
             </FormErrorMessage>
           )}
         </FormControl>

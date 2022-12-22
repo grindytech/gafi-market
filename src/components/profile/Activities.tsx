@@ -129,7 +129,7 @@ export default function UserActivities({
 
       {!isLoading && md && !isEmpty && !isError && (
         <TableContainer overflow="auto" w="full">
-          <Table variant='simple'>
+          <Table variant="simple">
             <Thead>
               <Tr>
                 <Th>Item</Th>
@@ -141,7 +141,10 @@ export default function UserActivities({
             </Thead>
             <Tbody>
               {histories.map((history, index) => (
-                <HistoryItemDesktop key={history.id} history={history} />
+                <HistoryItemDesktop
+                  key={history.id}
+                  history={history}
+                />
               ))}
             </Tbody>
           </Table>
@@ -153,7 +156,7 @@ export default function UserActivities({
         histories.map((h, index) => (
           <>
             {index !== 0 && <Divider />}
-            <Box p={2} w="full" _hover={{ boxShadow: "md" }}>
+            <Box p={2} w="full" className="highlight-hover">
               <HistoryListItem history={h} />
             </Box>
           </>
@@ -183,7 +186,7 @@ function HistoryItemDesktop({
 }) {
   const { user } = useSelector(selectProfile);
   return (
-    <Tr>
+    <Tr className="highlight-hover">
       <Td>
         <Skeleton isLoaded={!loading}>
           <HStack w="full">
@@ -223,9 +226,14 @@ function HistoryItemDesktop({
               >
                 <Text noOfLines={1}>{history?.name}</Text>
               </Link>
-              <Text noOfLines={1} fontSize="xs" color="gray.400">
-                #{history?.tokenId}
-              </Text>
+              <Link
+                as={NextLink}
+                href={`/nft/${history?.nftContract}:${history?.tokenId}`}
+              >
+                <Text noOfLines={1} fontSize="xs" color="gray.400">
+                  #{history?.tokenId}
+                </Text>
+              </Link>
             </VStack>
           </HStack>
         </Skeleton>
@@ -350,9 +358,14 @@ function HistoryListItem({
           >
             <Text noOfLines={1}>{history?.name}</Text>
           </Link>
-          <Text noOfLines={1} fontSize="xs" color="gray.400">
-            #{history?.tokenId}
-          </Text>
+          <Link
+            as={NextLink}
+            href={`/nft/${history?.nftContract}:${history?.tokenId}`}
+          >
+            <Text noOfLines={1} fontSize="xs" color="gray.400">
+              #{history?.tokenId}
+            </Text>
+          </Link>
         </VStack>
       </HStack>
       <VStack w="full" spacing={0}>
