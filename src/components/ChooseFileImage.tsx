@@ -20,6 +20,7 @@ type Props = {
   coverFile: [File];
   children: any;
   rounded?: string;
+  defaultImage?: string;
 };
 export default function ChooseFileImage({
   heigh,
@@ -28,6 +29,7 @@ export default function ChooseFileImage({
   coverFile,
   children,
   rounded,
+  defaultImage,
 }: Props) {
   const [coverBg, setCoverBg] = useState<string>();
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function ChooseFileImage({
                 justifyContent="center"
                 alignItems="center"
                 display="flex"
-                backgroundImage={!error ? coverBg : undefined}
+                backgroundImage={(!error ? coverBg : undefined) || defaultImage}
                 bgRepeat="no-repeat"
                 bgSize="cover"
                 bgPosition="center"

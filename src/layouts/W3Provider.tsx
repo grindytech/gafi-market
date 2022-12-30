@@ -13,7 +13,7 @@ import {
   selectProfile,
   userData,
 } from "../store/profileSlice";
-import { setChains, setPaymentTokens } from "../store/systemSlice";
+import { setChains } from "../store/systemSlice";
 
 export default function W3Provider(props: any) {
   const dispatch = useDispatch();
@@ -44,22 +44,12 @@ export default function W3Provider(props: any) {
       dispatch(login({ accessToken: loginData.accessToken, user: account }));
     }
   };
-
   const { data: chains } = useQuery(
     "chains",
     async () => systemService.getChainSupport(),
     {
       onSuccess: ({ data }) => {
         dispatch(setChains({ chains: data }));
-      },
-    }
-  );
-  const { data: paymentTokens } = useQuery(
-    "paymentTokens",
-    async () => systemService.getPaymentTokens(),
-    {
-      onSuccess: ({ data }) => {
-        dispatch(setPaymentTokens({ paymentTokens: data }));
       },
     }
   );

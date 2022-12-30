@@ -1,6 +1,7 @@
 import { AttributeMap } from "./AttributeMap";
 import { BaseDocumentDto } from "./BaseDocumentDto";
 import { ChainDto } from "./ChainDto";
+import { PaymentToken } from "./PaymentToken.dto";
 import { Socials } from "./Socials";
 
 export class NftCollectionDto extends BaseDocumentDto {
@@ -15,4 +16,9 @@ export class NftCollectionDto extends BaseDocumentDto {
   description: string;
   featureImage: string;
   socials: Socials;
+  paymentTokens: PaymentToken[];
+  autoDetect: boolean;
+  processByWorker: string;
+  enableSendExternalTransfer: boolean;
+  lockTransfer: number;
 }

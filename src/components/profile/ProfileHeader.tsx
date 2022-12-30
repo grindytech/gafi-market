@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import useCustomToast from "../../hooks/useCustomToast";
 import { Socials } from "../../services/types/dtos/Socials";
+import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/utils";
 import Avatar from "../Avatar";
 import ShareButton from "../ShareButton";
@@ -38,6 +39,7 @@ export default function ProfileHeader({
   ...rest
 }: Props & StackProps) {
   const toast = useCustomToast();
+  const {bgColor} = useCustomColors();
   return (
     <VStack w="full" position="relative">
       <Box
@@ -77,15 +79,10 @@ export default function ProfileHeader({
           </VStack>
         </Box>
       </Box>
-      <VStack
-        position="relative"
-        px={[3, 5]}
-        pt={3}
-        w="full"
-        alignItems="start"
-      >
-        <Box position="absolute" px={3} left={0} top={-20}>
+      <VStack position="relative" px={2} pt={4} w="full" alignItems="start">
+        <Box position="absolute" px={2} left={0} bottom={"110%"}>
           <Avatar
+            borderRadius={12}
             size={"xl"}
             jazzicon={{
               diameter: 96,
@@ -93,13 +90,14 @@ export default function ProfileHeader({
             }}
             src={avatar}
             bgColor={useColorModeValue("white", "black")}
-            borderColor={useColorModeValue("primary.50", "primary.700")}
+            borderColor={bgColor}
             borderWidth={1}
           />
         </Box>
         <Stack
-          direction={{ md: "row", base: "column" }}
+          direction="column"
           alignItems="start"
+          justifyContent="space-between"
           w="full"
           {...rest}
         >
