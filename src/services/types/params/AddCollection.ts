@@ -4,7 +4,7 @@ export class AddCollectionDto {
   nftContract: string;
   game?: string;
   chain: string;
-  paymentToken: string[];
+  paymentTokens: string[];
   status: "active" | "deActive";
   avatar: File;
   cover: File;
@@ -13,4 +13,6 @@ export class AddCollectionDto {
   autoDetect?: boolean;
   enableSendExternalTransfer?: boolean;
   lockTransfer?: number; //in seconds
+  description?: string;
+  owners?: string[];
 }

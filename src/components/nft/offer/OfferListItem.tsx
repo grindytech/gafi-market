@@ -119,7 +119,6 @@ export default function OfferListItem({
                     await nftService.acceptOffer(offer.id);
                     offer.status = OfferStatus.accepted;
                     refetch();
-                    debugger;
                   }}
                   color="green.300"
                   size="xs"

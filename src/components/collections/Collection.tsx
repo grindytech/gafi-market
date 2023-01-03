@@ -3,6 +3,7 @@ import {
   Button,
   HStack,
   Link,
+  SimpleGrid,
   TabList,
   TabPanel,
   TabPanels,
@@ -78,14 +79,9 @@ export default function Collection({ id }: { id: string }) {
           username={collection.key}
         >
           <Box pt={3}>
-            <HStack rounded="lg" bg={borderColor}>
+            <SimpleGrid columns={[2, 2, 4]} rounded="lg" bg={borderColor}>
               {STATS.map((stat, index) => (
-                <VStack
-                  minW={120}
-                  p={3}
-                  borderLeftWidth={index !== 0 ? 1 : 0}
-                  spacing={0}
-                >
+                <VStack minW={120} p={3} spacing={0}>
                   <Text fontSize="xl" fontWeight="semibold">
                     {stat.value}
                   </Text>
@@ -94,7 +90,7 @@ export default function Collection({ id }: { id: string }) {
                   </Text>
                 </VStack>
               ))}
-            </HStack>
+            </SimpleGrid>
           </Box>
         </ProfileHeader>
         <Tabs defaultIndex={tabIndex || 0} variant="enclosed" w="full" pt={5}>

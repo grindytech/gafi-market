@@ -39,7 +39,7 @@ export default function AdminPageLayout({
           borderWidth={1}
           minW="300px"
           p={3}
-          rounded='lg'
+          rounded="lg"
           w="300px"
           top="75px"
           mr={5}
@@ -50,6 +50,7 @@ export default function AdminPageLayout({
         >
           {links.map((link) => (
             <Link
+              key={`${link.key}`}
               _hover={{
                 color: highlightColor,
               }}

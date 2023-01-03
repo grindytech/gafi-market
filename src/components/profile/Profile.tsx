@@ -49,7 +49,7 @@ export default function Profile({ address }: { address?: string }) {
     {
       title: "NFTs",
       panel: () => (
-        <Box w="full" id="main">
+        <Box w="full">
           <Nfts owner={viewProfile.address} enableFilter={true} />
         </Box>
       ),
@@ -94,7 +94,7 @@ export default function Profile({ address }: { address?: string }) {
           description={viewProfile.about}
         />
         <Tabs defaultIndex={tabIndex || 0} variant="enclosed" w="full" pt={5}>
-          <TabList  p={1} overflow="auto">
+          <TabList p={1} overflow="auto">
             {TABS.map((t, index) => (
               <CustomTab
                 onClick={() => {

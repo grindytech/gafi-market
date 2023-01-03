@@ -6,7 +6,9 @@ import { NftCollectionDto } from "./types/dtos/NftCollectionDto";
 import { NftHistoryDto } from "./types/dtos/NftHistory.dto";
 import { OfferDto } from "./types/dtos/Offer.dto";
 import { PaginationDto } from "./types/dtos/PaginationDto";
+import { TopCollectionDto } from "./types/dtos/TopCollection.dto";
 import { AddCollectionDto } from "./types/params/AddCollection";
+import { BaseQueryParams } from "./types/params/BaseQueryParams";
 import { CreateOfferParams } from "./types/params/CreateOfferParams";
 import { GetHashMessage } from "./types/params/GetHashMessage";
 import { GetHistories } from "./types/params/GetHistories";
@@ -69,6 +71,14 @@ const getNftCollection = async (
   return await client.get(`/market/api/nftcollections/${id}`);
 };
 
+const topCollections = async (
+  params: BaseQueryParams
+): Promise<BaseResult<PaginationDto<TopCollectionDto>>> => {
+  return await client.get(`/market/api/nftcollections/top`, {
+    params,
+  });
+};
+
 const createNftCollection = async (data: AddCollectionDto): Promise<string> => {
   const formData = new FormData();
   for (const k of Object.keys(data)) {
@@ -124,6 +134,7 @@ export default {
   getNftCollection,
   createNftCollection,
   updateNftCollection,
+  topCollections,
 
   getOffers,
 

@@ -39,7 +39,7 @@ export default function ProfileHeader({
   ...rest
 }: Props & StackProps) {
   const toast = useCustomToast();
-  const {bgColor} = useCustomColors();
+  const { bgColor } = useCustomColors();
   return (
     <VStack w="full" position="relative">
       <Box
@@ -63,7 +63,12 @@ export default function ProfileHeader({
           bgPos="center"
         >
           <VStack h="full" w="full" alignItems="start" justifyContent="end">
-            <HStack justifyContent="space-between" p={3} w="full">
+            <HStack
+              justifyContent="space-between"
+              p={3}
+              alignItems="end"
+              w="full"
+            >
               <Box></Box>
               <HStack>
                 <SocialGroup socials={socials} />
@@ -79,58 +84,64 @@ export default function ProfileHeader({
           </VStack>
         </Box>
       </Box>
-      <VStack position="relative" px={2} pt={4} w="full" alignItems="start">
-        <Box position="absolute" px={2} left={0} bottom={"110%"}>
-          <Avatar
-            borderRadius={12}
-            size={"xl"}
-            jazzicon={{
-              diameter: 96,
-              seed: String(address),
-            }}
-            src={avatar}
-            bgColor={useColorModeValue("white", "black")}
-            borderColor={bgColor}
-            borderWidth={1}
-          />
-        </Box>
+      <VStack position="relative" w="full" alignItems="start">
         <Stack
-          direction="column"
+          direction={["column", "row"]}
           alignItems="start"
           justifyContent="space-between"
           w="full"
           {...rest}
         >
-          <VStack alignItems="start" spacing={0}>
-            <Heading fontSize={{ base: "xl", md: "3xl" }}>{name}</Heading>
-            <HStack justifyContent="start" w="full">
-              {username && username !== address && (
-                <Text size="sm">@{username}</Text>
-              )}
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(String(address));
-                  toast.success("Copied!");
+          <VStack alignItems="start">
+            <Stack
+              direction={[ "row"]}
+              justifyContent="end"
+              alignItems="end"
+            >
+              <Avatar
+                // borderRadius={12}
+                size={"xl"}
+                jazzicon={{
+                  diameter: 96,
+                  seed: String(address),
                 }}
-                rightIcon={<CopyIcon color="gray" />}
-                variant="link"
-                _hover={{
-                  textDecoration: "none",
-                }}
-                size="sm"
-              >
-                <Text color="gray">{shorten(address, 5, 3)}</Text>
-              </Button>
-            </HStack>
-
+                src={avatar}
+                bgColor={useColorModeValue("white", "black")}
+                borderColor={bgColor}
+                borderWidth={1}
+              />
+              <VStack pb={1} alignItems="start" spacing={0}>
+                <Heading fontSize={{ base: "xl", md: "3xl" }}>{name}</Heading>
+                <HStack alignItems="center" justifyContent="start" w="full">
+                  {username && username !== address && (
+                    <Text size="sm">@{username}</Text>
+                  )}
+                  <Button
+                    onClick={() => {
+                      navigator.clipboard.writeText(String(address));
+                      toast.success("Copied!");
+                    }}
+                    rightIcon={<CopyIcon color="gray.300" />}
+                    variant="link"
+                    _hover={{
+                      textDecoration: "none",
+                    }}
+                    size="sm"
+                  >
+                    <Text color="gray.300">{shorten(address, 5, 3)}</Text>
+                  </Button>
+                </HStack>
+              </VStack>
+            </Stack>
             {description && (
-              <Box pt={3}>
+              <Box>
                 <Text color="gray.400" size="sm">
                   {description}
                 </Text>
               </Box>
             )}
           </VStack>
+
           {children}
         </Stack>
       </VStack>

@@ -1,10 +1,21 @@
 import { Box, Heading, HStack, VStack } from "@chakra-ui/react";
+import Link from "next/link";
+import { useQuery } from "react-query";
+import nftService from "../../services/nft.service";
+import { HistoryType } from "../../services/types/enum";
 import ScrollSlide from "../hScroll/ScrollSlide";
 import NftCard from "../nftcard/NftCard";
-const IMAGE =
-  "https://i.seadn.io/gae/-u2Nd8nL-zLYfiCLZoXdVq-8KTtRObWGx7TNKsUftIytEnxwt1sYDbUCImXQWPIKxjKyszs96d5HEYQykXzzDRxbOVtb8GpO0_Gb?auto=format&w=1920";
+import NftCardRecentlySold from "../nftcard/NftCardRecentlySold";
 
 export default function RecentlySold() {
+  const { data } = useQuery(["RecentlySold"], async () => {
+    const rs = await nftService.getHistories({
+      type: [HistoryType.Sale],
+      orderBy: "createdAt",
+      desc: "desc",
+    });
+    return rs.data;
+  });
   return (
     <VStack w="full">
       <HStack
@@ -23,10 +34,12 @@ export default function RecentlySold() {
       </HStack>
       <Box w="full" position="relative">
         <ScrollSlide>
-          {Array.from(Array(12).keys()).map((k) => (
-            <Box key={`k-${k}`} w={300} pr={3} pb={5}>
-              <NftCard image={IMAGE} />
-            </Box>
+          {data?.items.map((item, k) => (
+            <Link href={`/nft/${item.nftContract}:${item.tokenId}`}>
+              <Box key={`nft-sold-${item.id}`} w={300} pr={3} pb={5}>
+                <NftCardRecentlySold history={item} />
+              </Box>
+            </Link>
           ))}
         </ScrollSlide>
       </Box>

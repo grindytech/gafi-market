@@ -118,13 +118,13 @@ export default function NftCollectionCard({
                       {vol && (
                         <>
                           <Text>Vol:</Text>
-                          <Text>$300m</Text>
+                          <Text>${vol}</Text>
                         </>
                       )}
                       {floor && (
                         <>
                           <Text>Floor:</Text>
-                          <Text>100HE</Text>
+                          <Text>${floor}</Text>
                         </>
                       )}
                     </HStack>

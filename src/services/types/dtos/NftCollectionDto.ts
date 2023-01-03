@@ -21,4 +21,5 @@ export class NftCollectionDto extends BaseDocumentDto {
   processByWorker: string;
   enableSendExternalTransfer: boolean;
   lockTransfer: number;
+  owner: string[];
 }

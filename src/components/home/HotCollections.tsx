@@ -13,9 +13,14 @@ import { FiArrowRight } from "react-icons/fi";
 import Icons from "../../images";
 import ScrollSlide from "../hScroll/ScrollSlide";
 import NftCollectionCard from "../collections/NftCollectionCard";
+import { useQuery } from "react-query";
+import nftService from "../../services/nft.service";
 export default function HotCollections() {
   const sliderBox = useStyleConfig("SliderBox");
-
+  const { data } = useQuery(["HotCollections"], async () => {
+    const rs = await nftService.topCollections({});
+    return rs.data;
+  });
   return (
     <VStack w="full">
       <HStack
@@ -32,26 +37,24 @@ export default function HotCollections() {
                 <Icons.Fire />
               </Icon>
             </HStack>
-            {/* <Button
-              className="right-arrow-btn"
-              size="sm"
-              rightIcon={<FiArrowRight className="right-arrow-icon" />}
-              textTransform="uppercase"
-              as={NextLink}
-              href="/games"
-            >
-              View all
-            </Button> */}
           </HStack>
         </Heading>
       </HStack>
       <Box w="full" position="relative" __css={sliderBox}>
         <ScrollSlide>
-          {Array.from(Array(12).keys()).map((k) => (
+          {data?.items.map((c, k) => (
             <Box py={3} pr={3}>
-              <Link href="#" key={`TopCollection-${k + 1}`}>
+              <Link
+                href={`/collection/${c.nftCollectionInfo.key}`}
+                key={`TopCollection-${c.nftCollectionInfo.id}`}
+              >
                 <Box w="300px" maxW="80vw">
-                  <NftCollectionCard top={k + 1} />
+                  <NftCollectionCard
+                    collection={c.nftCollectionInfo}
+                    floor={c.floorPrice}
+                    vol={c.totalVol}
+                    top={k + 1}
+                  />
                 </Box>
               </Link>
             </Box>

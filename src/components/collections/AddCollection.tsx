@@ -19,13 +19,13 @@ import {
   TagCloseButton,
   TagLabel,
   Text,
+  Textarea,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiPlus } from "react-icons/fi";
-import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import * as yup from "yup";
 import useSwal from "../../hooks/useSwal";
@@ -60,6 +60,8 @@ const validationSchema = yup.object({
       checkIfFilesAreTooBig(files, 5)
     ),
   name: yup.string().required("Name is required").max(200),
+  description: yup.string().required("Description is required").max(200),
+  owner: yup.string().required("Owner address is required").max(200),
   alias: yup.string().required("Short url is required").max(200),
   nftContract: yup.string().required("NFT contract is required").max(200),
   chain: yup.string().required("Chain is required"),
@@ -91,7 +93,7 @@ export default function AddCollection({
     watch,
     reset,
   } = useForm({
-    ...resolver,
+    resolver,
     defaultValues: {
       cover: undefined,
       avatar: undefined,
@@ -105,6 +107,8 @@ export default function AddCollection({
       autoDetect: collection?.autoDetect,
       enableSendExternalTransfer: collection?.enableSendExternalTransfer,
       lockTransfer: collection?.lockTransfer,
+      description: collection?.description,
+      owner: collection?.owner ? collection?.owner[0] : undefined,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -124,6 +128,8 @@ export default function AddCollection({
     autoDetect,
     enableSendExternalTransfer,
     lockTransfer,
+    description,
+    owner,
   }) => {
     try {
       setLoading(true);
@@ -137,12 +143,14 @@ export default function AddCollection({
         nftContract,
         game,
         chain,
-        paymentToken: payment,
+        paymentTokens: payment,
         status: "active",
         processByWorker,
         autoDetect,
         enableSendExternalTransfer,
         lockTransfer,
+        description,
+        owners: [owner],
       };
       if (!edit) {
         await nftService.createNftCollection(body);
@@ -296,11 +304,31 @@ export default function AddCollection({
           {errors.nftContract?.message?.toString()}
         </FormErrorMessage>
       </FormControl>
+      <FormControl isRequired isInvalid={!!errors.owner}>
+        <FormLabel>Owner address</FormLabel>
+        <Input
+          {...register("owner")}
+          type="text"
+          placeholder="Enter owner address"
+          defaultValue={collection?.owner ? collection?.owner[0] : undefined}
+          disabled={!!(collection?.owner && collection?.owner[0])}
+        />
+        <FormErrorMessage>{errors.owner?.message?.toString()}</FormErrorMessage>
+      </FormControl>
+      <FormControl isRequired isInvalid={!!errors.description}>
+        <FormLabel>Description</FormLabel>
+        <Textarea {...register("description")} placeholder="About collection" />
+        <FormErrorMessage>
+          {errors.description?.message?.toString()}
+        </FormErrorMessage>
+      </FormControl>
       <FormControl isRequired isInvalid={!!errors.chain}>
         <FormLabel>Chain</FormLabel>
         <Select {...register("chain")}>
           {chains.map((c, index) => (
-            <option value={c.id}>{c.name}</option>
+            <option key={`${c.id}-${c.name}`} value={c.id}>
+              {c.name}
+            </option>
           ))}
         </Select>
         <FormErrorMessage>{errors.chain?.message?.toString()}</FormErrorMessage>
@@ -424,7 +452,7 @@ export default function AddCollection({
       </FormControl>
 
       <PrimaryButton isLoading={loading} onClick={handleSubmit(onSubmit)}>
-        Submit
+        {edit ? "Edit" : "Create"}
       </PrimaryButton>
     </VStack>
   );
