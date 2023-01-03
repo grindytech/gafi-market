@@ -1,11 +1,8 @@
 import {
-  Tab,
-  useColorModeValue,
-  Heading,
-  HeadingProps,
+  Heading, Tab, TabProps, useColorModeValue
 } from "@chakra-ui/react";
 
-const CustomTab = ({ children, ...rest }: HeadingProps) => {
+const CustomTab = ({ children, ...rest }: TabProps) => {
   return (
     <Tab
       {...rest}
