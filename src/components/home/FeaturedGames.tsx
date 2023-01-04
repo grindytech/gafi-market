@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  Heading,
-  HStack,
-  Icon,
-  useStyleConfig,
-  VStack,
-} from "@chakra-ui/react";
-import NextLink from "next/link";
-import { FiArrowRight } from "react-icons/fi";
-import Icons from "../../images";
+import { Box, Heading, HStack, useStyleConfig, VStack } from "@chakra-ui/react";
 import GameCard from "../game/GameCard";
 import ScrollSlide from "../hScroll/ScrollSlide";
 export default function FeaturedGames() {

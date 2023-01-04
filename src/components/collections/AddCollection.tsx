@@ -66,7 +66,7 @@ const validationSchema = yup.object({
   nftContract: yup.string().required("NFT contract is required").max(200),
   chain: yup.string().required("Chain is required"),
   paymentTokens: yup.string().required("Payment token is required"),
-  processByWorker: yup.string().notRequired(),
+  // processByWorker: yup.string().notRequired(),
   autoDetect: yup.boolean().notRequired(),
   enableSendExternalTransfer: yup.boolean().notRequired(),
   lockTransfer: yup
@@ -74,6 +74,35 @@ const validationSchema = yup.object({
     .typeError("Must be a number")
     .nullable()
     .transform((_, val) => (isNaN(Number(val)) ? 0 : Number(val))),
+  twitter: yup
+    .string()
+    .max(200)
+    .matches(/^(https:\/\/twitter.com\/).+$/, {
+      message: "Invalid twitter url",
+      excludeEmptyString: true,
+    }),
+  facebook: yup
+    .string()
+    .max(200)
+    .matches(/^(https:\/\/facebook.com\/).+$/, {
+      message: "Invalid facebook url",
+      excludeEmptyString: true,
+    }),
+  discord: yup
+    .string()
+    .max(200)
+    .matches(/^(https:\/\/discord.com\/).+$/, {
+      message: "Invalid discord url",
+      excludeEmptyString: true,
+    }),
+  telegram: yup
+    .string()
+    .max(200)
+    .matches(/^(https:\/\/t.me\/).+$/, {
+      message: "Invalid telegram url",
+      excludeEmptyString: true,
+    }),
+  website: yup.string().max(200).url(),
 });
 export default function AddCollection({
   collection,
@@ -103,12 +132,12 @@ export default function AddCollection({
       nftContract: collection?.nftContract,
       chain: collection?.chain.id,
       paymentTokens: collection?.paymentTokens?.join(","),
-      processByWorker: collection?.processByWorker,
+      // processByWorker: collection?.processByWorker,
       autoDetect: collection?.autoDetect,
       enableSendExternalTransfer: collection?.enableSendExternalTransfer,
       lockTransfer: collection?.lockTransfer,
       description: collection?.description,
-      owner: collection?.owner ? collection?.owner[0] : undefined,
+      owner: collection?.owners ? collection?.owners[0] : undefined,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -124,7 +153,7 @@ export default function AddCollection({
     game,
     chain,
     paymentTokens,
-    processByWorker,
+    // processByWorker,
     autoDetect,
     enableSendExternalTransfer,
     lockTransfer,
@@ -145,7 +174,7 @@ export default function AddCollection({
         chain,
         paymentTokens: payment,
         status: "active",
-        processByWorker,
+        // processByWorker,
         autoDetect,
         enableSendExternalTransfer,
         lockTransfer,
@@ -157,7 +186,6 @@ export default function AddCollection({
       } else {
         await nftService.updateNftCollection(collection.id, body);
       }
-      reset();
       swAlert({
         title: "COMPLETE",
         text: `Successfully!`,
@@ -186,11 +214,11 @@ export default function AddCollection({
   }, [paymentTokens]);
   useEffect(() => {
     setPaymentTokens([]);
-    setValue("processByWorker", chains.find((c) => c.id === chain)?.name);
+    // setValue("processByWorker", chains.find((c) => c.id === chain)?.name);
   }, [chain]);
   useEffect(() => {
     if (collection) {
-      setPaymentTokens(collection?.paymentTokens || []);
+      setPaymentTokens((collection?.paymentTokens as PaymentToken[]) || []);
       collection?.chain && setValue("chain", collection?.chain.id);
     }
   }, [collection]);
@@ -227,7 +255,7 @@ export default function AddCollection({
           images in 600x400 resolution. Max 5 MB in JPEG format
         </FormHelperText>
         <ChooseFileImage
-          defaultImage={collection?.featureImage}
+          defaultImage={collection?.featuredImage}
           heigh="66%"
           maxW="300px"
           error={errors.featuredImage?.message?.toString()}
@@ -310,8 +338,8 @@ export default function AddCollection({
           {...register("owner")}
           type="text"
           placeholder="Enter owner address"
-          defaultValue={collection?.owner ? collection?.owner[0] : undefined}
-          disabled={!!(collection?.owner && collection?.owner[0])}
+          defaultValue={collection?.owners ? collection?.owners[0] : undefined}
+          // disabled={!!(collection?.owners && collection?.owners[0])}
         />
         <FormErrorMessage>{errors.owner?.message?.toString()}</FormErrorMessage>
       </FormControl>
@@ -373,7 +401,12 @@ export default function AddCollection({
                 chain={chain}
                 selected={paymentTokens}
                 onChange={(p) => {
-                  setPaymentTokens(Array.from([...paymentTokens, p]));
+                  setPaymentTokens(
+                    Array.from([
+                      ...paymentTokens.filter((token) => token.id !== p.id),
+                      p,
+                    ])
+                  );
                 }}
               />
             </MenuList>
@@ -403,7 +436,7 @@ export default function AddCollection({
           {errors.autoDetect?.message?.toString()}
         </FormErrorMessage>
       </FormControl>
-      <FormControl isInvalid={!!errors.processByWorker}>
+      {/* <FormControl isInvalid={!!errors.processByWorker}>
         <FormLabel>Worker process</FormLabel>
         <Input
           defaultValue={collection?.processByWorker}
@@ -418,7 +451,7 @@ export default function AddCollection({
         <FormErrorMessage>
           {errors.processByWorker?.message?.toString()}
         </FormErrorMessage>
-      </FormControl>
+      </FormControl> */}
       <FormControl isInvalid={!!errors.enableSendExternalTransfer}>
         <FormLabel> Enable lock transfer</FormLabel>
         <Checkbox
@@ -452,7 +485,7 @@ export default function AddCollection({
       </FormControl>
 
       <PrimaryButton isLoading={loading} onClick={handleSubmit(onSubmit)}>
-        {edit ? "Edit" : "Create"}
+        {edit ? "Edit collection" : "Create collection"}
       </PrimaryButton>
     </VStack>
   );

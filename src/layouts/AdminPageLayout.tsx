@@ -8,21 +8,27 @@ import {
 import { useQueryParam } from "use-query-params";
 import AddCollection from "../components/collections/AddCollection";
 import Collections from "../components/collections/Collections";
+import AddGame from "../components/game/AddGame";
 type LinkTab = {
   key: string;
   name: string;
   children: any;
 };
 export const ADMIN_LINKS = [
-  {
-    key: "collections",
-    name: "Collections",
-    children: <Collections />,
-  },
+  // {
+  //   key: "collections",
+  //   name: "Collections",
+  //   children: <Collections />,
+  // },
   {
     key: "collection_add",
     name: "Add Collection",
-    children: <AddCollection title="Create collection"/>,
+    children: <AddCollection title="Create collection" />,
+  },
+  {
+    key: "game_add",
+    name: "Add Game",
+    children: <AddGame title="Create game" />,
   },
 ];
 export default function AdminPageLayout({

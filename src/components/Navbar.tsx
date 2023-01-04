@@ -39,10 +39,11 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import React, { useState } from "react";
-import { FiEdit, FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
+import { FiEdit, FiLogIn, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useConnectWallet } from "../connectWallet/useWallet";
 import useCustomToast from "../hooks/useCustomToast";
+import { Roles } from "../services/types/enum";
 import { selectBag } from "../store/bagSlice";
 import { selectProfile } from "../store/profileSlice";
 import useCustomColors from "../theme/useCustomColors";
@@ -70,7 +71,7 @@ export const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
 
 export default function Navbar() {
   const { isOpen, onToggle, onClose } = useDisclosure();
-  const { user } = useSelector(selectProfile);
+  const { user, profile, isLoggedIn } = useSelector(selectProfile);
   const { nav } = useCustomColors();
   const { reset, waitToConnect } = useConnectWallet();
   const [showSearchBox, setShowSearchBox] = useState(false);
@@ -185,6 +186,7 @@ export default function Navbar() {
                         diameter: 31,
                         seed: String(user),
                       }}
+                      src={profile.avatar}
                     />
                   </MenuButton>
                   <MenuList px={2}>
@@ -206,7 +208,13 @@ export default function Navbar() {
                         Edit Profile
                       </MenuItemBtn>
                     </NextLink>
-
+                    {isLoggedIn && profile.roles?.includes(Roles.superAdmin) && (
+                      <NextLink href="/admin">
+                        <MenuItemBtn leftIcon={<FiSettings />}>
+                          Admin dashboard
+                        </MenuItemBtn>
+                      </NextLink>
+                    )}
                     <MenuItemBtn
                       color="gray"
                       leftIcon={<FiLogOut />}
@@ -397,10 +405,7 @@ const MobileNavItem = ({
           />
         )}
       </Link>
-      <Collapse
-        in={isOpen}
-        animateOpacity
-      >
+      <Collapse in={isOpen} animateOpacity>
         <Stack pt={0} mt={0} pl={4} align={"start"}>
           {children &&
             children.map((child) => (

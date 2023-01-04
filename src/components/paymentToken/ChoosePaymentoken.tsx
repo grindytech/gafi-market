@@ -24,9 +24,11 @@ export default function ChoosePaymentToken({
   chain,
   selected,
   onChange,
+  idList,
 }: {
-  chain: string;
+  chain?: string;
   selected: PaymentToken[];
+  idList?: string[];
   onChange: (s: PaymentToken) => void;
 }) {
   const [search, setSearch] = useState<string>();
@@ -45,6 +47,7 @@ export default function ChoosePaymentToken({
       const rs = await systemService.getPaymentTokens({
         chain,
         search,
+        idList,
         page: pageParam,
       });
       return rs.data;

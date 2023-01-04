@@ -14,12 +14,11 @@ export class NftCollectionDto extends BaseDocumentDto {
   verified: boolean;
   chain: ChainDto;
   description: string;
-  featureImage: string;
-  socials: Socials;
-  paymentTokens: PaymentToken[];
+  featuredImage: string;
+  paymentTokens: PaymentToken[] | string[];
   autoDetect: boolean;
   processByWorker: string;
   enableSendExternalTransfer: boolean;
   lockTransfer: number;
-  owner: string[];
+  owners: string[];
 }

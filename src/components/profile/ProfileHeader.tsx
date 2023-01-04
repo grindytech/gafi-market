@@ -84,7 +84,7 @@ export default function ProfileHeader({
           </VStack>
         </Box>
       </Box>
-      <VStack position="relative" w="full" alignItems="start">
+      <VStack w="full" alignItems="start">
         <Stack
           direction={["column", "row"]}
           alignItems="start"
@@ -93,11 +93,7 @@ export default function ProfileHeader({
           {...rest}
         >
           <VStack alignItems="start">
-            <Stack
-              direction={[ "row"]}
-              justifyContent="end"
-              alignItems="end"
-            >
+            <Stack direction={["row"]} justifyContent="end" alignItems="end">
               <Avatar
                 // borderRadius={12}
                 size={"xl"}

@@ -1,9 +1,10 @@
+import { Roles } from "../enum";
 import { BaseDocumentDto } from "./BaseDocumentDto";
 import { Socials } from "./Socials";
 
 export class UserDto extends BaseDocumentDto {
   isVerified?: boolean;
-  roles?: string[];
+  roles?: Roles[];
   nonce?: number;
   username?: string;
   address?: string;

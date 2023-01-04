@@ -4,4 +4,5 @@ export class GetPaymentToken extends BaseQueryParams {
   contractAddress?: string;
   chain?: string;
   symbol?: string;
+  idList?: string[];
 }

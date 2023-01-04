@@ -24,7 +24,7 @@ export enum OfferStatus {
   pending = "pending",
   accepted = "accepted",
   cancelled = "cancelled",
-  expired = "expired"
+  expired = "expired",
 }
 
 export enum HistoryType {
@@ -33,4 +33,9 @@ export enum HistoryType {
   CreateSale = "createSale",
   Sale = "sale",
   Burn = "burn",
+}
+
+export enum Roles {
+  user = "User",
+  superAdmin = "Supper Admin",
 }

@@ -96,7 +96,7 @@ const updateNftCollection = async (
     formData.append(k, data[k]);
   }
   return await client.postForm(
-    `/market/api/nftcollections/${id}/update`,
+    `/market/api/nftcollections/${id}/edit`,
     formData
   );
 };

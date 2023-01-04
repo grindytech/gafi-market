@@ -61,7 +61,7 @@ export default function NftCollectionCard({
                     __css={imageStyles}
                     h="full"
                     w="full"
-                    src={collection?.featureImage || collection?.cover}
+                    src={collection?.featuredImage || collection?.cover}
                   />
                   <Box zIndex={2} p={1} position="absolute" top={0} left={0}>
                     <FloatIconWithText

@@ -121,7 +121,7 @@ export default function NftCardMarket({
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>
           <Skeleton minW={100} height="1em" isLoaded={!loading}>
-            <NextLink href="#">
+            <NextLink href={`/collection/${nft?.nftCollection?.key}`}>
               <HStack spacing={0}>
                 <Box>
                   <Text

@@ -4,7 +4,6 @@ import { useQuery } from "react-query";
 import nftService from "../../services/nft.service";
 import { HistoryType } from "../../services/types/enum";
 import ScrollSlide from "../hScroll/ScrollSlide";
-import NftCard from "../nftcard/NftCard";
 import NftCardRecentlySold from "../nftcard/NftCardRecentlySold";
 
 export default function RecentlySold() {

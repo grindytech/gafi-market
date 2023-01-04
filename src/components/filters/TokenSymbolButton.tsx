@@ -16,10 +16,12 @@ import { useNftQueryParam } from "./useCustomParam";
 export default function TokenSymbolToken({
   onChangeToken,
   chain,
+  idList,
   ...rest
 }: ButtonProps & {
   onChangeToken: (token: PaymentToken) => void;
   chain?: string;
+  idList?: string[];
 }) {
   const { query, setQuery } = useNftQueryParam();
   const [first, setFirst] = useState(true);
@@ -46,6 +48,7 @@ export default function TokenSymbolToken({
       </MenuButton>
       <MenuList>
         <ChoosePaymentToken
+          idList={idList}
           chain={chain}
           selected={[selected]}
           onChange={(p) => {

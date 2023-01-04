@@ -177,11 +177,13 @@ export default function SaleButton({
                     children={
                       <Box w="full">
                         <TokenSymbolToken
+                          chain={nft.chain.id}
                           mr={2}
                           size="sm"
                           onChangeToken={(p) => {
                             setPaymentToken(p);
                           }}
+                          idList={nft.nftCollection.paymentTokens as string[]}
                         />
                       </Box>
                     }

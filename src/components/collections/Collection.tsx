@@ -1,7 +1,9 @@
+import { EditIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   HStack,
+  IconButton,
   Link,
   SimpleGrid,
   TabList,
@@ -12,17 +14,23 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useQuery } from "react-query";
+import { useSelector } from "react-redux";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import nftService from "../../services/nft.service";
+import { UserDto } from "../../services/types/dtos/UserDto";
+import { Roles } from "../../services/types/enum";
+import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/utils";
 import CustomTab from "../CustomTab";
 import Nfts from "../market/Nfts";
 import UserActivities from "../profile/Activities";
 import ProfileHeader from "../profile/ProfileHeader";
+import NextLink from "next/link";
 
 export default function Collection({ id }: { id: string }) {
   const [tab, setTab] = useQueryParam("tab", withDefault(StringParam, "nfts"));
+  const { profile, isLoggedIn } = useSelector(selectProfile);
   const { data: collection, isLoading } = useQuery(
     ["Collection", id],
     async () => {
@@ -74,10 +82,22 @@ export default function Collection({ id }: { id: string }) {
           name={collection.name}
           avatar={collection.avatar}
           cover={collection.cover}
-          socials={collection.socials}
+          // socials={collection.socials}
           description={collection.description}
           username={collection.key}
         >
+          {isLoggedIn && profile.roles?.includes(Roles.superAdmin) && (
+            <NextLink href={`/collection/edit/${collection.key}`}>
+              <IconButton
+                aria-label="edit"
+                position="absolute"
+                top={3}
+                right={3}
+              >
+                <EditIcon />
+              </IconButton>
+            </NextLink>
+          )}
           <Box pt={3}>
             <SimpleGrid columns={[2, 2, 4]} rounded="lg" bg={borderColor}>
               {STATS.map((stat, index) => (

@@ -48,7 +48,7 @@ export default function HotCollections() {
                 href={`/collection/${c.nftCollectionInfo.key}`}
                 key={`TopCollection-${c.nftCollectionInfo.id}`}
               >
-                <Box w="300px" maxW="80vw">
+                <Box w="350px" maxW="80vw">
                   <NftCollectionCard
                     collection={c.nftCollectionInfo}
                     floor={c.floorPrice}
