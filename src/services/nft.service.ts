@@ -1,5 +1,6 @@
 import { client } from "./client";
 import { BaseResult } from "./types/dtos/BaseResult";
+import { GameDto } from "./types/dtos/GameDto";
 import { HashMessageDto } from "./types/dtos/HashMessageDto";
 import { NftDto } from "./types/dtos/Nft.dto";
 import { NftCollectionDto } from "./types/dtos/NftCollectionDto";
@@ -8,8 +9,10 @@ import { OfferDto } from "./types/dtos/Offer.dto";
 import { PaginationDto } from "./types/dtos/PaginationDto";
 import { TopCollectionDto } from "./types/dtos/TopCollection.dto";
 import { AddCollectionDto } from "./types/params/AddCollection";
+import { AddGameParams } from "./types/params/AddGameParams";
 import { BaseQueryParams } from "./types/params/BaseQueryParams";
 import { CreateOfferParams } from "./types/params/CreateOfferParams";
+import { GetGameParams } from "./types/params/GetGamesParams";
 import { GetHashMessage } from "./types/params/GetHashMessage";
 import { GetHistories } from "./types/params/GetHistories";
 import { GetNftCollections } from "./types/params/GetNftCollections";
@@ -119,6 +122,31 @@ const refreshMetaData = async (id: string) => {
   return await client.get(`/market/api/nft/${id}/sync-nft`);
 };
 
+const createGame = async (data: AddGameParams) => {
+  const formData = new FormData();
+  for (const k of Object.keys(data)) {
+    formData.append(k, data[k]);
+  }
+  return await client.postForm(`/market/api/games/create`, formData);
+};
+
+const updateGame = async (id: string, data: AddGameParams) => {
+  const formData = new FormData();
+  for (const k of Object.keys(data)) {
+    formData.append(k, data[k]);
+  }
+  return await client.postForm(`/market/api/games/${id}/update`, formData);
+};
+
+const getGames = async (
+  params: GetGameParams
+): Promise<BaseResult<PaginationDto<GameDto>>> => {
+  return await client.get("/market/api/games", { params });
+};
+const getGame = async (id: string): Promise<BaseResult<GameDto>> => {
+  return await client.get(`/market/api/games/${id}`);
+};
+
 export default {
   getNfts,
   getNft,
@@ -143,4 +171,9 @@ export default {
   getPrice,
 
   refreshMetaData,
+
+  createGame,
+  updateGame,
+  getGames,
+  getGame,
 };

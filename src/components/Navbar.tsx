@@ -116,7 +116,7 @@ export default function Navbar() {
                 fontWeight="bold"
                 textTransform="uppercase"
               >
-                Marketplace
+                Overmint
               </Text>
             </Link>
 
@@ -247,7 +247,7 @@ export default function Navbar() {
                 fontWeight="bold"
                 textTransform="uppercase"
               >
-                Marketplace
+               Overmint
               </Text>
             </Link>
             <DrawerCloseButton />

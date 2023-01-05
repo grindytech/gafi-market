@@ -1,111 +1,113 @@
 import {
   Box,
-  Button,
-  Divider,
   Heading,
   HStack,
   Icon,
   Text,
-  useColorModeValue,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
-import { FiUser } from "react-icons/fi";
+import { HiBadgeCheck } from "react-icons/hi";
+import { GameDto } from "../../services/types/dtos/GameDto";
+import useCustomColors from "../../theme/useCustomColors";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import { ImageWithFallback } from "../LazyImage";
-const IMAGE =
-  "https://liquidifty.imgix.net/QmXSgpjF9SdNz3Rjqs6cTKfGaRRE3iupF6W3iYp9CpCCNW?auto=compress,format";
+import Skeleton from "../Skeleton";
 
-export default function GameCard() {
+export default function GameCard({
+  game,
+  isLoading,
+}: {
+  game?: GameDto;
+  isLoading?: boolean;
+}) {
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
+  const { borderColor } = useCustomColors();
   return (
-    <Box pr={3} pb={5} w="fit-content">
-      <Card p={0} __css={cardStyles}>
-        <CardBody>
-          <Box
-            pos={"relative"}
-            height={"230px"}
-            overflow="hidden"
-            bg={useColorModeValue("gray.600", "gray.800")}
-            rounded="xl"
-            w={400}
-            h={300}
-            maxW="full"
-            border={"1px solid"}
-            borderColor={useColorModeValue("gray.200", "gray.700")}
-          >
-            <ImageWithFallback
-              data-component-name="NFTImage"
-              __css={imageStyles}
-              h="full"
+    <Box w="full" h="full">
+      <Card
+        h="full"
+        w="full"
+        p={1}
+        __css={cardStyles}
+        border="1px solid"
+        borderColor={borderColor}
+      >
+        <CardBody w="full">
+          <VStack spacing={0} pb={1} w="full">
+            <Box
+              pos={"relative"}
+              overflow="hidden"
+              rounded="xl"
               w="full"
-              src={IMAGE}
-            />
-            <VStack
-              pos="absolute"
-              w="full"
-              h="full"
-              top={0}
-              left={0}
-              justifyContent="space-between"
-              alignItems="start"
-              px={2}
-              zIndex={2}
-              color="white"
-              // textShadow="0.1px 0.1px #fff"
-              p={3}
-              // fontFamily="mono"
-              bgGradient={["linear(to-b, rgba(0,0,0,0), rgba(0,0,0,0.3))"]}
+              paddingTop="75%"
+              maxW="full"
             >
-              <Button
-                color="white"
-                colorScheme={"black"}
-                size="xs"
-                alignItems="center"
-                bg="rgba(20,20,20,0.5)"
-                variant="ghost"
-              >
-                <FiUser />
-                <Text lineHeight="1rem">&nbsp;21k Players</Text>
-              </Button>
-              <VStack w="full" alignItems="start">
-                <Text brightness="150%" fontSize="2xl" fontWeight="semibold">
-                  Heroes & Empires
-                </Text>
-                <Divider borderColor="gray.300" />
-                <HStack
-                  w="full"
-                  spacing={2}
-                  fontSize="sm"
-                  fontWeight="semibold"
-                >
-                  <HStack spacing={1}>
-                    <Text color="gray.300">Vol:</Text>
-                    <Text color="gray.50">$100m</Text>
-                  </HStack>
-                  <HStack spacing={1}>
-                    <Text color="gray.300">Sale:</Text>
-                    <Text color="gray.50">3k</Text>
-                  </HStack>
-                  <HStack spacing={1}>
-                    <Text color="gray.300">Sold:</Text>
-                    <Text color="gray.50">3k</Text>
-                  </HStack>
-                </HStack>
-              </VStack>
-            </VStack>
-            {/* <VStack
-              data-component-name="ShowOnHover"
-              pos="absolute"
+              <Skeleton isLoaded={!isLoading}>
+                <Box position="absolute" w="full" h="full" top={0} left={0}>
+                  <ImageWithFallback
+                    data-component-name="NFTImage"
+                    __css={imageStyles}
+                    h="full"
+                    w="full"
+                    src={game?.featuredImage || game?.cover}
+                  />
+                  <Box zIndex={2} p={1} position="absolute" top={0} left={0}>
+                    {/* <FloatIconWithText
+                      h={6}
+                      w={6}
+                      title={collection?.chain.name}
+                    >
+                      <Icon w={4} h={4}>
+                        {Icons.chain[collection?.chain.symbol] ? (
+                          Icons.chain[collection?.chain.symbol]()
+                        ) : (
+                          <></>
+                        )}
+                      </Icon>
+                    </FloatIconWithText> */}
+                  </Box>
+                </Box>
+              </Skeleton>
+            </Box>
+            <HStack
+              pt={3}
+              pb={1}
+              px={1}
+              justifyContent="space-between"
+              position="relative"
               w="full"
-              h="full"
-              bg="rgba(0,0,0,0)"
-              visibility="hidden"
-              zIndex={3}
-            ></VStack> */}
-          </Box>
+            >
+              <VStack overflow="hidden" alignItems="start" spacing={0}>
+                <Skeleton isLoaded={!isLoading}>
+                  <HStack spacing={1}>
+                    <Heading fontSize="lg">{game?.name}</Heading>
+                    {game?.verified && (
+                      <Icon color="primary.500" h={4} w={4}>
+                        <HiBadgeCheck size="25px" />
+                      </Icon>
+                    )}
+                  </HStack>
+                </Skeleton>
+              </VStack>
+            </HStack>
+            {!top && (
+              <Box w="full" px={1} overflow="hidden">
+                <Text
+                  textColor="gray.500"
+                  w="full"
+                  textAlign="left"
+                  fontSize="sm"
+                  noOfLines={2}
+                  height="3em"
+                >
+                  {game?.description}
+                </Text>
+              </Box>
+            )}
+          </VStack>
         </CardBody>
       </Card>
     </Box>

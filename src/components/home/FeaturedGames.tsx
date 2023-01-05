@@ -1,5 +1,5 @@
 import { Box, Heading, HStack, useStyleConfig, VStack } from "@chakra-ui/react";
-import GameCard from "../game/GameCard";
+import GameCard from "../game/FeaturedGameCard";
 import ScrollSlide from "../hScroll/ScrollSlide";
 export default function FeaturedGames() {
   const sliderBox = useStyleConfig("SliderBox");

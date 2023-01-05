@@ -1,6 +1,8 @@
+import { BaseDocumentDto } from "./BaseDocumentDto";
+import { NftCollectionDto } from "./NftCollectionDto";
 import { Socials } from "./Socials";
 
-export class GameDto {
+export class GameDto extends BaseDocumentDto {
   name: string;
   key: string;
   avatar?: string;
@@ -10,4 +12,6 @@ export class GameDto {
   status: "active" | "deActive";
   description?: string;
   socials?: Socials;
+  collections?: NftCollectionDto[] | string[];
+  verified?: boolean;
 }

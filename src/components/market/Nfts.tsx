@@ -34,6 +34,7 @@ export default function Nfts({
   row,
   status,
   nftCollection,
+  game,
 }: {
   owner?: string;
   enableFilter?: boolean;
@@ -41,6 +42,7 @@ export default function Nfts({
   row?: number;
   status?: MarketType;
   nftCollection?: string;
+  game?: string;
 }) {
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
@@ -66,7 +68,7 @@ export default function Nfts({
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", query, owner, nftCollection, status, size, hideLoadMore],
+    ["Nfts", query, owner, nftCollection, status, size, hideLoadMore, game],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNfts({
         desc: query.sort?.desc as "desc" | "asc",
@@ -77,12 +79,12 @@ export default function Nfts({
         attributes: query.attributes,
         chain: query.chain,
         collectionId: nftCollection || query.collectionId,
-        game: query.game,
         marketType: status || (query.marketType as MarketType),
         maxPrice: query.maxPrice,
         minPrice: query.minPrice,
         paymentTokenId: query.paymentTokenId,
         owner: owner,
+        game,
       });
       return rs.data;
     },
@@ -101,7 +103,7 @@ export default function Nfts({
     () => nftsRsp?.pages.flatMap((page) => page.items) || [],
     [nftsRsp]
   );
-
+  console.log(marketNfts);
   const loadingRef = useRef<HTMLDivElement>(null);
   useIntersectionObserver({
     target: loadingRef,
@@ -135,12 +137,11 @@ export default function Nfts({
             overflow="hidden"
           >
             <NftsFilter
-              collectionProps={
-                nftCollection && {
-                  disableChange: true,
-                  nftCollection: nftCollection,
-                }
-              }
+              collectionProps={{
+                disableChange: !!nftCollection,
+                nftCollection,
+                game,
+              }}
               options={NFTS_FILTER_OPTIONS}
             />
           </Box>
@@ -191,6 +192,7 @@ export default function Nfts({
                       nftCollection && {
                         disableChange: true,
                         nftCollection: nftCollection,
+                        game,
                       }
                     }
                     options={NFTS_FILTER_OPTIONS}
@@ -274,7 +276,7 @@ export default function Nfts({
                   marketNfts.map((nft) => {
                     return nft ? (
                       <NextLink
-                        key={nft.id}
+                        key={`${nft.nftContract}:${nft.tokenId}`}
                         href={`/nft/${nft.nftContract}:${nft.tokenId}`}
                       >
                         <NftCardMarket
@@ -288,7 +290,6 @@ export default function Nfts({
                             refetch();
                           }}
                           nft={nft}
-                          key={nft.id}
                         />
                       </NextLink>
                     ) : (

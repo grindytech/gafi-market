@@ -212,7 +212,7 @@ export default function OfferButton({
                           onChangeToken={(p) => {
                             setPaymentToken(p);
                           }}
-                          idList={nft.nftCollection.paymentTokens as string[]}
+                          idList={nft.nftCollection?.paymentTokens as string[]}
                         />
                       </Box>
                     }

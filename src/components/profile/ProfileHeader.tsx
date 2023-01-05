@@ -23,7 +23,7 @@ type Props = {
   avatar?: string;
   name: string;
   socials?: Socials;
-  address: string;
+  address?: string;
   username?: string;
   description?: string;
 };
@@ -39,7 +39,6 @@ export default function ProfileHeader({
   ...rest
 }: Props & StackProps) {
   const toast = useCustomToast();
-  const { bgColor } = useCustomColors();
   return (
     <VStack w="full" position="relative">
       <Box
@@ -95,16 +94,14 @@ export default function ProfileHeader({
           <VStack alignItems="start">
             <Stack direction={["row"]} justifyContent="end" alignItems="end">
               <Avatar
-                // borderRadius={12}
                 size={"xl"}
                 jazzicon={{
                   diameter: 96,
-                  seed: String(address),
+                  seed: String(address || ""),
                 }}
                 src={avatar}
-                bgColor={useColorModeValue("white", "black")}
-                borderColor={bgColor}
-                borderWidth={1}
+                borderColor={"primary.500"}
+                borderWidth={0}
               />
               <VStack pb={1} alignItems="start" spacing={0}>
                 <Heading fontSize={{ base: "xl", md: "3xl" }}>{name}</Heading>
@@ -112,20 +109,22 @@ export default function ProfileHeader({
                   {username && username !== address && (
                     <Text size="sm">@{username}</Text>
                   )}
-                  <Button
-                    onClick={() => {
-                      navigator.clipboard.writeText(String(address));
-                      toast.success("Copied!");
-                    }}
-                    rightIcon={<CopyIcon color="gray.300" />}
-                    variant="link"
-                    _hover={{
-                      textDecoration: "none",
-                    }}
-                    size="sm"
-                  >
-                    <Text color="gray.300">{shorten(address, 5, 3)}</Text>
-                  </Button>
+                  {address && (
+                    <Button
+                      onClick={() => {
+                        navigator.clipboard.writeText(String(address));
+                        toast.success("Copied!");
+                      }}
+                      rightIcon={<CopyIcon color="gray.300" />}
+                      variant="link"
+                      _hover={{
+                        textDecoration: "none",
+                      }}
+                      size="sm"
+                    >
+                      <Text color="gray.300">{shorten(address, 5, 3)}</Text>
+                    </Button>
+                  )}
                 </HStack>
               </VStack>
             </Stack>

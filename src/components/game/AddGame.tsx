@@ -1,20 +1,29 @@
 import {
   Box,
+  Button,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
   Heading,
+  HStack,
+  Icon,
   Input,
   InputGroup,
   InputLeftElement,
+  Menu,
+  MenuButton,
+  MenuList,
   SimpleGrid,
+  Tag,
+  TagCloseButton,
+  TagLabel,
   Text,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   FaTwitter,
@@ -23,13 +32,18 @@ import {
   FaTelegram,
   FaGlobe,
 } from "react-icons/fa";
+import { FiPlus } from "react-icons/fi";
 import * as yup from "yup";
 import useSwal from "../../hooks/useSwal";
 import useYupValidationResolver from "../../hooks/useYupValidationResolver";
+import nftService from "../../services/nft.service";
 import { GameDto } from "../../services/types/dtos/GameDto";
+import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import { AddGameParams } from "../../services/types/params/AddGameParams";
 import { checkIfFilesAreTooBig } from "../../utils/utils";
+import Avatar from "../Avatar";
 import ChooseFileImage from "../ChooseFileImage";
+import ChooseCollections from "../collections/ChooseCollections";
 import PrimaryButton from "../PrimaryButton";
 
 const validationSchema = yup.object({
@@ -52,8 +66,8 @@ const validationSchema = yup.object({
       checkIfFilesAreTooBig(files, 5)
     ),
   name: yup.string().required("Name is required").max(200),
-  description: yup.string().required("Description is required").max(200),
-  owner: yup.string().required("Owner address is required").max(200),
+  description: yup.string().required("Description is required").max(500),
+  owner: yup.string().required("Owner address is required"),
   alias: yup.string().required("Short url is required").max(200),
   collections: yup.string(),
 });
@@ -61,8 +75,9 @@ type Props = {
   game?: GameDto;
   title: string;
   edit?: boolean;
+  onSuccess?: () => void;
 };
-export default function AddGame({ game, title, edit }: Props) {
+export default function AddGame({ game, title, edit, onSuccess }: Props) {
   const resolver = useYupValidationResolver(validationSchema);
   const {
     handleSubmit,
@@ -86,6 +101,7 @@ export default function AddGame({ game, title, edit }: Props) {
       discord: game?.socials?.discord,
       telegram: game?.socials?.telegram,
       website: game?.socials?.website,
+      collections: game?.collections?.join(","),
     },
   });
   const [loading, setLoading] = useState(false);
@@ -95,6 +111,16 @@ export default function AddGame({ game, title, edit }: Props) {
   const avatarFile = watch("avatar");
   const featuredImageFile = watch("featuredImage");
   const shortLinkLeftRef = useRef(null);
+  const [collections, setCollections] = useState<NftCollectionDto[]>([]);
+  useEffect(() => {
+    setValue("collections", collections.map((p) => p.id).join(","));
+  }, [collections]);
+  useEffect(() => {
+    if (game) {
+      setCollections((game?.collections as NftCollectionDto[]) || []);
+    }
+  }, [game]);
+
   const onSubmit = async ({
     cover,
     avatar,
@@ -108,27 +134,36 @@ export default function AddGame({ game, title, edit }: Props) {
     discord,
     telegram,
     website,
+    collections,
   }) => {
     try {
       setLoading(true);
+      const nftCollection = String(collections).split(",");
       const params: AddGameParams = {
+        cover: cover ? cover[0] : undefined,
+        avatar: avatar ? avatar[0] : undefined,
+        featuredImage: featuredImage ? featuredImage[0] : undefined,
         key: alias,
         name,
         owners: [owner],
         status: "active",
-        avatar,
-        cover,
         description,
-        discord,
-        facebook,
-        featuredImage,
-        telegram,
-        twitter,
-        website,
+        collections: nftCollection,
+        socials: JSON.stringify({
+          telegram,
+          twitter,
+          website,
+          discord,
+          facebook,
+        }),
       };
       if (!edit) {
+        await nftService.createGame(params);
       } else {
+        await nftService.updateGame(game.id, params);
       }
+      onSuccess && onSuccess();
+      reset();
       swAlert({
         title: "COMPLETE",
         text: `Successfully!`,
@@ -148,7 +183,7 @@ export default function AddGame({ game, title, edit }: Props) {
   return (
     <VStack spacing={5} w="full" alignItems="start">
       <Heading>{title}</Heading>
-      <VStack>
+      <VStack spacing={5} w="full" alignItems="start">
         <FormControl w="full" isInvalid={!!errors.avatar}>
           <FormLabel>Avatar</FormLabel>
           <FormHelperText mb={3} w="full">
@@ -257,12 +292,101 @@ export default function AddGame({ game, title, edit }: Props) {
             {errors.description?.message?.toString()}
           </FormErrorMessage>
         </FormControl>
+        <FormControl isRequired isInvalid={!!errors.owner}>
+          <FormLabel>Owner address</FormLabel>
+          <Input
+            {...register("owner")}
+            type="text"
+            placeholder="Enter owner address"
+            defaultValue={game?.owners ? game?.owners[0] : undefined}
+            // disabled={!!(collection?.owners && collection?.owners[0])}
+          />
+          <FormErrorMessage>
+            {errors.owner?.message?.toString()}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.collections}>
+          <FormLabel>Game collections</FormLabel>
+          <Box display="inline-block" w="full">
+            {collections.map((c) => (
+              <Tag
+                size="lg"
+                mr={1}
+                my={1}
+                key={c.id}
+                borderRadius="full"
+                variant="solid"
+              >
+                <TagLabel>
+                  <HStack
+                    py={1}
+                    w="full"
+                    justifyContent="start"
+                    alignItems="center"
+                    lineHeight="1em"
+                  >
+                    <Avatar
+                      w="30px"
+                      h="30px"
+                      src={c.avatar}
+                      jazzicon={{
+                        diameter: 30,
+                        seed: c.key||'',
+                      }}
+                    />
+
+                    <VStack fontSize="xs" spacing={0} alignItems="start">
+                      <Text>{c.name}</Text>
+                      <Text color="gray.300">{c.key}</Text>
+                    </VStack>
+                  </HStack>
+                </TagLabel>
+                <TagCloseButton
+                  onClick={() => {
+                    setCollections(
+                      Array.from(collections.filter((item) => item.id !== c.id))
+                    );
+                  }}
+                />
+              </Tag>
+            ))}
+            <Menu>
+              <MenuButton
+                mr={1}
+                my={1}
+                rounded="full"
+                size="md"
+                as={Button}
+                rightIcon={<Icon as={FiPlus} />}
+              >
+                Add
+              </MenuButton>
+              <MenuList>
+                <ChooseCollections
+                  selected={collections}
+                  onChange={(c) => {
+                    setCollections(
+                      Array.from([
+                        ...collections.filter((item) => item.id !== c.id),
+                        c,
+                      ])
+                    );
+                  }}
+                />
+              </MenuList>
+            </Menu>
+          </Box>
+          <Input type="hidden" {...register("collections")} />
+          <FormErrorMessage>
+            {errors.collections?.message?.toString()}
+          </FormErrorMessage>
+        </FormControl>
       </VStack>
       <Box w="full">
         <Text pt={3} fontSize="xl" fontWeight="semibold">
           Social links
         </Text>
-        <SimpleGrid pb={3} spacing={3} w="full" columns={[1, 2]}>
+        <SimpleGrid py={3} spacing={3} w="full" columns={[1, 2]}>
           <FormControl isInvalid={!!errors.twitter}>
             <FormLabel>Twitter</FormLabel>
             <InputGroup>

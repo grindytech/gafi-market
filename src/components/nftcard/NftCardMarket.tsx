@@ -134,10 +134,10 @@ export default function NftCardMarket({
                     fontWeight="semibold"
                     textOverflow="ellipsis"
                   >
-                    {nft?.nftCollection.name}
+                    {nft?.nftCollection?.name}
                   </Text>
                 </Box>
-                {nft?.nftCollection.verified && (
+                {nft?.nftCollection?.verified && (
                   <Icon color="primary.50" h={4} w={4}>
                     <HiBadgeCheck size="25px" />
                   </Icon>

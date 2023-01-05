@@ -60,7 +60,7 @@ export default function Blogs() {
                   p={0}
                   rounded="xl"
                   boxShadow="sm"
-                  border="3px solid"
+                  border="1px solid"
                   borderColor={borderColor}
                 >
                   <CardBody p={0} m={0}>
@@ -70,8 +70,8 @@ export default function Blogs() {
                         overflow="hidden"
                         bg={useColorModeValue("gray.600", "gray.800")}
                         rounded="xl"
-                        w={400}
-                        h={300}
+                        w={300}
+                        h={225}
                         maxW="full"
                         border={"1px solid"}
                         borderColor={useColorModeValue("gray.200", "gray.700")}
@@ -85,10 +85,16 @@ export default function Blogs() {
                         />
                       </Box>
                       <VStack w="full" alignItems="start">
-                        <Text fontSize="lg" fontWeight="semibold">
+                        <Text
+                          title="BEAR MARKET: WHY DID IT HAPPEN?"
+                          noOfLines={2}
+                          fontSize="lg"
+                          fontWeight="semibold"
+                          h="2lg"
+                        >
                           BEAR MARKET: WHY DID IT HAPPEN?
                         </Text>
-                        <Text fontSize="md">
+                        <Text h="rem" fontSize="md" noOfLines={3}>
                           Usually, a bear market causes doubts even among
                           full-fledged investors and traders, not to mention
                           beginners. Hopefully, our tips may assist you in

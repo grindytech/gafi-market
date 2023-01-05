@@ -7,9 +7,6 @@ export class AddGameParams {
   owners: string[];
   status: "active" | "deActive";
   description?: string;
-  facebook?: string;
-  twitter?: string;
-  telegram?: string;
-  discord?: string;
-  website?: string;
+  socials?: string; // Socials;
+  collections?: string[];
 }

@@ -61,7 +61,7 @@ const validationSchema = yup.object({
     ),
   name: yup.string().required("Name is required").max(200),
   description: yup.string().required("Description is required").max(200),
-  owner: yup.string().required("Owner address is required").max(200),
+  owner: yup.string().required("Owner address is required"),
   alias: yup.string().required("Short url is required").max(200),
   nftContract: yup.string().required("NFT contract is required").max(200),
   chain: yup.string().required("Chain is required"),
@@ -108,10 +108,12 @@ export default function AddCollection({
   collection,
   edit,
   title,
+  onSuccess,
 }: {
   collection?: NftCollectionDto;
   edit?: boolean;
   title: string;
+  onSuccess?: () => void;
 }) {
   const resolver = useYupValidationResolver(validationSchema);
   const {
@@ -130,7 +132,7 @@ export default function AddCollection({
       name: collection?.name,
       alias: collection?.key,
       nftContract: collection?.nftContract,
-      chain: collection?.chain.id,
+      chain: collection?.chain?.id,
       paymentTokens: collection?.paymentTokens?.join(","),
       // processByWorker: collection?.processByWorker,
       autoDetect: collection?.autoDetect,
@@ -186,6 +188,8 @@ export default function AddCollection({
       } else {
         await nftService.updateNftCollection(collection.id, body);
       }
+      onSuccess && onSuccess();
+      reset();
       swAlert({
         title: "COMPLETE",
         text: `Successfully!`,
@@ -219,7 +223,7 @@ export default function AddCollection({
   useEffect(() => {
     if (collection) {
       setPaymentTokens((collection?.paymentTokens as PaymentToken[]) || []);
-      collection?.chain && setValue("chain", collection?.chain.id);
+      collection?.chain && setValue("chain", collection?.chain?.id);
     }
   }, [collection]);
   return (

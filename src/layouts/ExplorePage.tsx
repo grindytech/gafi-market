@@ -15,6 +15,7 @@ type LinkTab = {
 export const EXPLORE_LINKS = [
   { href: "/explore/nfts", name: "NFTs" },
   { href: "/explore/collections", name: "Collections" },
+  { href: "/explore/games", name: "Games" },
 ];
 export default function TabPage({
   links,

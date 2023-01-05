@@ -93,6 +93,7 @@ export default function NftsFilter({
   collectionProps?: {
     nftCollection?: string;
     disableChange?: boolean;
+    game?: string;
   };
 }) {
   const { query, setQuery } = useNftQueryParam();
@@ -199,6 +200,7 @@ export default function NftsFilter({
               <NftCollectionsList
                 disableChange={collectionProps?.disableChange}
                 nftCollection={collectionProps?.nftCollection}
+                game={collectionProps?.game}
               />
             </AccordionPanel>
           </AccordionItem>
@@ -218,6 +220,7 @@ export function NftsFilterMobileBtn({
   collectionProps?: {
     nftCollection?: string;
     disableChange?: boolean;
+    game?: string;
   };
 } & ButtonProps) {
   const { isOpen, onClose, onOpen } = useDisclosure();

@@ -1,31 +1,31 @@
 import { Container } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import AddCollection from "../../../components/collections/AddCollection";
+import AddGame from "../../../components/game/AddGame";
 import nftService from "../../../services/nft.service";
 
-export default function CollectionEdit() {
+export default function GameEdit() {
   const router = useRouter();
   const { id } = router.query;
-  const { data: collection, refetch } = useQuery(
+  const { data: game, refetch } = useQuery(
     [],
     async () => {
-      const rs = await nftService.getNftCollection(String(id));
+      const rs = await nftService.getGame(String(id));
       return rs.data;
     },
     {
       enabled: !!id,
     }
   );
-  return collection ? (
+  return game ? (
     <Container maxW="container.sm">
-      <AddCollection
-        key={`${collection.id}-${collection.updatedAt}`}
-        title="Edit collection"
+      <AddGame
+        key={`${game.id}-${game.updatedAt}`}
+        title="Edit game"
         onSuccess={() => {
           refetch();
         }}
-        collection={collection}
+        game={game}
         edit={true}
       />
     </Container>

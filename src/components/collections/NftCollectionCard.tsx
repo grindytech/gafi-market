@@ -36,8 +36,9 @@ export default function NftCollectionCard({
   const imageStyles = useStyleConfig("NFTCardImage");
   const { borderColor } = useCustomColors();
   return (
-    <Box w="full">
+    <Box w="full" h="full">
       <Card
+        h="full"
         w="full"
         p={1}
         __css={cardStyles}
@@ -45,7 +46,7 @@ export default function NftCollectionCard({
         borderColor={borderColor}
       >
         <CardBody w="full">
-          <VStack w="full">
+          <VStack spacing={0} pb={1} w="full">
             <Box
               pos={"relative"}
               overflow="hidden"
@@ -82,63 +83,62 @@ export default function NftCollectionCard({
               </Skeleton>
             </Box>
             <HStack
-              py={1}
+              pt={3}
+              pb={1}
+              px={1}
               justifyContent="space-between"
               position="relative"
               w="full"
             >
-              <HStack justifyContent="start">
-                {/* <Avatar src={IMAGE} borderColor="primary.200" borderWidth={1} /> */}
+              <VStack overflow="hidden" alignItems="start" spacing={0}>
                 <Skeleton isLoaded={!isLoading}>
-                  <Avatar
-                    size="sm"
-                    borderColor="primary.200"
-                    borderWidth={1}
-                    jazzicon={{
-                      diameter: 30,
-                      seed: collection?.nftContract || "",
-                    }}
-                    src={collection?.avatar}
-                  />
+                  <HStack spacing={1}>
+                    <Heading fontSize="lg">{collection?.name}</Heading>
+                    {collection?.verified && (
+                      <Icon color="primary.500" h={4} w={4}>
+                        <HiBadgeCheck size="25px" />
+                      </Icon>
+                    )}
+                  </HStack>
                 </Skeleton>
-
-                <HStack justifyContent="start" spacing={0} alignItems="center">
-                  <VStack alignItems="start" spacing={0}>
-                    <Skeleton isLoaded={!isLoading}>
-                      <HStack spacing={1}>
-                        <Heading fontSize="md">{collection?.name}</Heading>
-                        {collection?.verified && (
-                          <Icon color="primary.500" h={4} w={4}>
-                            <HiBadgeCheck size="25px" />
-                          </Icon>
-                        )}
-                      </HStack>
-                    </Skeleton>
-                    <HStack fontWeight="500" color="gray.400" fontSize="sm">
-                      {vol && (
-                        <>
-                          <Text>Vol:</Text>
-                          <Text>${vol}</Text>
-                        </>
-                      )}
-                      {floor && (
-                        <>
-                          <Text>Floor:</Text>
-                          <Text>${floor}</Text>
-                        </>
-                      )}
-                    </HStack>
-                  </VStack>
+                <HStack spacing={1} fontSize="xs" fontWeight="500">
+                  {/* <Text>{collection?.key} </Text> */}
+                  {vol && (
+                    <>
+                      <Text color="gray.400">Vol:</Text>
+                      <Text color="gray.400">${vol}</Text>
+                    </>
+                  )}
+                  {floor && (
+                    <>
+                      <Text color="gray.400">Floor:</Text>
+                      <Text color="gray.400">${floor}</Text>
+                    </>
+                  )}
                 </HStack>
-              </HStack>
+              </VStack>
               {top && (
-                <Box px={3}>
+                <Box>
                   <Text fontWeight="bold" fontSize="5xl" color="gray.300">
                     {top}
                   </Text>
                 </Box>
               )}
             </HStack>
+            {!top && (
+              <Box w="full" px={1} overflow="hidden">
+                <Text
+                  textColor="gray.500"
+                  w="full"
+                  textAlign="left"
+                  fontSize="sm"
+                  noOfLines={2}
+                  height="3em"
+                >
+                  {collection?.description}
+                </Text>
+              </Box>
+            )}
           </VStack>
         </CardBody>
       </Card>

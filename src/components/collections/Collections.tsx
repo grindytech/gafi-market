@@ -31,7 +31,6 @@ export default function Collections() {
     countFilter,
     reset: resetQuery,
   } = useNftQueryParam();
-  console.log(query);
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
@@ -45,7 +44,7 @@ export default function Collections() {
     isLoading,
     isError,
   } = useInfiniteQuery(
-    ["Nfts", query],
+    ["Collections", query],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getNftCollections({
         desc: query.sort?.desc as "desc" | "asc",

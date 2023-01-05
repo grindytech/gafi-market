@@ -72,12 +72,15 @@ const CollectionItem = ({
 export default function NftCollectionsList({
   nftCollection,
   disableChange,
+  game,
 }: {
   nftCollection?: string;
   disableChange?: boolean;
+  game?: string;
 }) {
   const [search, setSearch] = useState<string>();
   const { query, setQuery } = useNftQueryParam();
+  console.log(game)
   const collectionId = nftCollection || query.collectionId;
   const {
     data,
@@ -89,10 +92,11 @@ export default function NftCollectionsList({
     refetch,
     isLoading,
   } = useInfiniteQuery(
-    ["NftCollectionsList", search],
+    ["NftCollectionsList", search, nftCollection, game],
     async ({ pageParam = 1 }) => {
       if (!collectionId) {
         const rs = await nftService.getNftCollections({
+          game,
           search,
           page: pageParam,
         });
