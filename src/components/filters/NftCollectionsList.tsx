@@ -80,7 +80,6 @@ export default function NftCollectionsList({
 }) {
   const [search, setSearch] = useState<string>();
   const { query, setQuery } = useNftQueryParam();
-  console.log(game)
   const collectionId = nftCollection || query.collectionId;
   const {
     data,
@@ -94,7 +93,7 @@ export default function NftCollectionsList({
   } = useInfiniteQuery(
     ["NftCollectionsList", search, nftCollection, game],
     async ({ pageParam = 1 }) => {
-      if (!collectionId) {
+      if (!nftCollection) {
         const rs = await nftService.getNftCollections({
           game,
           search,
@@ -130,6 +129,7 @@ export default function NftCollectionsList({
     () => data?.pages.flatMap((page) => page.items) || [],
     [data]
   );
+  console.log(collections);
   const selected = useMemo(
     () => collections.find((c) => c.id === collectionId),
     [collections, collectionId]

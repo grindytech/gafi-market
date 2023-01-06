@@ -262,7 +262,7 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
     const newAttrs = Array.from(query.attributes || []).filter(
       (old: GetNftAttributes) => old.key !== attr.key
     );
-    if (!!attr.value) newAttrs.push(attr);
+    if (!!attr.value || !!attr.minNumber) newAttrs.push(attr);
     setQuery({ ...query, attributes: newAttrs });
   };
   const attributesMap = useMemo(() => c.attributesMap, [c, query.attributes]);
@@ -279,22 +279,24 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
         />
         <VStack w="full">
           <Accordion allowMultiple w="full">
-            {attributesMap.map((attr) => (
-              <Box
-                display={
-                  !search ||
-                  attr.key.toLowerCase().includes(search.toLowerCase()) ||
-                  attr.options?.find((option: string) =>
-                    option.toLowerCase().includes(search.toLowerCase())
-                  )
-                    ? "block"
-                    : "none"
-                }
-                key={`${c.id}-${attr.key}-${!!query.attributes}`}
-              >
-                <Property attr={attr} filterOnChange={filterOnChange} />
-              </Box>
-            ))}
+            {attributesMap
+              .sort((a, b) => a.key.localeCompare(b.key))
+              .map((attr) => (
+                <Box
+                  display={
+                    !search ||
+                    attr.key.toLowerCase().includes(search.toLowerCase()) ||
+                    attr.options?.find((option: string) =>
+                      option.toLowerCase().includes(search.toLowerCase())
+                    )
+                      ? "block"
+                      : "none"
+                  }
+                  key={`${c.id}-${attr.key}-${!!query.attributes}`}
+                >
+                  <Property attr={attr} filterOnChange={filterOnChange} />
+                </Box>
+              ))}
           </Accordion>
         </VStack>
       </VStack>

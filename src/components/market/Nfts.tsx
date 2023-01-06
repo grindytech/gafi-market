@@ -103,7 +103,6 @@ export default function Nfts({
     () => nftsRsp?.pages.flatMap((page) => page.items) || [],
     [nftsRsp]
   );
-  console.log(marketNfts);
   const loadingRef = useRef<HTMLDivElement>(null);
   useIntersectionObserver({
     target: loadingRef,

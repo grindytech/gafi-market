@@ -76,7 +76,7 @@ export default function Collection({ id }: { id: string }) {
   ];
   return (
     collection && (
-      <VStack w="full" alignItems="start" spacing={5}>
+      <VStack id="main" w="full" alignItems="start" spacing={5}>
         <ProfileHeader
           address={collection.nftContract}
           name={collection.name}

@@ -21,6 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AxiosResponse } from "axios";
+import { get } from "lodash";
 import NextLink from "next/link";
 import { useMemo, useState } from "react";
 import Countdown from "react-countdown";
@@ -51,6 +52,7 @@ import NftHistory from "./NftHistory";
 import NftViewer from "./NftViewer";
 import NftOffers from "./offer/NftOffers";
 import RefreshMetadataButton from "./RefreshMetadataButton";
+import { STATS } from "./stats";
 
 export default function Detail({ id }: { id: string }) {
   const [errorCode, setErrorCode] = useState(0);
@@ -118,6 +120,7 @@ export default function Detail({ id }: { id: string }) {
                 </Card>
               </Box>
               {md && <NftDetailSection nft={nft} />}
+              {md && <NftStatsSection nft={nft} />}
               {md && <NftHistorySection nft={nft} />}
             </VStack>
             <VStack
@@ -137,6 +140,8 @@ export default function Detail({ id }: { id: string }) {
                 refetch={refetch}
               />
               {!md && <NftDetailSection nft={nft} />}
+              {!md && <NftStatsSection nft={nft} />}
+
               <NftOfferSection
                 key={`NftOfferSection-${loadOfferTime}`}
                 nft={nft}
@@ -208,6 +213,10 @@ const NftOfferSection = ({ nft }: { nft: NftDto }) => {
       </Accordion>
     </Box>
   );
+};
+const NftStatsSection = ({ nft }: { nft: NftDto }) => {
+  const stats = get(STATS, nft.nftCollection.key);
+  return stats ? stats({ nft }) : <></>;
 };
 const NftDetailSection = ({ nft }: { nft: NftDto }) => {
   return (
@@ -363,22 +372,25 @@ const Properties = ({ nft }: { nft: NftDto }) => {
   return (
     <VStack w="full" alignItems="start">
       <SimpleGrid w="full" columns={2} spacing={2}>
-        {nft.attributes.map((attr) => {
-          return (
-            <VStack
-              borderWidth={1}
-              p={3}
-              rounded="xl"
-              borderColor="primary.100"
-              spacing={1}
-            >
-              <Text color="primary.100" fontSize="sm">
-                {attr.key}
-              </Text>
-              <Text fontSize="xl">{attr.value}</Text>
-            </VStack>
-          );
-        })}
+        {nft.attributes
+          .filter((a) => typeof a.value !== "object")
+          .sort((a, b) => a.key.localeCompare(b.key))
+          .map((attr) => {
+            return (
+              <VStack
+                borderWidth={1}
+                p={3}
+                rounded="xl"
+                borderColor="primary.100"
+                spacing={1}
+              >
+                <Text color="primary.100" fontSize="sm">
+                  {attr.key}
+                </Text>
+                <Text fontSize="xl">{String(attr.value)}</Text>
+              </VStack>
+            );
+          })}
       </SimpleGrid>
     </VStack>
   );

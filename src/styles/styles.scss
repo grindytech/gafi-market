@@ -8,11 +8,9 @@
   scrollbar-width: 0; /* Firefox */
 }
 
-
-
 /* Make clicks pass-through */
 #nprogress {
-  --primary-color: #8B55E0; //changing mine to red
+  --primary-color: #8b55e0; //changing mine to red
   pointer-events: none;
 }
 
@@ -41,11 +39,11 @@
   width: 100px;
   height: 100%;
   box-shadow: 0 0 10px var(--primary-color), 0 0 5px var(--primary-color);
-  opacity: 1.0;
+  opacity: 1;
 
   -webkit-transform: rotate(3deg) translate(0px, -4px);
-      -ms-transform: rotate(3deg) translate(0px, -4px);
-          transform: rotate(3deg) translate(0px, -4px);
+  -ms-transform: rotate(3deg) translate(0px, -4px);
+  transform: rotate(3deg) translate(0px, -4px);
 }
 
 /* Remove these to get rid of the spinner */
@@ -69,7 +67,7 @@
   border-radius: 50%;
 
   -webkit-animation: nprogress-spinner 400ms linear infinite;
-          animation: nprogress-spinner 400ms linear infinite;
+  animation: nprogress-spinner 400ms linear infinite;
 }
 
 .nprogress-custom-parent {
@@ -83,11 +81,46 @@
 }
 
 @-webkit-keyframes nprogress-spinner {
-  0%   { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 @keyframes nprogress-spinner {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
+.tier {
+  .common {
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #555, 0 0 4px #555,
+      0 0 5px #555, 0 0 6px #555, 0 0 7px #555;
+  }
+  .rare {
+    text-shadow: 0 0 1px #fff, 0 0 2px #5393ef, 0 0 3px #5393ef, 0 0 4px #5393ef,
+      0 0 5px #5393ef, 0 0 6px #5393ef, 0 0 7px #5393ef;
+  }
+  .epic {
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #e60073, 0 0 4px #e60073,
+      0 0 5px #e60073, 0 0 6px #e60073, 0 0 7px #e60073;
+  }
+  .legendary {
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #f39329, 0 0 4px #f39329,
+      0 0 5px #f39329, 0 0 6px #f39329, 0 0 7px #f39329;
+  }
+  .immortal {
+    color: #f7cbca;
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #e80904, 0 0 4px #e80904,
+      0 0 5px #e80904, 0 0 6px #e80904, 0 0 7px #e80904;
+  }
+  .ultimate {
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 3px #e8e104ad,
+      0 0 4px #e8e104ad, 0 0 5px #e8e104ad, 0 0 6px #e8e104ad, 0 0 7px #e8e104ad;
+  }
+}

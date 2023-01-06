@@ -29,6 +29,9 @@ import { useMemo } from "react";
 import { selectBag } from "../../store/bagSlice";
 import { BsBagCheck, BsFillBagCheckFill } from "react-icons/bs";
 import { AddToCartButton } from "./AddToCartButton";
+import HeHeroMask, { HERO_KEY } from "./mask/HeHeroMask";
+import { MASKS } from "./mask";
+import { get } from "lodash";
 export default function NftCardMarket({
   nft,
   loading,
@@ -53,6 +56,7 @@ export default function NftCardMarket({
     () => !!items.find((i) => i.id === nft?.id && nft.sale?.id === i.sale.id),
     [items, nft]
   );
+  const mask = get(MASKS, nft?.nftCollection.key);
   return (
     <NftCard
       className={isInCart ? "in-cart" : ""}
@@ -117,6 +121,7 @@ export default function NftCardMarket({
           </HStack>
         </VStack>
       }
+      mask={mask ? mask({ nft: nft }) : <></>}
     >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>

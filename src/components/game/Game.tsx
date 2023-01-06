@@ -114,7 +114,7 @@ export default function Game({ id }: { id: string }) {
             </SimpleGrid>
           </Box>
         </ProfileHeader>
-        <Box>
+        <Box w="full">
           <Heading fontSize="2xl">Collections</Heading>
           <Box w="full" position="relative" __css={sliderBox}>
             <ScrollSlide>
