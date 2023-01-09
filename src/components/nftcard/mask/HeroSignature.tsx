@@ -1,4 +1,4 @@
-import { Box, Image, Text, VStack } from "@chakra-ui/react";
+import { Image, Text, VStack } from "@chakra-ui/react";
 import { get } from "lodash";
 
 export const tierColorMapping = {
@@ -13,18 +13,18 @@ export const tierColorMapping = {
 export default function HeroSignature({ tier, signatureIcon, signatureLevel }) {
   return (
     <VStack
+      w={["35px", "50px"]}
+      h={["35px", "50px"]}
       style={{
-        width: "50px",
-        height: "50px",
         border: `2px solid ${get(tierColorMapping, tier)}`,
         borderRadius: "50%",
         textAlign: "center",
         position: "relative",
-        // background: "rgba(255,255,255,0.5)",
       }}
     >
       <Image src={signatureIcon} alt="signature icon" />
       <Text
+        fontSize={["xs", "sm"]}
         fontWeight="bold"
         style={{
           position: "absolute",

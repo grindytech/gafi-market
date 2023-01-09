@@ -125,7 +125,7 @@ export default function Detail({ id }: { id: string }) {
             </VStack>
             <VStack
               position="sticky"
-              height={{ base: "auto", md: 610 }}
+              height={{ base: "auto", md: "100vh" }}
               spacing={5}
               pl={{ base: 0, md: 10 }}
               w="full"

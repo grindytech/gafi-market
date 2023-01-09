@@ -7,6 +7,7 @@ import {
   IconButton,
   Text,
   Tooltip,
+  useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
 import { FiPlus } from "react-icons/fi";
@@ -27,9 +28,7 @@ import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { numeralFormat } from "../../utils/utils";
 import { useMemo } from "react";
 import { selectBag } from "../../store/bagSlice";
-import { BsBagCheck, BsFillBagCheckFill } from "react-icons/bs";
 import { AddToCartButton } from "./AddToCartButton";
-import HeHeroMask, { HERO_KEY } from "./mask/HeHeroMask";
 import { MASKS } from "./mask";
 import { get } from "lodash";
 export default function NftCardMarket({
@@ -56,6 +55,8 @@ export default function NftCardMarket({
     () => !!items.find((i) => i.id === nft?.id && nft.sale?.id === i.sale.id),
     [items, nft]
   );
+  const md = useBreakpointValue({ base: false, md: true });
+
   const mask = get(MASKS, nft?.nftCollection.key);
   return (
     <NftCard
@@ -63,63 +64,65 @@ export default function NftCardMarket({
       loading={loading}
       image={nft?.image}
       showOnHover={
-        <VStack
-          w="full"
-          h="full"
-          justifyContent="space-between"
-          alignItems="start"
-          zIndex={3}
-        >
-          <Box></Box>
-          <HStack w="full" justifyContent="center" p={2}>
-            <Fade in={true}>
-              {!nft?.sale ? (
-                <>
-                  {!isOwner && (
-                    <HStack>
-                      <PrimaryButton as={OfferButton} nft={nft}>
-                        Make offer
-                      </PrimaryButton>
-                    </HStack>
-                  )}
-                  {isOwner && (
-                    <SaleButton
+        md ? (
+          <VStack
+            w="full"
+            h="full"
+            justifyContent="space-between"
+            alignItems="start"
+            zIndex={3}
+          >
+            <Box></Box>
+            <HStack w="full" justifyContent="center" p={2}>
+              <Fade in={true}>
+                {!nft?.sale ? (
+                  <>
+                    {!isOwner && (
+                      <HStack>
+                        {/* <PrimaryButton as={OfferButton} nft={nft}>
+                          Make offer
+                        </PrimaryButton> */}
+                      </HStack>
+                    )}
+                    {isOwner && (
+                      <SaleButton
+                        onSuccess={() => {
+                          onSale && onSale(nft);
+                        }}
+                        nft={nft}
+                      >
+                        Put on sale
+                      </SaleButton>
+                    )}
+                  </>
+                ) : isOwner ? (
+                  <HStack>
+                    <CancelBtn
                       onSuccess={() => {
-                        onSale && onSale(nft);
+                        onCancelSale && onCancelSale(nft);
                       }}
                       nft={nft}
                     >
-                      Put on sale
-                    </SaleButton>
-                  )}
-                </>
-              ) : isOwner ? (
-                <HStack>
-                  <CancelBtn
-                    onSuccess={() => {
-                      onCancelSale && onCancelSale(nft);
-                    }}
-                    nft={nft}
-                  >
-                    Cancel
-                  </CancelBtn>
-                </HStack>
-              ) : (
-                <HStack>
-                  <BuyButton
-                    nft={nft}
-                    onSuccess={() => {
-                      onBuy && onBuy(nft);
-                    }}
-                  >
-                    Buy now
-                  </BuyButton>
-                  <AddToCartButton nft={nft} />
-                </HStack>
-              )}
-            </Fade>
-          </HStack>
-        </VStack>
+                      Cancel
+                    </CancelBtn>
+                  </HStack>
+                ) : (
+                  <HStack>
+                    <BuyButton
+                      nft={nft}
+                      onSuccess={() => {
+                        onBuy && onBuy(nft);
+                      }}
+                    >
+                      Buy now
+                    </BuyButton>
+                    <AddToCartButton nft={nft} />
+                  </HStack>
+                )}
+              </Fade>
+            </HStack>
+          </VStack>
+        ) : undefined
       }
       mask={mask ? mask({ nft: nft }) : <></>}
     >

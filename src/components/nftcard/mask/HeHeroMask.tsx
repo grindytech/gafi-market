@@ -1,8 +1,6 @@
-import { Box, HStack, Image, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Box, HStack, Image, Text, VStack } from "@chakra-ui/react";
 import { MaskProps } from ".";
 import HeroSignature from "./HeroSignature";
-
-export const HERO_KEY = "he_hero";
 
 export default function HeHeroMask({ nft }: MaskProps) {
   const race = nft.attributes.find((attr) => attr.key === "Race");
@@ -19,24 +17,29 @@ export default function HeHeroMask({ nft }: MaskProps) {
         justifyContent="end"
         className="tier"
       >
-        <HStack w="full" alignItems="end" justifyContent="space-between" px={3}>
+        <HStack
+          w="full"
+          alignItems="end"
+          justifyContent="space-between"
+          px={[2, 5]}
+        >
           <HStack spacing={1}>
             {race && (
-              <Image
-                title={race.value}
-                w={6}
+              <Avatar
+                size={["xs", "sm"]}
+                name={race.value}
                 src={`/heroes-empires/race/${race.value?.toLowerCase()}.png`}
               />
             )}
             {heroClass && (
-              <Image
-                title={heroClass.value}
-                w={6}
+              <Avatar
+                size={["xs", "sm"]}
+                name={heroClass.value}
                 src={`/heroes-empires/class/${heroClass.value?.toLowerCase()}.png`}
               />
             )}
           </HStack>
-          <VStack>
+          <VStack alignItems="end">
             {signature && (
               <HeroSignature
                 signatureIcon={signature?.value?.icon}
@@ -51,7 +54,7 @@ export default function HeHeroMask({ nft }: MaskProps) {
                 className={tierCssClass}
                 color="white"
               >
-                {tier?.value?.replace("+", "*")}
+                {tier?.value?.replace("+", "★")}
               </Text>
             )}
           </VStack>
