@@ -26,6 +26,8 @@ export default function W3Provider(props: any) {
       const payload: { exp: number } = jwtDecode(accessToken);
       if (payload.exp - 3600 * 0.1 > Date.now() / 1000) {
         dispatch(login({ accessToken, user }));
+      } else {
+        dispatch(logout())
       }
     } else {
       const { data: sign } = await accountService.nonce({
@@ -60,7 +62,7 @@ export default function W3Provider(props: any) {
         dispatch(userData({ profile: userInfo }));
       });
     }
-  }, [user]);
+  }, [user, accessToken, isLoggedIn]);
   return (
     <ConnectWalletProvider
       onDisconnect={() => dispatch(logout())}

@@ -147,6 +147,10 @@ const getGame = async (id: string): Promise<BaseResult<GameDto>> => {
   return await client.get(`/market/api/games/${id}`);
 };
 
+const fetchNftsOnchain = async (cId: string): Promise<void> => {
+  return await client.get(`/market/api/nft/sync/${cId}`);
+};
+
 export default {
   getNfts,
   getNft,
@@ -176,4 +180,6 @@ export default {
   updateGame,
   getGames,
   getGame,
+
+  fetchNftsOnchain,
 };

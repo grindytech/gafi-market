@@ -26,6 +26,7 @@ import NftsFilter, {
 import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
+import SyncNfts from "../profile/syncNfts/SyncNfts";
 
 export default function Nfts({
   owner,
@@ -221,6 +222,13 @@ export default function Nfts({
                 )}
               </HStack>
               <HStack>
+                {owner && (
+                  <SyncNfts
+                    onSuccess={() => {
+                      refetch();
+                    }}
+                  />
+                )}
                 <IconButton
                   isLoading={isFetching}
                   onClick={() => {

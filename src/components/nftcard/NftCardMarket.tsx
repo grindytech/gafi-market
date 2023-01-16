@@ -1,36 +1,31 @@
 import {
   Box,
-  Button,
   Fade,
   HStack,
   Icon,
-  IconButton,
   Text,
   Tooltip,
   useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
-import { FiPlus } from "react-icons/fi";
+import { get } from "lodash";
+import NextLink from "next/link";
+import { useMemo } from "react";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useSelector } from "react-redux";
-import { selectProfile } from "../../store/profileSlice";
-import PrimaryButton from "../PrimaryButton";
-import NftCard from "./NftCard";
-import NextLink from "next/link";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
-import Skeleton from "../Skeleton";
-import Icons from "../../images";
-import SaleButton from "./SaleButton";
-import CancelBtn from "./CancelButton";
-import BuyButton from "./BuyButton";
-import OfferButton from "./OfferButton";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
-import { numeralFormat } from "../../utils/utils";
-import { useMemo } from "react";
+import Icons from "../../images";
+import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectBag } from "../../store/bagSlice";
+import { selectProfile } from "../../store/profileSlice";
+import { numeralFormat } from "../../utils/utils";
+import Skeleton from "../Skeleton";
 import { AddToCartButton } from "./AddToCartButton";
+import BuyButton from "./BuyButton";
+import CancelBtn from "./CancelButton";
 import { MASKS } from "./mask";
-import { get } from "lodash";
+import NftCard from "./NftCard";
+import SaleButton from "./SaleButton";
 export default function NftCardMarket({
   nft,
   loading,

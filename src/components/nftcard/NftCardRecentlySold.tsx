@@ -71,7 +71,7 @@ export default function NftCardRecentlySold({
                   #{history?.tokenId}
                 </Text>
               </VStack>
-              <VStack alignItems="end">
+              <VStack spacing={0} alignItems="end">
                 <Tooltip label={history?.chain?.name}>
                   <Icon blur="xl" w={5} h={5}>
                     {Icons.chain[String(history?.chain?.symbol).toUpperCase()]
@@ -101,7 +101,7 @@ export default function NftCardRecentlySold({
               </VStack>
             </HStack>
           </Skeleton>
-          <HStack w="full" alignItems="end">
+          <HStack w="full" alignItems="center">
             <Skeleton isLoaded={!loading}>
               <Text
                 fontWeight="semibold"
@@ -130,7 +130,7 @@ export default function NftCardRecentlySold({
                 title={`${prefix}${history.priceInUsd}`}
               >
                 ~{prefix}
-                {numeralFormat(history.priceInUsd)}
+                {numeralFormat(history.priceInUsd, 4)}
               </Text>
             )}
           </HStack>
