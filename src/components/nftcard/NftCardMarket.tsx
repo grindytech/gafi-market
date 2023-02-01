@@ -1,30 +1,44 @@
 import {
   Box,
-  Fade,
+  Button,
   HStack,
   Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Text,
   Tooltip,
-  useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
 import { get } from "lodash";
 import NextLink from "next/link";
 import { useMemo } from "react";
+import { BiGift } from "react-icons/bi";
+import { BsBox, BsThreeDots } from "react-icons/bs";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import Icons from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectBag } from "../../store/bagSlice";
 import { selectProfile } from "../../store/profileSlice";
 import { numeralFormat } from "../../utils/utils";
+import FloatIconWithText from "../FloatIconWithText";
+import RefreshMetadataButton from "../nft/RefreshMetadataButton";
 import Skeleton from "../Skeleton";
 import { AddToCartButton } from "./AddToCartButton";
 import BuyButton from "./BuyButton";
 import CancelBtn from "./CancelButton";
 import { MASKS } from "./mask";
 import NftCard from "./NftCard";
+import OfferButton from "./OfferButton";
 import SaleButton from "./SaleButton";
 export default function NftCardMarket({
   nft,
@@ -32,99 +46,145 @@ export default function NftCardMarket({
   onCancelSale,
   onSale,
   onBuy,
+  selected,
+  menuItems,
+  showMenu = true,
+  disabled,
 }: {
   nft?: NftDto;
   loading?: boolean;
   onCancelSale?: (nft: NftDto) => void;
   onSale?: (nft: NftDto) => void;
   onBuy?: (nft: NftDto) => void;
+  selected?: boolean;
+  menuItems?: any;
+  showMenu?: boolean;
+  disabled?: boolean;
 }) {
+  const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
+  });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: nft?.sale?.paymentToken,
+  });
   const { user } = useSelector(selectProfile);
   const isOwner = user === nft?.owner.address;
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: !!nft?.sale,
-    paymentSymbol: nft?.sale?.paymentToken.symbol,
+    paymentSymbol: paymentInfo?.symbol,
   });
   const { items } = useSelector(selectBag);
   const isInCart = useMemo(
     () => !!items.find((i) => i.id === nft?.id && nft.sale?.id === i.sale.id),
     [items, nft]
   );
-  const md = useBreakpointValue({ base: false, md: true });
 
-  const mask = get(MASKS, nft?.nftCollection.key);
+  const mask = get(MASKS, collectionInfo?.key);
   return (
     <NftCard
-      className={isInCart ? "in-cart" : ""}
+      disabled={disabled}
+      className={isInCart || selected ? "selected" : ""}
       loading={loading}
       image={nft?.image}
       showOnHover={
-        md ? (
+        nft &&
+        showMenu && (
           <VStack
-            w="full"
-            h="full"
-            justifyContent="space-between"
-            alignItems="start"
-            zIndex={3}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+            textAlign="left"
+            position="absolute"
+            right={0}
+            top={0}
+            p={3}
           >
-            <Box></Box>
-            <HStack w="full" justifyContent="center" p={2}>
-              <Fade in={true}>
-                {!nft?.sale ? (
-                  <>
-                    {!isOwner && (
-                      <HStack>
-                        {/* <PrimaryButton as={OfferButton} nft={nft}>
-                          Make offer
-                        </PrimaryButton> */}
-                      </HStack>
-                    )}
-                    {isOwner && (
-                      <SaleButton
+            <Menu>
+              <MenuButton
+                aria-label="Menu"
+                as={IconButton}
+                icon={<BsThreeDots />}
+                size="sm"
+                variant="ghost"
+              />
+              {/* <IconButton variant="ghost" /> */}
+              <MenuList fontSize="sm">
+                <VStack spacing={0} w="full" alignItems="start">
+                  <MenuItem>
+                    <RefreshMetadataButton nftId={nft.id}>
+                      Refetch metadata
+                    </RefreshMetadataButton>
+                  </MenuItem>
+                  {!nft?.sale ? (
+                    <>
+                      {!isOwner && (
+                        <MenuItem>
+                          <OfferButton w="full" nft={nft}>
+                            Make offer
+                          </OfferButton>
+                        </MenuItem>
+                      )}
+                      {isOwner && (
+                        <MenuItem>
+                          <SaleButton
+                            w="full"
+                            onSuccess={() => {
+                              onSale && onSale(nft);
+                            }}
+                            nft={nft}
+                          >
+                            Put on sale
+                          </SaleButton>
+                        </MenuItem>
+                      )}
+                    </>
+                  ) : isOwner ? (
+                    <MenuItem>
+                      <CancelBtn
+                        color="red.400"
+                        w="full"
                         onSuccess={() => {
-                          onSale && onSale(nft);
+                          onCancelSale && onCancelSale(nft);
                         }}
                         nft={nft}
                       >
-                        Put on sale
-                      </SaleButton>
-                    )}
-                  </>
-                ) : isOwner ? (
-                  <HStack>
-                    <CancelBtn
-                      onSuccess={() => {
-                        onCancelSale && onCancelSale(nft);
-                      }}
-                      nft={nft}
-                    >
-                      Cancel
-                    </CancelBtn>
-                  </HStack>
-                ) : (
-                  <HStack>
-                    <BuyButton
-                      nft={nft}
-                      onSuccess={() => {
-                        onBuy && onBuy(nft);
-                      }}
-                    >
-                      Buy now
-                    </BuyButton>
-                    <AddToCartButton nft={nft} />
-                  </HStack>
-                )}
-              </Fade>
-            </HStack>
+                        Cancel sale
+                      </CancelBtn>
+                    </MenuItem>
+                  ) : (
+                    <>
+                      <MenuItem>
+                        <BuyButton
+                          w="full"
+                          nft={nft}
+                          onSuccess={() => {
+                            onBuy && onBuy(nft);
+                          }}
+                          rounded="none"
+                        >
+                          Buy now
+                        </BuyButton>
+                      </MenuItem>
+                      <MenuItem>
+                        <AddToCartButton w="full" nft={nft} />
+                      </MenuItem>
+                    </>
+                  )}
+                  {menuItems && menuItems}
+                </VStack>
+              </MenuList>
+            </Menu>
           </VStack>
-        ) : undefined
+        )
       }
       mask={mask ? mask({ nft: nft }) : <></>}
+      bundle={nft?.bundle}
     >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>
           <Skeleton minW={100} height="1em" isLoaded={!loading}>
-            <NextLink href={`/collection/${nft?.nftCollection?.key}`}>
+            <NextLink href={`/collection/${collectionInfo?.key}`}>
               <HStack spacing={0}>
                 <Box>
                   <Text
@@ -137,10 +197,10 @@ export default function NftCardMarket({
                     fontWeight="semibold"
                     textOverflow="ellipsis"
                   >
-                    {nft?.nftCollection?.name}
+                    {collectionInfo?.name}
                   </Text>
                 </Box>
-                {nft?.nftCollection?.verified && (
+                {collectionInfo?.verified && (
                   <Icon color="primary.50" h={4} w={4}>
                     <HiBadgeCheck size="25px" />
                   </Icon>
@@ -154,14 +214,19 @@ export default function NftCardMarket({
                 <Text noOfLines={1} fontSize="md" fontWeight="semibold">
                   {nft?.name || <>&nbsp;</>}
                 </Text>
-                <Text color="gray" fontSize="xs" fontWeight="semibold">
+                <Text
+                  noOfLines={1}
+                  color="gray"
+                  fontSize="xs"
+                  fontWeight="semibold"
+                >
                   #{nft?.tokenId}
                 </Text>
               </VStack>
-              <Tooltip label={nft?.chain?.name}>
+              <Tooltip label={chainInfo?.name}>
                 <Icon blur="xl" w={5} h={5}>
-                  {Icons.chain[String(nft?.chain?.symbol).toUpperCase()]
-                    ? Icons.chain[String(nft?.chain?.symbol).toUpperCase()]()
+                  {Icons.chain[String(chainInfo?.symbol).toUpperCase()]
+                    ? Icons.chain[String(chainInfo?.symbol).toUpperCase()]()
                     : ""}
                 </Icon>
               </Tooltip>
@@ -187,15 +252,11 @@ export default function NftCardMarket({
                   fontSize="sm"
                   color="gray"
                   title={String(
-                    nft?.price > 0
-                      ? `${nft.price} ${nft?.sale.paymentToken.symbol}`
-                      : ""
+                    nft?.price > 0 ? `${nft.price} ${paymentInfo?.symbol}` : ""
                   )}
                 >
                   {nft?.price > 0
-                    ? `${numeralFormat(nft?.price)} ${
-                        nft?.sale.paymentToken.symbol
-                      }`
+                    ? `${numeralFormat(nft?.price)} ${paymentInfo?.symbol}`
                     : "Not for sale"}
                 </Text>
               </Skeleton>

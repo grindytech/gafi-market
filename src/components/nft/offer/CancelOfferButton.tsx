@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import mpContract from "../../../contracts/marketplace.contract";
+import { useGetPaymentTokenInfo } from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
 import { Images } from "../../../images";
 import nftService from "../../../services/nft.service";
@@ -37,6 +38,9 @@ export default function CancelOfferButton({
   offer: OfferDto;
   onSuccess: () => void;
 }) {
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: offer?.paymentToken,
+  });
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(selectProfile);
@@ -46,13 +50,13 @@ export default function CancelOfferButton({
       setLoading(true);
       const contractValue = convertToContractValue({
         amount: offer.offerPrice,
-        decimal: offer.paymentToken.decimals,
+        decimal: paymentInfo?.decimals,
       });
       const param = {
         contractPrice: contractValue,
         nftContract: offer.nftContract,
         ownerAddress: offer.seller.address,
-        paymentContract: offer.paymentToken.contractAddress,
+        paymentContract: paymentInfo?.contractAddress,
         period: offer.period,
         saleOption: SaleType.MakeOffer,
         saltNonce: Number(offer.saltNonce),

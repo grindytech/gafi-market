@@ -27,6 +27,11 @@ import { FiArrowRight } from "react-icons/fi";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useInfiniteQuery } from "react-query";
 import { useSelector } from "react-redux";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
@@ -141,10 +146,7 @@ export default function UserActivities({
             </Thead>
             <Tbody>
               {histories.map((history, index) => (
-                <HistoryItemDesktop
-                  key={history.id}
-                  history={history}
-                />
+                <HistoryItemDesktop key={history.id} history={history} />
               ))}
             </Tbody>
           </Table>
@@ -185,6 +187,13 @@ function HistoryItemDesktop({
   history?: NftHistoryDto;
 }) {
   const { user } = useSelector(selectProfile);
+  const { chainInfo } = useGetChainInfo({ chainId: history?.chain });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: history?.nftCollection,
+  });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: history?.paymentToken,
+  });
   return (
     <Tr className="highlight-hover">
       <Td>
@@ -243,9 +252,7 @@ function HistoryItemDesktop({
           <VStack spacing={0} alignItems="start">
             {history?.price && (
               <Text noOfLines={1} fontSize="sm" color="gray">
-                {`${numeralFormat(history?.price)} ${
-                  history?.paymentToken?.symbol
-                }`}{" "}
+                {`${numeralFormat(history?.price)} ${paymentInfo?.symbol}`}{" "}
               </Text>
             )}
             {history?.priceInUsd && (
@@ -287,18 +294,24 @@ function HistoryItemDesktop({
       <Td>
         <Skeleton isLoaded={!loading}>
           <HStack justifyContent="start" color="gray">
-            <Tooltip label={new Date(history?.createdAt).toUTCString()}>
+            <Tooltip
+              label={new Date((history?.blockTime || 0) * 1e3).toUTCString()}
+            >
               <Text textAlign="left" fontSize="sm">
-                {formatDistance(new Date(history?.createdAt || 0), Date.now(), {
-                  includeSeconds: false,
-                  addSuffix: true,
-                })}
+                {formatDistance(
+                  new Date((history?.blockTime || 0) * 1e3),
+                  Date.now(),
+                  {
+                    includeSeconds: false,
+                    addSuffix: true,
+                  }
+                )}
               </Text>
             </Tooltip>
             <Link
               target="_blank"
               fontSize="sm"
-              href={`${history?.chain.explore}/tx/${history?.txHash}`}
+              href={`${chainInfo?.explore}/tx/${history?.txHash}`}
             >
               <ExternalLinkIcon />
             </Link>
@@ -317,6 +330,10 @@ function HistoryListItem({
   history?: NftHistoryDto;
 }) {
   const { user } = useSelector(selectProfile);
+  const { chainInfo } = useGetChainInfo({ chainId: history?.chain });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: history?.paymentToken,
+  });
   return (
     <Stack
       w="full"
@@ -326,7 +343,7 @@ function HistoryListItem({
     >
       <HStack w="full">
         <Image
-          src={history?.image}
+          src={history?.nft?.image}
           rounded="md"
           fallbackSrc={Images.Placeholder.src}
           w={14}
@@ -356,14 +373,11 @@ function HistoryListItem({
             as={NextLink}
             href={`/nft/${history?.nftContract}:${history?.tokenId}`}
           >
-            <Text noOfLines={1}>{history?.name}</Text>
+            <Text noOfLines={1}>{history?.nft?.name}</Text>
           </Link>
-          <Link
-            as={NextLink}
-            href={`/nft/${history?.nftContract}:${history?.tokenId}`}
-          >
+          <Link as={NextLink} href={`/nft/${history?.nft?.id}`}>
             <Text noOfLines={1} fontSize="xs" color="gray.400">
-              #{history?.tokenId}
+              #{history?.nft?.tokenId}
             </Text>
           </Link>
         </VStack>
@@ -403,9 +417,7 @@ function HistoryListItem({
             <HStack alignItems="end">
               {history?.price && (
                 <Text noOfLines={1} fontSize="sm" color="gray">
-                  {`${numeralFormat(history?.price)} ${
-                    history?.paymentToken?.symbol
-                  }`}{" "}
+                  {`${numeralFormat(history?.price)} ${paymentInfo?.symbol}`}{" "}
                 </Text>
               )}
               {history?.priceInUsd && (
@@ -417,10 +429,12 @@ function HistoryListItem({
           </Skeleton>
           <Skeleton w="full" isLoaded={!loading}>
             <HStack justifyContent="end" color="gray">
-              <Tooltip label={new Date(history?.createdAt).toUTCString()}>
+              <Tooltip
+                label={new Date((history?.blockTime || 0) * 1e3).toUTCString()}
+              >
                 <Text fontSize="sm">
                   {formatDistance(
-                    new Date(history?.createdAt || 0),
+                    new Date((history?.blockTime || 0) * 1e3),
                     Date.now(),
                     {
                       includeSeconds: false,
@@ -432,7 +446,7 @@ function HistoryListItem({
               <Link
                 target="_blank"
                 fontSize="sm"
-                href={`${history?.chain.explore}/tx/${history?.txHash}`}
+                href={`${chainInfo?.explore}/tx/${history?.txHash}`}
               >
                 <ExternalLinkIcon />
               </Link>

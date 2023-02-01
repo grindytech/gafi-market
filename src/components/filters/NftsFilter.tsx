@@ -83,6 +83,12 @@ export const NFTS_FILTER_OPTIONS: Option[] = [
   "marketStatus",
   "collection",
 ];
+export const BUNDLE_FILTER_OPTIONS: Option[] = [
+  "search",
+  "chain",
+  "price",
+  "collection",
+];
 export const COLLECTIONS_FILTER_OPTIONS: Option[] = ["search", "chain"];
 
 export default function NftsFilter({
@@ -198,6 +204,7 @@ export default function NftsFilter({
             </AccordionButton>
             <AccordionPanel overflow="auto" pb={4} p={0}>
               <NftCollectionsList
+                showProperties={options.includes("attribute")}
                 disableChange={collectionProps?.disableChange}
                 nftCollection={collectionProps?.nftCollection}
                 game={collectionProps?.game}

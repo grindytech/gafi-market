@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   HStack,
   Icon,
   Link,
@@ -8,16 +9,25 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
+import { get } from "lodash";
 import NextLink from "next/link";
+import { BsBox } from "react-icons/bs";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import Icons from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { selectProfile } from "../../store/profileSlice";
 import { getUserName, numeralFormat } from "../../utils/utils";
+import FloatIconWithText from "../FloatIconWithText";
 import Skeleton from "../Skeleton";
+import { MASKS } from "./mask";
 import NftCard from "./NftCard";
 
 export default function NftCardRecentlySold({
@@ -28,12 +38,26 @@ export default function NftCardRecentlySold({
   loading?: boolean;
 }) {
   const { user } = useSelector(selectProfile);
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: history?.paymentToken,
+  });
+  const { chainInfo } = useGetChainInfo({ chainId: history?.chain });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: history?.nftCollection,
+  });
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: true,
-    paymentSymbol: history.paymentToken.symbol,
+    paymentSymbol: paymentInfo?.symbol,
   });
+  const mask = get(MASKS, collectionInfo?.key);
+
   return (
-    <NftCard loading={loading} image={history?.image}>
+    <NftCard
+      mask={mask ? mask({ nft: history?.nft }) : <></>}
+      loading={loading}
+      image={history?.image}
+      bundle={history?.nft?.bundle}
+    >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>
           <Skeleton minW={100} height="1em" isLoaded={!loading}>
@@ -62,35 +86,40 @@ export default function NftCardRecentlySold({
             </NextLink>
           </Skeleton>
           <Skeleton w="full" isLoaded={!loading}>
-            <HStack alignItems="start" w="full" justifyContent="space-between">
-              <VStack spacing={0} alignItems="start">
+            <VStack
+              spacing={0}
+              alignItems="start"
+              w="full"
+              justifyContent="space-between"
+            >
+              <HStack w="full" justifyContent="space-between">
                 <Text noOfLines={1} fontSize="md" fontWeight="semibold">
                   {history?.name || <>&nbsp;</>}
                 </Text>
-                <Text color="gray" fontSize="xs" fontWeight="semibold">
-                  #{history?.tokenId}
-                </Text>
-              </VStack>
-              <VStack spacing={0} alignItems="end">
-                <Tooltip label={history?.chain?.name}>
+                <Tooltip label={chainInfo?.name}>
                   <Icon blur="xl" w={5} h={5}>
-                    {Icons.chain[String(history?.chain?.symbol).toUpperCase()]
-                      ? Icons.chain[
-                          String(history?.chain?.symbol).toUpperCase()
-                        ]()
+                    {Icons.chain[String(chainInfo?.symbol).toUpperCase()]
+                      ? Icons.chain[String(chainInfo?.symbol).toUpperCase()]()
                       : ""}
                   </Icon>
                 </Tooltip>
+              </HStack>
+              <HStack w="full" justifyContent="space-between">
+                <Text color="gray" fontSize="xs" fontWeight="semibold">
+                  #{history?.tokenId}
+                </Text>
                 <Text
                   fontWeight="semibold"
                   noOfLines={1}
                   fontSize="xs"
                   color="gray.500"
                   textAlign="left"
-                  title={`${new Date(history?.createdAt || 0).toUTCString()}`}
+                  title={`${new Date(
+                    (history?.blockTime || 0) * 1e3
+                  ).toUTCString()}`}
                 >
                   {formatDistance(
-                    new Date(history?.createdAt || 0),
+                    new Date((history?.blockTime || 0) * 1e3),
                     Date.now(),
                     {
                       includeSeconds: false,
@@ -98,8 +127,8 @@ export default function NftCardRecentlySold({
                     }
                   )}
                 </Text>
-              </VStack>
-            </HStack>
+              </HStack>
+            </VStack>
           </Skeleton>
           <HStack w="full" alignItems="center">
             <Skeleton isLoaded={!loading}>
@@ -110,14 +139,12 @@ export default function NftCardRecentlySold({
                 color="gray"
                 title={String(
                   history?.price > 0
-                    ? `${history.price} ${history?.paymentToken.symbol}`
+                    ? `${history.price} ${paymentInfo?.symbol}`
                     : ""
                 )}
               >
                 {history?.price > 0 &&
-                  `${numeralFormat(history?.price)} ${
-                    history.paymentToken.symbol
-                  }`}
+                  `${numeralFormat(history?.price)} ${paymentInfo?.symbol}`}
               </Text>
             </Skeleton>
             {history?.priceInUsd && priceAsUsd && (

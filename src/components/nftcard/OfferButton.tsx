@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   Button,
   ButtonProps,
   FormControl,
@@ -44,13 +45,17 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import useSwal from "../../hooks/useSwal";
 import useYupValidationResolver from "../../hooks/useYupValidationResolver";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+} from "../../hooks/useGetSystemInfo";
 
 export default function OfferButton({
   nft,
   children,
   onSuccess,
   ...rest
-}: ButtonProps & { nft: NftDto; onSuccess?: () => void }) {
+}: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [errorMsg, setErrorMsg] = useState<string>();
   const [isFirst, setIsFirst] = useState(true);
@@ -60,10 +65,12 @@ export default function OfferButton({
   const [loading, setLoading] = useState(false);
   const [period, setPeriod] = useState(SalePeriod.Week);
   const { swAlert } = useSwal();
-  const chain = useMemo(
-    () => chains.find((c) => c.id === paymentToken?.chain),
-    [paymentToken, chains]
-  );
+  const { chainInfo: chain } = useGetChainInfo({
+    chainId: nft?.chain,
+  });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
+  });
   const validationSchema = yup.object({
     price: yup
       .number()
@@ -77,7 +84,7 @@ export default function OfferButton({
             ? await erc20Contract.getErc20Balance(
                 user,
                 paymentToken.contractAddress,
-                chain.symbol.toUpperCase(),
+                chain?.symbol.toUpperCase(),
                 paymentToken.decimals
               )
             : 0;
@@ -104,13 +111,13 @@ export default function OfferButton({
       });
       const allowance = await erc20Contract.getAllowance(
         paymentToken.contractAddress,
-        nft.chain.mpContract,
+        chain?.mpContract,
         user
       );
       if (Number(allowance) < Number(priceContractValue)) {
         await erc20Contract.approve(
           paymentToken.contractAddress,
-          nft.chain.mpContract,
+          chain?.mpContract,
           user,
           priceContractValue
         );
@@ -135,7 +142,7 @@ export default function OfferButton({
       //     saltNonce: nft.saltNonce,
       //     tokenId: nft.tokenId,
       //   },
-      //   nft.chain.mpContract
+      //   nft.chain?.mpContract
       // );
       const sign = await web3Inject.eth.personal.sign(hashMessage, user, "");
       const sale = await nftService.createOffer(nft.id, {
@@ -169,7 +176,7 @@ export default function OfferButton({
   const price = watch("price");
   return (
     <>
-      <Button
+      <Box
         onClick={(e) => {
           e.preventDefault();
           onOpen();
@@ -177,7 +184,7 @@ export default function OfferButton({
         {...rest}
       >
         {children}
-      </Button>
+      </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -206,18 +213,20 @@ export default function OfferButton({
                     children={
                       <Box w="full">
                         <TokenSymbolToken
-                          chain={nft.chain.id}
+                          disabled={loading}
+                          chain={chain?.id}
                           mr={2}
                           size="sm"
                           onChangeToken={(p) => {
                             setPaymentToken(p);
                           }}
-                          idList={nft.nftCollection?.paymentTokens as string[]}
+                          idList={collectionInfo?.paymentTokens as string[]}
                         />
                       </Box>
                     }
                   />
                   <Input
+                    disabled={loading}
                     {...register("price")}
                     type="number"
                     variant="filled"
@@ -253,6 +262,7 @@ export default function OfferButton({
                 <FormLabel>Duration</FormLabel>
                 <InputGroup size="lg">
                   <Select
+                    disabled={loading}
                     variant="filled"
                     defaultValue={SalePeriod.Week}
                     _focusVisible={{
@@ -283,8 +293,8 @@ export default function OfferButton({
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
               <SwitchNetworkButton
-                symbol={nft.chain.symbol}
-                name={nft.chain.name}
+                symbol={chain?.symbol}
+                name={chain?.name}
                 w="full"
               >
                 <PrimaryButton

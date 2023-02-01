@@ -73,10 +73,12 @@ export default function NftCollectionsList({
   nftCollection,
   disableChange,
   game,
+  showProperties = true,
 }: {
   nftCollection?: string;
   disableChange?: boolean;
   game?: string;
+  showProperties?: boolean;
 }) {
   const [search, setSearch] = useState<string>();
   const { query, setQuery } = useNftQueryParam();
@@ -155,7 +157,7 @@ export default function NftCollectionsList({
           />
         )}
       </CollectionItem>
-      <Properties c={selected} />
+      {showProperties && <Properties c={selected} />}
     </VStack>
   ) : (
     <VStack w="full">

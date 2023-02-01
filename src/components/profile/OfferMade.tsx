@@ -38,6 +38,10 @@ import { EmptyState, ErrorState } from "../EmptyState";
 import useCustomColors from "../../theme/useCustomColors";
 import { GetOffers } from "../../services/types/params/GetOffers";
 import AcceptOfferButton from "../nft/offer/AcceptOfferButton";
+import {
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 
 export default function OfferMade({
   address,
@@ -66,9 +70,6 @@ export default function OfferMade({
       };
       if (!receive) param.buyer = address;
       else param.seller = address;
-      console.log(receive);
-      console.log(param);
-
       const rs = await nftService.getOffers(param);
       return rs.data;
     },
@@ -98,7 +99,6 @@ export default function OfferMade({
     () => !isError && !isLoading && !isFetching && offers.length === 0,
     [isError, isLoading, isFetching, offers.length]
   );
-  const md = useBreakpointValue({ base: false, md: true });
   const { bgColor } = useCustomColors();
   return (
     <VStack w="full">
@@ -160,6 +160,13 @@ function OfferListItem({
   offer?: OfferDto;
   onSuccess: () => void;
 }) {
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: offer?.nftCollection,
+  });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: offer?.paymentToken,
+  });
+
   const { bgColor } = useCustomColors();
   const { user } = useSelector(selectProfile);
   const isOfferOwner = useMemo(
@@ -208,8 +215,8 @@ function OfferListItem({
                     fontWeight="semibold"
                     fontSize="xs"
                   >
-                    {offer?.nftCollection.name}{" "}
-                    {offer?.nftCollection.verified && (
+                    {collectionInfo?.name}{" "}
+                    {collectionInfo?.verified && (
                       <Icon color="primary.50" h={3} w={3}>
                         <HiBadgeCheck size="25px" />
                       </Icon>
@@ -239,9 +246,7 @@ function OfferListItem({
           <VStack spacing={0} alignItems="start">
             {offer?.offerPrice && (
               <Text noOfLines={1} fontSize="sm" color="gray">
-                {`${numeralFormat(offer?.offerPrice)} ${
-                  offer?.paymentToken?.symbol
-                }`}{" "}
+                {`${numeralFormat(offer?.offerPrice)} ${paymentInfo?.symbol}`}{" "}
               </Text>
             )}
             {/* {offer?.priceInUsd && (

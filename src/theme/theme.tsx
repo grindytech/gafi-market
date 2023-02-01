@@ -123,7 +123,7 @@ const nftCardActiveStyle = {
   boxShadow: "md",
   borderColor: "primary.300",
   '[data-component-name="NFTImage"]': {
-    // transform: "scale(1.05)",
+    transform: "scale(1.05)",
   },
   '[data-component-name="ShowOnHover"]': {
     background: "rgba(0,0,0,0.3)",
@@ -143,12 +143,13 @@ const nftCardActiveStyle = {
 const NFTCard: ComponentStyleConfig = {
   ...Card,
   baseStyle: {
+    borderWidth: "1px",
     padding: 0,
     overflow: "hidden",
     cursor: "pointer",
     boxShadow: "sm",
     "&.active": nftCardActiveStyle,
-    "&.in-cart": {
+    "&.selected": {
       borderColor: "primary.300",
       borderWidth: "3px",
       rounded: "xl",

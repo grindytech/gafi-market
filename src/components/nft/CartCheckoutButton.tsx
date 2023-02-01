@@ -20,6 +20,10 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
+import {
+  useGetChainInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { reset } from "../../store/bagSlice";
@@ -50,28 +54,33 @@ export default function CartCheckoutButton({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-
+  const { chainInfo } = useGetChainInfo({
+    chainId: nfts.length > 0 ? nfts[0].chain : undefined,
+  });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: nfts.length > 0 ? nfts[0].sale?.paymentToken : undefined,
+  });
   const checkout = async () => {
     try {
       setIsLoading(true);
       const approvePrice = convertToContractValue({
         amount: total,
-        decimal: nfts[0].sale.paymentToken.decimals,
+        decimal: paymentInfo?.decimals,
       });
       const allowance = await erc20Contract.getAllowance(
-        nfts[0].sale.paymentToken.contractAddress,
-        nfts[0].chain.mpContract,
+        paymentInfo?.contractAddress,
+        chainInfo?.mpContract,
         user
       );
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(
-          nfts[0].sale.paymentToken.contractAddress,
-          nfts[0].chain.mpContract,
+          paymentInfo?.contractAddress,
+          chainInfo?.mpContract,
           user,
           approvePrice
         );
       }
-      await mpContract.matchBag(nfts, user, nfts[0].chain.mpContract);
+      await mpContract.matchBag(nfts, user, chainInfo?.mpContract, paymentInfo);
       onClose();
       onSuccess();
       swAlert({
@@ -125,7 +134,7 @@ export default function CartCheckoutButton({
                 {nfts.map((item, index) => (
                   <>
                     {index !== 0 && <Divider />}
-                    <NftItem item={item} onClose={onClose} />
+                    <NftItem item={item} />
                   </>
                 ))}
               </VStack>
@@ -145,7 +154,7 @@ export default function CartCheckoutButton({
                   Total
                 </Text>
                 <Text>
-                  {numeralFormat(total)} {nfts[0].sale.paymentToken.symbol}
+                  {numeralFormat(total)} {paymentInfo?.symbol}
                 </Text>
               </HStack>
               <HStack w="full" justifyContent="center">
@@ -153,8 +162,8 @@ export default function CartCheckoutButton({
                   Close
                 </Button>
                 <SwitchNetworkButton
-                  symbol={nfts[0].chain.symbol}
-                  name={nfts[0].chain.name}
+                  symbol={chainInfo?.symbol}
+                  name={chainInfo?.name}
                   w="full"
                 >
                   <PrimaryButton

@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { customAlphabet } from "nanoid";
 import numeral from "numeral";
 import { UserDto } from "../services/types/dtos/UserDto";
 
@@ -214,3 +215,8 @@ export function checkIfFilesAreTooBig(files?: [File], mb = 5): boolean {
   }
   return valid;
 }
+
+export const generateId = () => {
+  const nanoid = customAlphabet("1234567890qwertyuiopasdfghjklZxcvbnm", 10);
+  return nanoid();
+};

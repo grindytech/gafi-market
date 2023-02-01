@@ -12,6 +12,7 @@ import { HiBadgeCheck } from "react-icons/hi";
 import Icons from "../../images";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import useCustomColors from "../../theme/useCustomColors";
+import { numeralFormat } from "../../utils/utils";
 import Avatar from "../Avatar";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
@@ -106,13 +107,13 @@ export default function NftCollectionCard({
                   {vol && (
                     <>
                       <Text color="gray.400">Vol:</Text>
-                      <Text color="gray.400">${vol}</Text>
+                      <Text color="gray.400">${numeralFormat(vol)}</Text>
                     </>
                   )}
                   {floor && (
                     <>
                       <Text color="gray.400">Floor:</Text>
-                      <Text color="gray.400">${floor}</Text>
+                      <Text color="gray.400">${numeralFormat(floor)}</Text>
                     </>
                   )}
                 </HStack>

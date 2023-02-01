@@ -3,9 +3,11 @@ import {
   Button,
   HStack,
   IconButton,
+  MenuItem,
   SimpleGrid,
   Stack,
   Text,
+  Tooltip,
   useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
@@ -27,6 +29,11 @@ import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
 import SyncNfts from "../profile/syncNfts/SyncNfts";
+import { useSelector } from "react-redux";
+import { selectProfile } from "../../store/profileSlice";
+import { NftDto } from "../../services/types/dtos/Nft.dto";
+import CreateBundle from "./CreateBundle";
+import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 
 export default function Nfts({
   owner,
@@ -49,10 +56,31 @@ export default function Nfts({
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
   const containerRef = useRef(null);
+  const { user } = useSelector(selectProfile);
+  const [bundleItems, setBundleItems] = useState<NftDto[]>([]);
+  const [createBundleMode, setCreateBundleMode] = useState(false);
+  const [bundleCollection, setBundleCollection] = useState<string>();
+  useEffect(() => {
+    if (bundleItems.length === 0) {
+      setBundleCollection(undefined);
+    } else {
+      const c = bundleItems[0].nftCollection;
+      setBundleCollection(typeof c === "string" ? c : c?.id);
+    }
+  }, [bundleItems]);
+  const baseCols = [2, 4, 4, 5, 6];
   const col = useBreakpointValue(
-    showFilter && md ? [2, 3, 3, 3, 5] : [2, 3, 4, 5, 6]
+    !md
+      ? baseCols
+      : baseCols.map((v, i) => {
+          if (i > 1) {
+            const newV = v - (showFilter ? 1 : 0) - (createBundleMode ? 1 : 0);
+            return newV;
+          } else return v;
+        })
   );
   const size = (row || 3) * col;
+
   const {
     query,
     setQuery,
@@ -120,20 +148,111 @@ export default function Nfts({
 
   return (
     <VStack px={0} spacing={5} w="full" alignItems="start">
-      <HStack w="full" alignItems="start" spacing={0}>
-        {enableFilter && (
+      {enableFilter && (
+        <Stack
+          zIndex={10}
+          position="sticky"
+          top="60px"
+          h="60px"
+          direction="row"
+          w="full"
+          justifyContent="space-between"
+          bg={bgColor}
+        >
+          <HStack>
+            {md && (
+              <Button
+                onClick={() => {
+                  setShowFilter(!showFilter);
+                }}
+                leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
+                lineHeight="base"
+              >
+                <HStack>
+                  <Text>Filter</Text>
+                  {countFilter() && (
+                    <Box
+                      w="1.5em"
+                      h="1.5em"
+                      justifyContent="center"
+                      alignItems="center"
+                      fontSize="xs"
+                      rounded="full"
+                      bg="gray"
+                      color="white"
+                    >
+                      {countFilter()}
+                    </Box>
+                  )}
+                </HStack>
+              </Button>
+            )}
+            {!md && (
+              <NftsFilterMobileBtn
+                collectionProps={
+                  nftCollection && {
+                    disableChange: true,
+                    nftCollection: nftCollection,
+                    game,
+                  }
+                }
+                options={NFTS_FILTER_OPTIONS}
+                lineHeight="base"
+              >
+                <HStack>
+                  <Text>Filter</Text>
+                  {countFilter() && (
+                    <Box
+                      w="1.5em"
+                      h="1.5em"
+                      justifyContent="center"
+                      alignItems="center"
+                      fontSize="xs"
+                      rounded="full"
+                      bg="gray"
+                      color="white"
+                    >
+                      {countFilter()}
+                    </Box>
+                  )}
+                </HStack>
+              </NftsFilterMobileBtn>
+            )}
+            {countFilter() && <Button onClick={resetQuery}>Reset all</Button>}
+          </HStack>
+          <HStack>
+            {owner === user && (
+              <SyncNfts
+                onSuccess={() => {
+                  refetch();
+                }}
+              />
+            )}
+            <IconButton
+              isLoading={isFetching}
+              onClick={() => {
+                refetch();
+              }}
+              aria-label="refresh"
+            >
+              <FiRefreshCw />
+            </IconButton>
+            <Sort option="nft" />
+          </HStack>
+        </Stack>
+      )}
+      <HStack w="full" alignItems="start" spacing={[0, 3]}>
+        {enableFilter && md && showFilter && (
           <Box
-            display={md && showFilter ? "block" : "none"}
             position="sticky"
             border="1px solid"
             borderColor={borderColor}
             rounded="xl"
             minW="350px"
             w="350px"
-            top="65px"
+            top="125px"
             height="calc( 100vh - 60px )"
             minH={500}
-            mr={3}
             overflow="hidden"
           >
             <NftsFilter
@@ -142,151 +261,125 @@ export default function Nfts({
                 nftCollection,
                 game,
               }}
-              options={NFTS_FILTER_OPTIONS}
+              options={NFTS_FILTER_OPTIONS.filter(
+                (o) => !status || o !== "marketStatus"
+              )}
             />
           </Box>
         )}
-        <VStack w="full" p={0}>
-          {enableFilter && (
-            <Stack
-              zIndex={10}
-              position="sticky"
-              top="60px"
-              h="60px"
-              direction="row"
-              w="full"
-              justifyContent="space-between"
-              bg={bgColor}
-            >
-              <HStack>
-                {md && (
-                  <Button
-                    onClick={() => {
-                      setShowFilter(!showFilter);
-                    }}
-                    leftIcon={showFilter && md ? <FiArrowLeft /> : <FiFilter />}
-                    lineHeight="base"
-                  >
-                    <HStack>
-                      <Text>Filter</Text>
-                      {countFilter() && (
-                        <Box
-                          w="1.5em"
-                          h="1.5em"
-                          justifyContent="center"
-                          alignItems="center"
-                          fontSize="xs"
-                          rounded="full"
-                          bg="gray"
-                          color="white"
-                        >
-                          {countFilter()}
-                        </Box>
-                      )}
-                    </HStack>
-                  </Button>
-                )}
-                {!md && (
-                  <NftsFilterMobileBtn
-                    collectionProps={
-                      nftCollection && {
-                        disableChange: true,
-                        nftCollection: nftCollection,
-                        game,
-                      }
-                    }
-                    options={NFTS_FILTER_OPTIONS}
-                    lineHeight="base"
-                  >
-                    <HStack>
-                      <Text>Filter</Text>
-                      {countFilter() && (
-                        <Box
-                          w="1.5em"
-                          h="1.5em"
-                          justifyContent="center"
-                          alignItems="center"
-                          fontSize="xs"
-                          rounded="full"
-                          bg="gray"
-                          color="white"
-                        >
-                          {countFilter()}
-                        </Box>
-                      )}
-                    </HStack>
-                  </NftsFilterMobileBtn>
-                )}
-                {countFilter() && (
-                  <Button onClick={resetQuery}>Reset all</Button>
-                )}
-              </HStack>
-              <HStack>
-                {owner && (
-                  <SyncNfts
-                    onSuccess={() => {
-                      refetch();
-                    }}
-                  />
-                )}
-                <IconButton
-                  isLoading={isFetching}
+        <Box w="full">
+          {isEmpty && (
+            <Box w="full" py={10}>
+              <EmptyState>
+                <Button
                   onClick={() => {
                     refetch();
                   }}
-                  aria-label="refresh"
+                  isLoading={isLoading || isFetching}
                 >
-                  <FiRefreshCw />
-                </IconButton>
-                <Sort option="nft" />
-              </HStack>
-            </Stack>
+                  Try again
+                </Button>
+              </EmptyState>
+            </Box>
           )}
-          <Box w="full">
-            {isEmpty && (
-              <Box w="full" py={10}>
-                <EmptyState>
-                  <Button
-                    onClick={() => {
-                      refetch();
-                    }}
-                    isLoading={isLoading || isFetching}
-                  >
-                    Try again
-                  </Button>
-                </EmptyState>
-              </Box>
-            )}
-            {isError && (
-              <Box w="full" py={10}>
-                <ErrorState>
-                  <Button
-                    onClick={() => {
-                      refetch();
-                    }}
-                  >
-                    Try again
-                  </Button>
-                </ErrorState>
-              </Box>
-            )}
-            {!isError && !isEmpty && (
-              <SimpleGrid
-                ref={containerRef}
-                justifyContent="center"
-                w="full"
-                columns={col}
-                gap="15px"
-                px={1}
-              >
-                {!isLoading &&
-                  marketNfts.map((nft) => {
-                    return nft ? (
+          {isError && (
+            <Box w="full" py={10}>
+              <ErrorState>
+                <Button
+                  onClick={() => {
+                    refetch();
+                  }}
+                >
+                  Try again
+                </Button>
+              </ErrorState>
+            </Box>
+          )}
+          {!isError && !isEmpty && (
+            <SimpleGrid
+              ref={containerRef}
+              justifyContent="center"
+              w="full"
+              columns={col}
+              gap="15px"
+              px={0}
+            >
+              {!isLoading &&
+                marketNfts.map((nft) => {
+                  const someBundleCollection =
+                    bundleCollection === nft.nftCollection ||
+                    bundleCollection ===
+                      (nft.nftCollection as NftCollectionDto)?.id;
+                  return nft ? (
+                    <Box position="relative">
+                      {createBundleMode && (
+                        <Box
+                          zIndex={9}
+                          cursor="pointer"
+                          onClick={(e) => {
+                            if (createBundleMode) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (bundleCollection && !someBundleCollection) {
+                                return;
+                              }
+                              if (bundleItems.find((b) => b.id === nft.id)) {
+                                const newItems = Array.from(
+                                  bundleItems.filter((b) => b.id !== nft.id)
+                                );
+                                setBundleItems(newItems);
+                              } else {
+                                setBundleItems(
+                                  Array.from([...bundleItems, nft])
+                                );
+                              }
+                            }
+                          }}
+                          position="absolute"
+                          w="full"
+                          h="full"
+                        >
+                          <Tooltip
+                            label={
+                              createBundleMode
+                                ? bundleCollection && !someBundleCollection
+                                  ? "You can only select items from the same collection"
+                                  : !!nft.bundle
+                                  ? "This item actually in a bundle"
+                                  : ""
+                                : ""
+                            }
+                          >
+                            <Box w="full" h="full"></Box>
+                          </Tooltip>
+                        </Box>
+                      )}
+
                       <NextLink
                         key={`${nft.nftContract}:${nft.tokenId}`}
                         href={`/nft/${nft.nftContract}:${nft.tokenId}`}
                       >
                         <NftCardMarket
+                          disabled={
+                            createBundleMode &&
+                            ((bundleCollection && !someBundleCollection) ||
+                              !!nft.bundle)
+                          }
+                          selected={!!bundleItems.find((b) => b.id === nft.id)}
+                          showMenu={!createBundleMode}
+                          menuItems={
+                            owner === user &&
+                            !nft.bundle && (
+                              <MenuItem
+                                onClick={() => {
+                                  setCreateBundleMode(true);
+                                  setBundleItems([nft]);
+                                }}
+                              >
+                                Sale as bundle
+                              </MenuItem>
+                            )
+                          }
                           onCancelSale={() => {
                             refetch();
                           }}
@@ -299,32 +392,54 @@ export default function Nfts({
                           nft={nft}
                         />
                       </NextLink>
-                    ) : (
-                      <></>
-                    );
-                  })}
-
-                {(isLoading || isFetching) &&
-                  marketNfts.length === 0 &&
-                  Array.from(Array(col).keys()).map((k) => (
-                    <NftCardMarket loading key={`nft-template-${k}`} />
-                  ))}
-
-                {hasNextPage &&
-                  (isFetchingNextPage ? (
-                    Array.from(Array(col).keys()).map((k) => (
-                      <NftCardMarket loading key={`nft-template-${k}`} />
-                    ))
+                    </Box>
                   ) : (
                     <></>
-                  ))}
-              </SimpleGrid>
-            )}
-            {!hideLoadMore && !isLoading && !isFetching && hasNextPage && (
-              <div ref={loadingRef} />
-            )}
+                  );
+                })}
+
+              {(((isLoading || isFetching) && marketNfts.length === 0) ||
+                (hasNextPage && isFetchingNextPage)) &&
+                Array.from(Array(col).keys()).map((k) => (
+                  <NftCardMarket loading key={`nft-template-${k}`} />
+                ))}
+            </SimpleGrid>
+          )}
+          {!hideLoadMore && !isLoading && !isFetching && hasNextPage && (
+            <div ref={loadingRef} />
+          )}
+        </Box>
+        {createBundleMode && (
+          <Box
+            display={md && createBundleMode ? "block" : "none"}
+            position="sticky"
+            border="1px solid"
+            borderColor={borderColor}
+            rounded="xl"
+            minW="350px"
+            w="350px"
+            top="125px"
+            height="calc( 100vh - 60px )"
+            minH={500}
+            overflow="hidden"
+          >
+            <CreateBundle
+              items={bundleItems}
+              onClose={() => {
+                setBundleItems([]);
+                setCreateBundleMode(false);
+              }}
+              onRemove={(nftId) => {
+                setBundleItems(
+                  Array.from(bundleItems.filter((b) => b.id !== nftId))
+                );
+              }}
+              onReset={() => {
+                setBundleItems([]);
+              }}
+            />
           </Box>
-        </VStack>
+        )}
       </HStack>
     </VStack>
   );

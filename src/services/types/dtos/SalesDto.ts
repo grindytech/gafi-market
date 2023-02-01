@@ -12,7 +12,7 @@ export class SalesDto extends BaseDocumentDto {
 
   price: number;
 
-  paymentToken: PaymentToken;
+  paymentToken: PaymentToken | string;
 
   period: number;
 

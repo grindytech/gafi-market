@@ -9,4 +9,5 @@ export class GetHistories extends BaseQueryParams {
   tokenId?: string;
   nftCollection?: string;
   nftContract?: string;
+  nft?: string;
 }

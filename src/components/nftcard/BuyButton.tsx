@@ -1,5 +1,7 @@
 import {
   Box,
+  BoxProps,
+  Button,
   ButtonProps,
   Heading,
   HStack,
@@ -21,6 +23,11 @@ import { useBalanceOf } from "../../connectWallet/useBalanceof";
 import { Chain } from "../../contracts";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
 import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
@@ -34,13 +41,16 @@ export default function BuyButton({
   children,
   onSuccess,
   ...rest
-}: ButtonProps & { nft: NftDto; onSuccess?: () => void }) {
+}: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const { swAlert } = useSwal();
   const router = useRouter();
-
+  const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: nft.sale.paymentToken,
+  });
   const {
     data: balance,
     refetch: refetchBalance,
@@ -48,9 +58,9 @@ export default function BuyButton({
     isFetching: fetchingBalance,
   } = useBalanceOf({
     account: user,
-    chain: nft.chain.symbol.toUpperCase() as Chain,
-    tokenAddress: nft.sale.paymentToken.contractAddress,
-    isNative: false,
+    chain: chainInfo?.symbol.toUpperCase() as Chain,
+    tokenAddress: paymentInfo?.contractAddress,
+    isNative: paymentInfo?.isNative,
   });
 
   const buyNftHandle = async () => {
@@ -58,17 +68,17 @@ export default function BuyButton({
       setLoading(true);
       const approvePrice = convertToContractValue({
         amount: nft.sale.price,
-        decimal: nft.sale.paymentToken.decimals,
+        decimal: paymentInfo?.decimals,
       });
       const allowance = await erc20Contract.getAllowance(
-        nft.sale.paymentToken.contractAddress,
-        nft.chain.mpContract,
+        paymentInfo?.contractAddress,
+        chainInfo?.mpContract,
         user
       );
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(
-          nft.sale.paymentToken.contractAddress,
-          nft.chain.mpContract,
+          paymentInfo.contractAddress,
+          chainInfo?.mpContract,
           user,
           approvePrice
         );
@@ -77,7 +87,7 @@ export default function BuyButton({
         {
           nftContract: nft.nftContract,
           ownerAddress: nft.owner.address,
-          paymentTokenAddress: nft.sale.paymentToken.contractAddress,
+          paymentTokenAddress: paymentInfo.contractAddress,
           price: approvePrice,
           saltNonce: nft.sale.saltNonce,
           signature: nft.sale.signedSignature,
@@ -85,7 +95,7 @@ export default function BuyButton({
           period: nft.sale.period,
         },
         user,
-        nft.chain.mpContract
+        chainInfo?.mpContract
       );
       onClose();
       onSuccess && onSuccess();
@@ -116,7 +126,7 @@ export default function BuyButton({
   };
   return (
     <>
-      <PrimaryButton
+      <Box
         onClick={(e) => {
           e.preventDefault();
           onOpen();
@@ -124,7 +134,7 @@ export default function BuyButton({
         {...rest}
       >
         {children}
-      </PrimaryButton>
+      </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -150,7 +160,7 @@ export default function BuyButton({
                 <HStack w="full" justifyContent="space-between">
                   <Text>Price</Text>
                   <Text>
-                    {nft.sale.price} {nft.sale.paymentToken.symbol}
+                    {nft.sale.price} {paymentInfo?.symbol}
                   </Text>
                 </HStack>
               </VStack>
@@ -159,8 +169,8 @@ export default function BuyButton({
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
               <SwitchNetworkButton
-                symbol={nft.chain.symbol}
-                name={nft.chain.name}
+                symbol={chainInfo?.symbol}
+                name={chainInfo?.name}
               >
                 <PrimaryButton
                   disabled={loading || balance < nft.sale.price}

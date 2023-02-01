@@ -1,5 +1,7 @@
 import { client } from "./client";
 import { BaseResult } from "./types/dtos/BaseResult";
+import { BundleDto } from "./types/dtos/BundleDto";
+import { BundleHashMessageDto } from "./types/dtos/BundleHashMessageDto";
 import { GameDto } from "./types/dtos/GameDto";
 import { HashMessageDto } from "./types/dtos/HashMessageDto";
 import { NftDto } from "./types/dtos/Nft.dto";
@@ -11,7 +13,10 @@ import { TopCollectionDto } from "./types/dtos/TopCollection.dto";
 import { AddCollectionDto } from "./types/params/AddCollection";
 import { AddGameParams } from "./types/params/AddGameParams";
 import { BaseQueryParams } from "./types/params/BaseQueryParams";
+import { CreateBundleDto } from "./types/params/CreateBundle.dto";
 import { CreateOfferParams } from "./types/params/CreateOfferParams";
+import { GetBundleHashMessageDto } from "./types/params/GetBundleHashMessage.dto";
+import { GetBundleDto } from "./types/params/GetBundles.dto";
 import { GetGameParams } from "./types/params/GetGamesParams";
 import { GetHashMessage } from "./types/params/GetHashMessage";
 import { GetHistories } from "./types/params/GetHistories";
@@ -151,6 +156,28 @@ const fetchNftsOnchain = async (cId: string): Promise<void> => {
   return await client.get(`/market/api/nft/sync/${cId}`);
 };
 
+const getBundleHashMessage = async (
+  body: GetBundleHashMessageDto
+): Promise<BaseResult<BundleHashMessageDto>> => {
+  return await client.post("/market/api/bundles/hash-message", body);
+};
+
+const createBundle = async (
+  body: CreateBundleDto
+): Promise<BaseResult<string>> => {
+  return await client.post("/market/api/bundles/create", body);
+};
+
+const getBundles = async (
+  params: GetBundleDto
+): Promise<BaseResult<PaginationDto<BundleDto>>> => {
+  return await client.get("/market/api/bundles", { params });
+};
+
+const getBundle = async (id: string): Promise<BaseResult<BundleDto>> => {
+  return await client.get(`/market/api/bundles/${id}/detail`);
+};
+
 export default {
   getNfts,
   getNft,
@@ -182,4 +209,9 @@ export default {
   getGame,
 
   fetchNftsOnchain,
+
+  getBundleHashMessage,
+  createBundle,
+  getBundles,
+  getBundle,
 };

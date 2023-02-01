@@ -3,6 +3,7 @@ import { formatDistance } from "date-fns";
 import NextLink from "next/link";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { useGetPaymentTokenInfo } from "../../../hooks/useGetSystemInfo";
 import { useTokenUSDPrice } from "../../../hooks/useTokenUSDPrice";
 import nftService from "../../../services/nft.service";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
@@ -29,13 +30,15 @@ export default function OfferListItem({
   refetch: () => void;
 }) {
   const { user } = useSelector(selectProfile);
-
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: offer?.paymentToken,
+  });
   const buyerName = useMemo(
     () => getUserName(offer?.buyer, user),
     [offer?.buyer]
   );
   const { priceAsUsd, prefix, isPriceAsUsdLoading } = useTokenUSDPrice({
-    paymentSymbol: offer?.paymentToken.symbol,
+    paymentSymbol: paymentInfo?.symbol,
   });
   const isOfferOwner = useMemo(
     () =>
@@ -154,7 +157,7 @@ export default function OfferListItem({
       <VStack spacing={0} fontWeight="semibold" alignItems="end">
         <Skeleton isLoaded={!loading}>
           <Text>
-            {offer?.offerPrice}&nbsp;{offer?.paymentToken.symbol}
+            {offer?.offerPrice}&nbsp;{paymentInfo?.symbol}
           </Text>
         </Skeleton>
         <Skeleton isLoaded={!loading && !isPriceAsUsdLoading}>

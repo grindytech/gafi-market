@@ -19,6 +19,10 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import erc721Contract from "../../../contracts/erc721.contract";
 import mpContract from "../../../contracts/marketplace.contract";
+import {
+  useGetChainInfo,
+  useGetPaymentTokenInfo,
+} from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../../hooks/useTokenUSDPrice";
 import { Images } from "../../../images";
@@ -42,6 +46,10 @@ export default function AcceptOfferButton({
   const { swAlert } = useSwal();
   const [marketFee, setMarketFee] = useState(0.05);
   const [collectionOwnerFee, setCollectionOwnerFee] = useState(0.0);
+  const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: offer.paymentToken,
+  });
   const receive = () =>
     Number(offer.offerPrice) -
     Number(offer.offerPrice) * (marketFee + collectionOwnerFee);
@@ -51,17 +59,17 @@ export default function AcceptOfferButton({
       await erc721Contract.approveForAll(
         nft.nftContract,
         user,
-        nft.chain.mpContract
+        chainInfo?.mpContract
       );
       const approvePrice = convertToContractValue({
         amount: offer.offerPrice,
-        decimal: offer.paymentToken.decimals,
+        decimal: paymentInfo?.decimals,
       });
       await mpContract.matchOffer(
         {
           nftContract: nft.nftContract,
           ownerAddress: offer.buyer.address,
-          paymentTokenAddress: offer.paymentToken.contractAddress,
+          paymentTokenAddress: paymentInfo?.contractAddress,
           price: approvePrice,
           saltNonce: String(offer.saltNonce),
           signature: offer.signature,
@@ -69,7 +77,7 @@ export default function AcceptOfferButton({
           period: offer.period,
         },
         user,
-        nft.chain.mpContract
+        chainInfo?.mpContract
       );
       swAlert({
         title: "COMPLETE",
@@ -95,7 +103,7 @@ export default function AcceptOfferButton({
   };
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: !!offer?.paymentToken,
-    paymentSymbol: offer?.paymentToken?.symbol,
+    paymentSymbol: paymentInfo?.symbol,
   });
   return (
     <>
@@ -140,7 +148,7 @@ export default function AcceptOfferButton({
                     <Text color="gray">
                       {receive() || "--"}
                       &nbsp;
-                      {offer.paymentToken?.symbol}
+                      {paymentInfo?.symbol}
                     </Text>
                     {priceAsUsd && offer.offerPrice && (
                       <Text fontSize="xs" color="gray.500">
@@ -156,8 +164,8 @@ export default function AcceptOfferButton({
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
               <SwitchNetworkButton
-                symbol={nft.chain.symbol}
-                name={nft.chain.name}
+                symbol={chainInfo?.symbol}
+                name={chainInfo?.name}
               >
                 <PrimaryButton
                   isLoading={loading}

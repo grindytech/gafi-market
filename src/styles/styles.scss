@@ -124,3 +124,13 @@
       0 0 4px #e8e104ad, 0 0 5px #e8e104ad, 0 0 6px #e8e104ad, 0 0 7px #e8e104ad;
   }
 }
+
+.slick-arrow {
+  z-index: 9;
+  &.slick-prev {
+    left: 5px;
+  }
+  &.slick-next {
+    right: 5px;
+  }
+}

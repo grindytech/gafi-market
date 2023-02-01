@@ -39,3 +39,10 @@ export enum Roles {
   user = "User",
   superAdmin = "Supper Admin",
 }
+
+export enum BundleStatus {
+  onSale = "onSale",
+  sold = "sold",
+  expired = "expired",
+  cancel = "cancel",
+}
