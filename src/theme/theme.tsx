@@ -10,7 +10,7 @@ const breakpoints = {
   sm: "40em",
   md: "64em",
   lg: "80em",
-  xl: "110em",
+  xl: "90em",
 };
 const colors = {
   primary: {

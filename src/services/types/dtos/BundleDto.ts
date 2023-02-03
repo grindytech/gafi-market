@@ -23,4 +23,6 @@ export class BundleDto extends BaseDocumentDto {
   status: BundleStatus;
   name: string;
   description: string;
+  startTime: string;
+  endTime: string;
 }

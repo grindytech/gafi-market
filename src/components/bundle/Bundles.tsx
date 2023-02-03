@@ -3,6 +3,7 @@ import {
   Button,
   HStack,
   IconButton,
+  Link,
   SimpleGrid,
   Stack,
   Text,
@@ -26,6 +27,8 @@ import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NftCardMarket from "../nftcard/NftCardMarket";
 import BundleCard from "./BundleCard";
+import NextLink from "next/link";
+import { BundleStatus } from "../../services/types/enum";
 
 export default function Bundles() {
   const [showFilter, setShowFilter] = useState(false);
@@ -33,7 +36,7 @@ export default function Bundles() {
   const { borderColor } = useCustomColors();
   const containerRef = useRef(null);
   const { user } = useSelector(selectProfile);
-  const baseCols = [2, 4, 4, 5, 6];
+  const baseCols = [2, 4, 4, 5, 5];
   const col = useBreakpointValue(
     !md
       ? baseCols
@@ -73,6 +76,7 @@ export default function Bundles() {
         maxPrice: query.maxPrice,
         minPrice: query.minPrice,
         paymentTokenId: query.paymentTokenId,
+        status: BundleStatus.onSale,
       });
       return rs.data;
     },
@@ -238,7 +242,11 @@ export default function Bundles() {
               px={0}
             >
               {!isLoading &&
-                bundles?.map((bundle) => <BundleCard bundle={bundle} />)}
+                bundles?.map((bundle) => (
+                  <Link as={NextLink} href={`/bundle/${bundle.id}`}>
+                    <BundleCard bundle={bundle} />
+                  </Link>
+                ))}
               {(((isLoading || isFetching) && bundles.length === 0) ||
                 (hasNextPage && isFetchingNextPage)) &&
                 Array.from(Array(col).keys()).map((k) => (

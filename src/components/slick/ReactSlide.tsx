@@ -75,7 +75,10 @@ export default function ReactSlide({
           top={top}
           transform={"translate(0%, -50%)"}
           zIndex={9}
-          onClick={() => slider?.slickPrev()}
+          onClick={(e) => {
+            e.preventDefault();
+            slider?.slickPrev();
+          }}
           rounded="full"
         >
           <FiChevronLeft size="30px" />
@@ -95,7 +98,10 @@ export default function ReactSlide({
           top={top}
           transform={"translate(0%, -50%)"}
           zIndex={9}
-          onClick={() => slider?.slickNext()}
+          onClick={(e) => {
+            e.preventDefault();
+            slider?.slickNext()
+          }}
           rounded="full"
         >
           <FiChevronRight size="30px" />

@@ -2,55 +2,61 @@ import {
   Box,
   BoxProps,
   Button,
-  ButtonProps,
   Heading,
   HStack,
-  Image,
+  Link,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalOverlay,
+  SimpleGrid,
   Text,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import { get } from "lodash";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Countdown from "react-countdown";
 import { useSelector } from "react-redux";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
 import { Chain } from "../../contracts";
+import bundleContract from "../../contracts/bundle.contract";
 import erc20Contract from "../../contracts/erc20.contract";
-import mpContract from "../../contracts/marketplace.contract";
 import {
   useGetChainInfo,
   useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
-import { Images } from "../../images";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { BundleDto } from "../../services/types/dtos/BundleDto";
 import { selectProfile } from "../../store/profileSlice";
+import useCustomColors from "../../theme/useCustomColors";
 import { convertToContractValue } from "../../utils/utils";
+import { MASKS } from "../nftcard/mask";
+import NftCard from "../nftcard/NftCard";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
-export default function BuyButton({
-  nft,
+export default function BuyBundle({
+  bundle,
   children,
   onSuccess,
   ...rest
-}: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
+}: BoxProps & { bundle: BundleDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const { swAlert } = useSwal();
   const router = useRouter();
-  const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
+  const { chainInfo } = useGetChainInfo({ chainId: bundle.chain });
   const { paymentInfo } = useGetPaymentTokenInfo({
-    paymentId: nft.sale.paymentToken,
+    paymentId: bundle.paymentToken,
+  });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: bundle.nftCollection,
   });
   const {
     data: balance,
@@ -63,12 +69,11 @@ export default function BuyButton({
     tokenAddress: paymentInfo?.contractAddress,
     isNative: paymentInfo?.isNative,
   });
-
   const buyNftHandle = async () => {
     try {
       setLoading(true);
       const approvePrice = convertToContractValue({
-        amount: nft.sale.price,
+        amount: bundle.price,
         decimal: paymentInfo?.decimals,
       });
       const allowance = await erc20Contract.getAllowance(
@@ -84,20 +89,16 @@ export default function BuyButton({
           approvePrice
         );
       }
-      await mpContract.matchTransaction(
-        {
-          nftContract: nft.nftContract,
-          ownerAddress: nft.owner.address,
-          paymentTokenAddress: paymentInfo.contractAddress,
-          price: approvePrice,
-          saltNonce: nft.sale.saltNonce,
-          signature: nft.sale.signedSignature,
-          tokenId: nft.tokenId,
-          period: nft.sale.period,
-        },
-        user,
-        chainInfo?.mpContract
-      );
+      await bundleContract.match(chainInfo.bundleContract, user, {
+        bundleId: bundle.bundleId,
+        nftContract: collectionInfo.nftContract,
+        paymentToken: paymentInfo.contractAddress,
+        price: approvePrice,
+        saltNonce: String(bundle.saltNonce),
+        seller: bundle.seller.address,
+        signedSignature: bundle.signedSignature,
+        tokenIds: bundle.items.map((nft) => nft.tokenId),
+      });
       onClose();
       onSuccess && onSuccess();
       swAlert({
@@ -125,10 +126,12 @@ export default function BuyButton({
       setLoading(false);
     }
   };
+  const mask = get(MASKS, collectionInfo?.key);
+  const { bgColor } = useCustomColors();
   return (
     <>
       <Countdown
-        date={nft.sale.startTime}
+        date={bundle.startTime}
         renderer={({ hours, minutes, seconds, completed }) => {
           if (completed) {
             return (
@@ -154,30 +157,64 @@ export default function BuyButton({
       />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={bgColor}>
           <ModalCloseButton />
           <ModalBody>
             <VStack pt={5} px={5} w="full">
               <Heading fontSize="2xl">BUY NFT</Heading>
               <HStack spacing={0}>
-                <Text>You are about buy&nbsp;</Text>
-                <Text color="gray">
-                  {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
-                </Text>
+                <Text>You are about buy {bundle.items.length} items</Text>
               </HStack>
-              <Box py={3}>
-                <Image
-                  w="300px"
-                  src={nft.image}
-                  fallbackSrc={Images.Placeholder.src}
-                />
+              <Box rounded="xl" p={2} w="full" maxH={400} overflow="auto">
+                <SimpleGrid
+                  justifyContent="center"
+                  w="full"
+                  columns={2}
+                  gap="15px"
+                  px={0}
+                >
+                  {bundle.items.map((nft) => {
+                    return (
+                      <Link href={`/nft/${nft.id}`} target="_blank">
+                        <NftCard
+                          image={nft.image}
+                          mask={mask ? mask({ nft: nft }) : <></>}
+                        >
+                          <HStack
+                            alignItems="start"
+                            w="full"
+                            justifyContent="space-between"
+                            p={2}
+                          >
+                            <VStack spacing={0} alignItems="start">
+                              <Text
+                                noOfLines={1}
+                                fontSize="md"
+                                fontWeight="semibold"
+                              >
+                                {nft?.name || <>&nbsp;</>}
+                              </Text>
+                              <Text
+                                noOfLines={1}
+                                color="gray"
+                                fontSize="xs"
+                                fontWeight="semibold"
+                              >
+                                #{nft?.tokenId}
+                              </Text>
+                            </VStack>
+                          </HStack>
+                        </NftCard>
+                      </Link>
+                    );
+                  })}
+                </SimpleGrid>
               </Box>
-
               <VStack spacing={2} p={1} w="full" fontWeight="semibold">
                 <HStack w="full" justifyContent="space-between">
                   <Text>Price</Text>
                   <Text>
-                    {nft.sale.price} {paymentInfo?.symbol}
+                    {bundle.price} {paymentInfo?.symbol}
                   </Text>
                 </HStack>
               </VStack>
@@ -190,14 +227,12 @@ export default function BuyButton({
                 name={chainInfo?.name}
               >
                 <PrimaryButton
-                  disabled={loading || balance < nft.sale.price}
+                  disabled={loading || balance < bundle.price}
                   isLoading={loading}
                   onClick={buyNftHandle}
                   w="full"
                 >
-                  {balance < nft.sale.price
-                    ? "Insufficient balance"
-                    : "Confirm"}
+                  {balance < bundle.price ? "Insufficient balance" : "Confirm"}
                 </PrimaryButton>
               </SwitchNetworkButton>
             </HStack>

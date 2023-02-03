@@ -29,11 +29,11 @@ export default function FeaturedGameCard() {
             height={"230px"}
             overflow="hidden"
             bg={useColorModeValue("gray.600", "gray.800")}
-            rounded="xl"
+            // rounded="xl"
             w={400}
             h={300}
             maxW="full"
-            border={"1px solid"}
+            // border={"1px solid"}
             borderColor={useColorModeValue("gray.200", "gray.700")}
           >
             <ImageWithFallback
