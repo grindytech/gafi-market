@@ -5,25 +5,38 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useQueryParam } from "use-query-params";
 import AddCollection from "../components/collections/AddCollection";
 import Collections from "../components/collections/Collections";
 import AddGame from "../components/game/AddGame";
+import Games from "../components/game/Games";
+import UserManager from "../components/profile/UserManager";
 type LinkTab = {
   key: string;
   name: string;
   children: any;
 };
 export const ADMIN_LINKS = [
-  // {
-  //   key: "collections",
-  //   name: "Collections",
-  //   children: <Collections />,
-  // },
+  {
+    key: "users_manager",
+    name: "Users",
+    children: <UserManager />,
+  },
+  {
+    key: "collections",
+    name: "Collections",
+    children: <Collections statusAll={true} />,
+  },
   {
     key: "collection_add",
     name: "Add Collection",
     children: <AddCollection title="Create collection" />,
+  },
+  {
+    key: "games",
+    name: "Games",
+    children: <Games statusAll={true} />,
   },
   {
     key: "game_add",
@@ -37,6 +50,9 @@ export default function AdminPageLayout({
 }: { links: LinkTab[] } & StackProps) {
   const highlightColor = useColorModeValue("gray.900", "gray.50");
   const [tab, setTab] = useQueryParam("tab");
+  useEffect(() => {
+    if (!tab) setTab(ADMIN_LINKS[0].key);
+  }, [tab]);
   return (
     <VStack w="full" {...rest}>
       <HStack w="full" alignItems="start">

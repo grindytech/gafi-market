@@ -8,7 +8,10 @@ export enum AttributesMapType {
   Boolean = "boolean",
   Object = "object",
 }
-
+export enum Status {
+  Active = "active",
+  DeActive = "deActive",
+}
 export enum SalePeriod {
   Week = 604800,
   TwoWeek = 1209600,

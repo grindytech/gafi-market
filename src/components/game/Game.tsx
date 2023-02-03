@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import nftService from "../../services/nft.service";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
-import { Roles } from "../../services/types/enum";
+import { Roles, Status } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import NftCollectionCard from "../collections/NftCollectionCard";
@@ -118,19 +118,21 @@ export default function Game({ id }: { id: string }) {
           <Heading fontSize="2xl">Collections</Heading>
           <Box w="full" position="relative" __css={sliderBox}>
             <ScrollSlide>
-              {(game?.collections as NftCollectionDto[])?.map((c, k) => (
-                <Box py={3} pr={3}>
-                  <Link
-                    as={NextLink}
-                    href={`/collection/${c.key}`}
-                    key={`GameCollection-${c.id}`}
-                  >
-                    <Box w="350px" maxW="80vw">
-                      <NftCollectionCard collection={c} />
-                    </Box>
-                  </Link>
-                </Box>
-              ))}
+              {(game?.collections as NftCollectionDto[])
+                ?.filter((c) => c.status === Status.Active)
+                ?.map((c, k) => (
+                  <Box py={3} pr={3}>
+                    <Link
+                      as={NextLink}
+                      href={`/collection/${c.key}`}
+                      key={`GameCollection-${c.id}`}
+                    >
+                      <Box w="350px" maxW="80vw">
+                        <NftCollectionCard collection={c} />
+                      </Box>
+                    </Link>
+                  </Box>
+                ))}
             </ScrollSlide>
           </Box>
         </Box>

@@ -1,19 +1,14 @@
-import {
-  Box,
-  Button,
-  HStack,
-  SimpleGrid,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useMemo, useRef } from "react";
 import { useInfiniteQuery } from "react-query";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
+import { Status } from "../../services/types/enum";
 import useCustomColors from "../../theme/useCustomColors";
 import { EmptyState, ErrorState } from "../EmptyState";
 import GameCard from "./GameCard";
-export default function Games() {
+export default function Games({ statusAll = undefined }) {
   const {
     data,
     isFetching,
@@ -28,6 +23,7 @@ export default function Games() {
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getGames({
         page: pageParam,
+        status: statusAll ? undefined : Status.Active,
       });
       return rs.data;
     },

@@ -1,3 +1,5 @@
+import { Status } from "../enum";
+
 export class AddGameParams {
   name: string;
   key: string;
@@ -5,8 +7,8 @@ export class AddGameParams {
   cover?: string;
   featuredImage?: string;
   owners: string[];
-  status: "active" | "deActive";
   description?: string;
   socials?: string; // Socials;
   collections?: string[];
+  status: Status;
 }

@@ -6,7 +6,6 @@ import {
   AccordionPanel,
   Box,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { NftDto } from "../../../../services/types/dtos/Nft.dto";
@@ -22,9 +21,6 @@ export default function SkinStats({ nft }: { nft: NftDto }) {
     }
     setAttributes(attrs);
   }, [nft]);
-  const { isOpen: isShowStats, onToggle: showStatsToggle } = useDisclosure();
-  const { isOpen: isShowBonusStats, onToggle: showBonusStatsToggle } =
-    useDisclosure();
 
   return (
     <Box

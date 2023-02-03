@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CheckboxGroup,
   FormControl,
   FormErrorMessage,
   FormHelperText,
@@ -14,7 +15,10 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  Radio,
+  RadioGroup,
   Select,
+  Stack,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -22,6 +26,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { get } from "lodash";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -33,6 +38,7 @@ import useYupValidationResolver from "../../hooks/useYupValidationResolver";
 import nftService from "../../services/nft.service";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
+import { Status } from "../../services/types/enum";
 import { AddCollectionDto } from "../../services/types/params/AddCollection";
 import { selectSystem } from "../../store/systemSlice";
 import { checkIfFilesAreTooBig } from "../../utils/utils";
@@ -103,6 +109,7 @@ const validationSchema = yup.object({
       excludeEmptyString: true,
     }),
   website: yup.string().max(200).url(),
+  status: yup.string().oneOf(Object.values(Status)),
 });
 export default function AddCollection({
   collection,
@@ -161,6 +168,7 @@ export default function AddCollection({
     lockTransfer,
     description,
     owner,
+    status,
   }) => {
     try {
       setLoading(true);
@@ -175,7 +183,7 @@ export default function AddCollection({
         game,
         chain,
         paymentTokens: payment,
-        status: "active",
+        status,
         // processByWorker,
         autoDetect,
         enableSendExternalTransfer,
@@ -212,6 +220,7 @@ export default function AddCollection({
   const shortLinkLeftRef = useRef(null);
   const { chains } = useSelector(selectSystem);
   const [paymentTokens, setPaymentTokens] = useState<PaymentToken[]>([]);
+  const collectionStatus = watch("status");
   const chain = watch("chain");
   useEffect(() => {
     setValue("paymentTokens", paymentTokens.map((p) => p.id).join(","));
@@ -488,6 +497,26 @@ export default function AddCollection({
         </FormErrorMessage>
       </FormControl>
 
+      <FormControl isInvalid={!!errors.status}>
+        <FormLabel> Status</FormLabel>
+        <RadioGroup
+          onChange={(v) => {
+            setValue("status", v);
+          }}
+          value={collectionStatus||collection?.status}
+        >
+          <Stack direction="row">
+            {Object.values(Status).map((v) => (
+              <Radio value={v}>{v}</Radio>
+            ))}
+          </Stack>
+        </RadioGroup>
+        <Input type="hidden" {...register("status")} />
+
+        <FormErrorMessage>
+          {errors.status?.message?.toString()}
+        </FormErrorMessage>
+      </FormControl>
       <PrimaryButton isLoading={loading} onClick={handleSubmit(onSubmit)}>
         {edit ? "Edit collection" : "Create collection"}
       </PrimaryButton>

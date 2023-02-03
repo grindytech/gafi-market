@@ -3,6 +3,7 @@ import {
   Heading,
   HStack,
   Icon,
+  Tag,
   Text,
   useColorModeValue,
   useStyleConfig,
@@ -11,6 +12,7 @@ import {
 import { HiBadgeCheck } from "react-icons/hi";
 import Icons from "../../images";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
+import { Status } from "../../services/types/enum";
 import useCustomColors from "../../theme/useCustomColors";
 import Avatar from "../Avatar";
 import Card from "../card/Card";
@@ -93,7 +95,14 @@ export default function NftCollectionCard({
               <VStack overflow="hidden" alignItems="start" spacing={0}>
                 <Skeleton isLoaded={!isLoading}>
                   <HStack spacing={1}>
-                    <Heading fontSize="lg">{collection?.name}</Heading>
+                    <Heading fontSize="lg">
+                      {collection?.name}{" "}
+                      {collection?.status !== Status.Active ? (
+                        <Tag>{collection?.status}</Tag>
+                      ) : (
+                        ""
+                      )}
+                    </Heading>
                     {collection?.verified && (
                       <Icon color="primary.500" h={4} w={4}>
                         <HiBadgeCheck size="25px" />

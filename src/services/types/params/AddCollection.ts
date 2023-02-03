@@ -1,3 +1,5 @@
+import { Status } from "../enum";
+
 export class AddCollectionDto {
   name: string;
   key: string;
@@ -5,7 +7,6 @@ export class AddCollectionDto {
   game?: string;
   chain: string;
   paymentTokens: string[];
-  status: "active" | "deActive";
   avatar: File;
   cover: File;
   featuredImage: File;
@@ -15,4 +16,5 @@ export class AddCollectionDto {
   lockTransfer?: number; //in seconds
   description?: string;
   owners?: string[];
+  status: Status;
 }

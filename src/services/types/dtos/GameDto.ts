@@ -1,3 +1,4 @@
+import { Status } from "../enum";
 import { BaseDocumentDto } from "./BaseDocumentDto";
 import { NftCollectionDto } from "./NftCollectionDto";
 import { Socials } from "./Socials";
@@ -9,7 +10,7 @@ export class GameDto extends BaseDocumentDto {
   cover?: string;
   featuredImage?: string;
   owners: string[];
-  status: "active" | "deActive";
+  status: Status;
   description?: string;
   socials?: Socials;
   collections?: NftCollectionDto[] | string[];

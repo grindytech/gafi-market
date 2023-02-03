@@ -3,12 +3,14 @@ import {
   Heading,
   HStack,
   Icon,
+  Tag,
   Text,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
 import { HiBadgeCheck } from "react-icons/hi";
 import { GameDto } from "../../services/types/dtos/GameDto";
+import { Status } from "../../services/types/enum";
 import useCustomColors from "../../theme/useCustomColors";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
@@ -83,7 +85,14 @@ export default function GameCard({
               <VStack overflow="hidden" alignItems="start" spacing={0}>
                 <Skeleton isLoaded={!isLoading}>
                   <HStack spacing={1}>
-                    <Heading fontSize="lg">{game?.name}</Heading>
+                    <Heading fontSize="lg">
+                      {game?.name}&nbsp;
+                      {game?.status !== Status.Active ? (
+                        <Tag>{game?.status}</Tag>
+                      ) : (
+                        ""
+                      )}
+                    </Heading>
                     {game?.verified && (
                       <Icon color="primary.500" h={4} w={4}>
                         <HiBadgeCheck size="25px" />

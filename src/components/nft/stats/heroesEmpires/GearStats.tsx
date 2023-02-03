@@ -22,10 +22,6 @@ export default function GearStats({ nft }: { nft: NftDto }) {
     }
     setAttributes(attrs);
   }, [nft]);
-  const { isOpen: isShowStats, onToggle: showStatsToggle } = useDisclosure();
-  const { isOpen: isShowBonusStats, onToggle: showBonusStatsToggle } =
-    useDisclosure();
-
   return (
     <Box
       borderTop="none"

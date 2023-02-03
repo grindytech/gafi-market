@@ -14,7 +14,10 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  Radio,
+  RadioGroup,
   SimpleGrid,
+  Stack,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -39,6 +42,7 @@ import useYupValidationResolver from "../../hooks/useYupValidationResolver";
 import nftService from "../../services/nft.service";
 import { GameDto } from "../../services/types/dtos/GameDto";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
+import { Status } from "../../services/types/enum";
 import { AddGameParams } from "../../services/types/params/AddGameParams";
 import { checkIfFilesAreTooBig } from "../../utils/utils";
 import Avatar from "../Avatar";
@@ -70,6 +74,7 @@ const validationSchema = yup.object({
   owner: yup.string().required("Owner address is required"),
   alias: yup.string().required("Short url is required").max(200),
   collections: yup.string(),
+  status: yup.string().oneOf(Object.values(Status)),
 });
 type Props = {
   game?: GameDto;
@@ -102,6 +107,7 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
       telegram: game?.socials?.telegram,
       website: game?.socials?.website,
       collections: game?.collections?.join(","),
+      status: game?.status,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -111,6 +117,8 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
   const avatarFile = watch("avatar");
   const featuredImageFile = watch("featuredImage");
   const shortLinkLeftRef = useRef(null);
+  const gameStatus = watch("status");
+
   const [collections, setCollections] = useState<NftCollectionDto[]>([]);
   useEffect(() => {
     setValue("collections", collections.map((p) => p.id).join(","));
@@ -135,6 +143,7 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
     telegram,
     website,
     collections,
+    status,
   }) => {
     try {
       setLoading(true);
@@ -146,7 +155,7 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
         key: alias,
         name,
         owners: [owner],
-        status: "active",
+        status,
         description,
         collections: nftCollection,
         socials: JSON.stringify({
@@ -331,7 +340,7 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
                       src={c.avatar}
                       jazzicon={{
                         diameter: 30,
-                        seed: c.key||'',
+                        seed: c.key || "",
                       }}
                     />
 
@@ -361,7 +370,7 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
               >
                 Add
               </MenuButton>
-              <MenuList>
+              <MenuList zIndex={9}>
                 <ChooseCollections
                   selected={collections}
                   onChange={(c) => {
@@ -379,6 +388,26 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
           <Input type="hidden" {...register("collections")} />
           <FormErrorMessage>
             {errors.collections?.message?.toString()}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.status}>
+          <FormLabel> Status</FormLabel>
+          <RadioGroup
+            onChange={(v) => {
+              setValue("status", v);
+            }}
+            value={gameStatus || game?.status}
+          >
+            <Stack direction="row">
+              {Object.values(Status).map((v) => (
+                <Radio value={v}>{v}</Radio>
+              ))}
+            </Stack>
+          </RadioGroup>
+          <Input type="hidden" {...register("status")} />
+
+          <FormErrorMessage>
+            {errors.status?.message?.toString()}
           </FormErrorMessage>
         </FormControl>
       </VStack>

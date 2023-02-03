@@ -24,7 +24,8 @@ import Sort from "../filters/Sort";
 import { useNftQueryParam } from "../filters/useCustomParam";
 import NextLink from "next/link";
 import NftCollectionCard from "./NftCollectionCard";
-export default function Collections() {
+import { Status } from "../../services/types/enum";
+export default function Collections({ statusAll = undefined }) {
   const {
     query,
     setQuery,
@@ -53,6 +54,7 @@ export default function Collections() {
         search: query.search,
         chain: query.chain,
         game: query.game,
+        status: statusAll ? undefined : Status.Active,
       });
       return rs.data;
     },

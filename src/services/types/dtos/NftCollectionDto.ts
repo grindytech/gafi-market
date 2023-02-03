@@ -1,3 +1,4 @@
+import { Status } from "../enum";
 import { AttributeMap } from "./AttributeMap";
 import { BaseDocumentDto } from "./BaseDocumentDto";
 import { ChainDto } from "./ChainDto";
@@ -21,4 +22,5 @@ export class NftCollectionDto extends BaseDocumentDto {
   enableSendExternalTransfer: boolean;
   lockTransfer: number;
   owners: string[];
+  status: Status;
 }
