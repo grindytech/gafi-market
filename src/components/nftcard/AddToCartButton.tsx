@@ -1,25 +1,39 @@
-import { IconButton, Tooltip } from "@chakra-ui/react";
+import { BoxProps, HStack, Icon, Text, Tooltip } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { FiPlus, FiX } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
+import { ChainDto } from "../../services/types/dtos/ChainDto";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
-import { remove, selectBag, add } from "../../store/bagSlice";
+import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
+import { add, remove, selectBag } from "../../store/bagSlice";
 
-export function AddToCartButton({ nft }: { nft: NftDto }) {
+export function AddToCartButton({
+  nft,
+  showIcon,
+  ...rest
+}: { nft: NftDto; showIcon?: boolean } & BoxProps) {
   const dispatch = useDispatch();
   const { items } = useSelector(selectBag);
+
   const isInCart = useMemo(
     () => !!items.find((i) => i.id === nft?.id && nft.sale?.id === i.sale.id),
     [items, nft]
   );
   const isDifferentChain = useMemo(
-    () => items.length > 0 && items[0].chain.id !== nft.chain.id,
+    () =>
+      items.length > 0 &&
+      (typeof nft.chain === "string"
+        ? items[0].chain !== nft.chain
+        : (items[0].chain as ChainDto)?.id !== (nft.chain as ChainDto)?.id),
     [items, nft]
   );
   const isDifferentPaymentToken = useMemo(
     () =>
       items.length > 0 &&
-      items[0].sale.paymentToken.id !== nft.sale.paymentToken.id,
+      (typeof nft.sale.paymentToken === "string"
+        ? items[0].sale.paymentToken !== nft.sale.paymentToken
+        : (items[0].sale.paymentToken as PaymentToken)?.id !==
+          (nft.sale.paymentToken as PaymentToken)?.id),
     [items, nft]
   );
   return (
@@ -34,20 +48,29 @@ export function AddToCartButton({ nft }: { nft: NftDto }) {
           : "Put to cart"
       }
     >
-      <IconButton
+      <HStack
         disabled={isDifferentChain || isDifferentPaymentToken}
         onClick={(e) => {
           e.preventDefault();
+          if (isDifferentChain || isDifferentPaymentToken) return;
           if (isInCart) {
             dispatch(remove({ id: nft.id }));
           } else {
             dispatch(add({ item: nft }));
           }
         }}
-        aria-label="Add to cart"
+        {...rest}
+        color={
+          isDifferentChain || isDifferentPaymentToken
+            ? "gray.400"
+            : isInCart
+            ? "red.400"
+            : "green.300"
+        }
       >
-        {isInCart ? <FiX size="30px" /> : <FiPlus size="30px" />}
-      </IconButton>
+        {showIcon && <Icon as={isInCart ? FiX : FiPlus} />}
+        <Text> {isInCart ? "Remove from cart" : "Add to cart"}</Text>
+      </HStack>
     </Tooltip>
   );
 }

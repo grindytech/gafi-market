@@ -24,6 +24,7 @@ import Nfts from "../market/Nfts";
 import UserActivities from "./Activities";
 import OfferMade from "./OfferMade";
 import ProfileHeader from "./ProfileHeader";
+import SyncNfts from "./syncNfts/SyncNfts";
 
 export default function Profile({ address }: { address?: string }) {
   const { user } = useSelector(selectProfile);

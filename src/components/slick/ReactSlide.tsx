@@ -1,4 +1,10 @@
-import { Box, IconButton, useBreakpointValue } from "@chakra-ui/react";
+import {
+  Box,
+  IconButton,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import React, { useState } from "react";
 // Here we have used react-icons package for the icons
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
@@ -37,8 +43,11 @@ export default function ReactSlide({
 
   // These are the breakpoints which changes the position of the
   // buttons as the screen size changes
-  const top = useBreakpointValue({ base: "90%", md: "50%" });
-  const side = useBreakpointValue({ base: "30%", md: "40px" });
+  // const top = useBreakpointValue({ base: "90%", md: "50%" });
+  // const side = useBreakpointValue({ base: "30%", md: "40px" });
+  const top = "50%";
+  const side = "5px";
+
   const [index, setIndex] = useState(0);
   return (
     <Box
@@ -47,18 +56,27 @@ export default function ReactSlide({
       width={"full"}
       overflow={"hidden"}
     >
+      <Box position="absolute" top={0} right={0} px={2}>
+        <Text color="gray.500" fontSize="sm">
+          {index + 1} of {length}
+        </Text>
+      </Box>
       {/* Left Icon */}
       {index > 0 && length > 0 && (
         <IconButton
+          bg={useColorModeValue(
+            "rgba(255, 255, 255, 0.7)",
+            "rgba(0, 0, 0, 0.2)"
+          )}
           aria-label="left-arrow"
           variant="ghost"
           position="absolute"
           left={side}
           top={top}
           transform={"translate(0%, -50%)"}
-          zIndex={2}
+          zIndex={9}
           onClick={() => slider?.slickPrev()}
-          borderRadius={50}
+          rounded="full"
         >
           <FiChevronLeft size="30px" />
         </IconButton>
@@ -66,15 +84,19 @@ export default function ReactSlide({
       {/* Right Icon */}
       {index < length - 1 && (
         <IconButton
+          bg={useColorModeValue(
+            "rgba(255, 255, 255, 0.7)",
+            "rgba(0, 0, 0, 0.2)"
+          )}
           aria-label="right-arrow"
           variant="ghost"
           position="absolute"
           right={side}
           top={top}
           transform={"translate(0%, -50%)"}
-          zIndex={2}
+          zIndex={9}
           onClick={() => slider?.slickNext()}
-          borderRadius={50}
+          rounded="full"
         >
           <FiChevronRight size="30px" />
         </IconButton>

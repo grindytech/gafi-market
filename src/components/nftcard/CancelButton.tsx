@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   Button,
   ButtonProps,
   Heading,
@@ -28,37 +29,45 @@ import PrimaryButton from "../PrimaryButton";
 import nftService from "../../services/nft.service";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 import useSwal from "../../hooks/useSwal";
+import {
+  useGetChainInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 
 export default function CancelBtn({
   nft,
   children,
   onSuccess,
   ...rest
-}: ButtonProps & { nft: NftDto; onSuccess: () => void }) {
+}: BoxProps & { nft: NftDto; onSuccess: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(selectProfile);
   const { swAlert } = useSwal();
+  const { chainInfo } = useGetChainInfo({ chainId: nft.chain });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: nft.sale.paymentToken,
+  });
 
   const cancelSale = async () => {
     try {
       setLoading(true);
       const contractValue = convertToContractValue({
         amount: nft.price,
-        decimal: nft.sale.paymentToken.decimals,
+        decimal: paymentInfo.decimals,
       });
       const param = {
         contractPrice: contractValue,
         nftContract: nft.nftContract,
         ownerAddress: nft.owner.address,
-        paymentContract: nft.sale.paymentToken.contractAddress,
+        paymentContract: paymentInfo.contractAddress,
         period: nft.sale.period,
         saleOption: SaleType.Sale,
         saltNonce: Number(nft.sale.saltNonce),
         signature: nft.sale.signedSignature,
         tokenId: Number(nft.tokenId),
       };
-      await mpContract.cancelMessage(param, nft.chain.mpContract, user);
+      await mpContract.cancelMessage(param, chainInfo?.mpContract, user);
       try {
         await nftService.cancelSale(nft.id);
       } catch (error) {
@@ -88,10 +97,7 @@ export default function CancelBtn({
   };
   return (
     <>
-      <PrimaryButton
-        colorScheme="red"
-        bg="red.600"
-        _hover={{ bg: "red.500" }}
+      <Box
         onClick={(e) => {
           e.preventDefault();
           onOpen();
@@ -99,7 +105,7 @@ export default function CancelBtn({
         {...rest}
       >
         {children}
-      </PrimaryButton>
+      </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -124,14 +130,15 @@ export default function CancelBtn({
           </ModalBody>
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
-              <Button w="50%" onClick={onClose}>
-                Close
-              </Button>
               <SwitchNetworkButton
-                symbol={nft.chain.symbol}
-                name={nft.chain.name}
+                symbol={chainInfo?.symbol}
+                name={chainInfo?.name}
               >
-                <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
+                <PrimaryButton
+                  w="full"
+                  isLoading={loading}
+                  onClick={cancelSale}
+                >
                   Confirm
                 </PrimaryButton>
               </SwitchNetworkButton>

@@ -1,16 +1,18 @@
 import {
   Box,
   BoxProps,
-  Heading,
+  Button,
   HStack,
-  useBreakpointValue,
+  Icon,
   useColorModeValue,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
 import { useRef } from "react";
+import { BsBox } from "react-icons/bs";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
+import FloatIconWithText from "../FloatIconWithText";
 import LazyImage from "../LazyImage";
 import Skeleton from "../Skeleton";
 
@@ -21,6 +23,9 @@ type Props = {
   showOnHover?: any;
   loading?: boolean;
   mask?: any;
+  disabled?: boolean;
+  bundle?: string;
+  cardStyle?: "unstyle" | "nftCard";
 };
 
 export default function NftCard({
@@ -30,22 +35,27 @@ export default function NftCard({
   children,
   showOnHover,
   mask,
+  disabled,
+  bundle,
+  cardStyle = "nftCard",
   ...rest
 }: Props & BoxProps) {
-  const cardStyles = useStyleConfig("NFTCard");
+  const cardStyles = cardStyle === "nftCard" ? useStyleConfig("NFTCard") : {};
   const imageStyles = useStyleConfig("NFTCardImage");
   const videoRef = useRef<any>(null);
-  const md = useBreakpointValue({ base: false, md: true });
-
+  const bgColor =
+    cardStyle === "nftCard"
+      ? useColorModeValue("white", "gray.800")
+      : "none";
   return (
     <Box w="full">
       <Card
+        opacity={disabled ? 0.5 : 1}
         p={0}
         rounded="xl"
         __css={cardStyles}
-        border="1px solid"
         borderColor={useColorModeValue("gray.200", "gray.700")}
-        bg={useColorModeValue("white", "gray.900")}
+        bg={bgColor}
         onMouseEnter={() => {
           if (!videoRef?.current) return;
           videoRef.current.play();
@@ -59,7 +69,7 @@ export default function NftCard({
         <CardBody>
           <VStack w="full" spacing={0}>
             <Box
-              overflow="hidden"
+              overflow="visible"
               w="full"
               paddingTop="100%"
               position="relative"
@@ -78,47 +88,74 @@ export default function NftCard({
                   alignItems="center"
                   display="flex"
                 >
-                  <HStack
-                    position="absolute"
-                    top={0}
-                    left={0}
+                  <Box>
+                    {showOnHover && !loading && (
+                      <HStack
+                        className="hover-show"
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        w="full"
+                        h="full"
+                        zIndex={3}
+                      >
+                        {showOnHover}
+                      </HStack>
+                    )}
+                    {videoUri && (
+                      <video
+                        className="hover-show"
+                        ref={videoRef}
+                        height="280px"
+                      >
+                        <source src={videoUri} />
+                      </video>
+                    )}
+                  </Box>
+                  <Box
                     w="full"
                     h="full"
-                    zIndex={2}
+                    position="absolute"
+                    data-component-name={disabled ? "" : "NFTImage"}
                   >
-                    {mask}
-                  </HStack>
-                  {showOnHover && !loading && (
                     <HStack
-                      className="hover-show"
                       position="absolute"
                       top={0}
                       left={0}
                       w="full"
                       h="full"
-                      zIndex={3}
+                      zIndex={2}
                     >
-                      {showOnHover}
+                      {mask}
                     </HStack>
-                  )}
-
-                  <LazyImage
-                    className={videoUri && "hover-hidden"}
-                    data-component-name="NFTImage"
-                    __css={imageStyles}
-                    src={image}
-                    h="full"
-                    objectFit="contain"
-                  />
-                  {videoUri && (
-                    <video className="hover-show" ref={videoRef} height="280px">
-                      <source src={videoUri} />
-                    </video>
-                  )}
+                    <LazyImage
+                      className={videoUri && "hover-hidden"}
+                      __css={imageStyles}
+                      src={image}
+                      h="full"
+                      objectFit="contain"
+                    />
+                  </Box>
                 </Box>
               </Skeleton>
             </Box>
             <VStack w="full" spacing={0} alignItems="start">
+              {bundle && (
+                <Box zIndex={3} p={3} position="absolute" top={0} left={0}>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.open(`/bundle/${bundle}`, "_blank");
+                    }}
+                    size="xs"
+                    variant="unstyled"
+                  >
+                    <FloatIconWithText title="Go to bundle" h={6} w={6}>
+                      <Icon w={4} h={4} as={BsBox} />
+                    </FloatIconWithText>
+                  </Button>
+                </Box>
+              )}
               {children}
             </VStack>
           </VStack>

@@ -1,10 +1,14 @@
-import { IconButton } from "@chakra-ui/react";
+import { Box, BoxProps, IconButton } from "@chakra-ui/react";
 import { useState } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import useCustomToast from "../../hooks/useCustomToast";
 import nftService from "../../services/nft.service";
 
-export default function RefreshMetadataButton({ nftId }: { nftId: string }) {
+export default function RefreshMetadataButton({
+  nftId,
+  children,
+  ...rest
+}: { nftId: string } & BoxProps) {
   const toast = useCustomToast();
   const [loading, setLoading] = useState(false);
   const refreshMetadata = async () => {
@@ -21,13 +25,8 @@ export default function RefreshMetadataButton({ nftId }: { nftId: string }) {
     }
   };
   return (
-    <IconButton
-      onClick={refreshMetadata}
-      size="sm"
-      aria-label="refresh metadata"
-      isLoading={loading}
-    >
-      <FiRefreshCw />
-    </IconButton>
+    <Box onClick={refreshMetadata} {...rest}>
+      {children}
+    </Box>
   );
 }

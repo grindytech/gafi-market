@@ -1,5 +1,7 @@
 import {
   Box,
+  BoxProps,
+  Button,
   ButtonProps,
   FormControl,
   FormErrorMessage,
@@ -27,6 +29,10 @@ import { useSelector } from "react-redux";
 import * as yup from "yup";
 import { web3Inject } from "../../contracts";
 import erc721Contract from "../../contracts/erc721.contract";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+} from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import useYupValidationResolver from "../../hooks/useYupValidationResolver";
@@ -55,7 +61,7 @@ export default function SaleButton({
   children,
   onSuccess,
   ...rest
-}: ButtonProps & { nft: NftDto; onSuccess?: () => void }) {
+}: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
   const resolver = useYupValidationResolver(validationSchema);
   const {
     handleSubmit,
@@ -63,6 +69,12 @@ export default function SaleButton({
     formState: { errors },
     watch,
   } = useForm({ resolver });
+  const { chainInfo } = useGetChainInfo({
+    chainId: nft?.chain,
+  });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
+  });
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [paymentToken, setPaymentToken] = useState<PaymentToken>();
   const [marketFee, setMarketFee] = useState(0.05);
@@ -81,12 +93,12 @@ export default function SaleButton({
       await erc721Contract.approveForAll(
         nft.nftContract,
         user,
-        nft.chain.mpContract
+        chainInfo?.mpContract
       );
-      const priceContractValue = convertToContractValue({
-        amount: Number(price),
-        decimal: paymentToken.decimals,
-      });
+      // const priceContractValue = convertToContractValue({
+      //   amount: Number(price),
+      //   decimal: paymentToken.decimals,
+      // });
       const {
         data: { hashMessage },
       } = await nftService.getNftHashMessage(nft.id, {
@@ -140,7 +152,7 @@ export default function SaleButton({
     Number(price) - Number(price) * (marketFee + collectionOwnerFee);
   return (
     <>
-      <PrimaryButton
+      <Box
         onClick={(e) => {
           e.preventDefault();
           onOpen();
@@ -148,7 +160,7 @@ export default function SaleButton({
         {...rest}
       >
         {children}
-      </PrimaryButton>
+      </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -177,18 +189,20 @@ export default function SaleButton({
                     children={
                       <Box w="full">
                         <TokenSymbolToken
-                          chain={nft.chain.id}
+                          disabled={loading}
+                          chain={chainInfo?.id}
                           mr={2}
                           size="sm"
                           onChangeToken={(p) => {
                             setPaymentToken(p);
                           }}
-                          idList={nft.nftCollection?.paymentTokens as string[]}
+                          idList={collectionInfo?.paymentTokens as string[]}
                         />
                       </Box>
                     }
                   />
                   <Input
+                    disabled={loading}
                     {...register("price")}
                     type="number"
                     variant="filled"
@@ -207,6 +221,7 @@ export default function SaleButton({
                 <FormLabel>Sale period</FormLabel>
                 <InputGroup size="lg">
                   <Select
+                    disabled={loading}
                     variant="filled"
                     defaultValue={SalePeriod.Week}
                     _focusVisible={{
@@ -266,8 +281,8 @@ export default function SaleButton({
           <ModalFooter w="full">
             <HStack w="full" justifyContent="center" px={5}>
               <SwitchNetworkButton
-                symbol={nft.chain.symbol}
-                name={nft.chain.name}
+                symbol={chainInfo?.symbol}
+                name={chainInfo?.name}
               >
                 <PrimaryButton
                   isLoading={loading}

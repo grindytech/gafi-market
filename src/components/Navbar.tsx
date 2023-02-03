@@ -38,7 +38,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { useMemo, useState } from "react";
 import { FiEdit, FiLogIn, FiLogOut, FiSettings, FiUser } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useConnectWallet } from "../connectWallet/useWallet";
@@ -208,13 +209,14 @@ export default function Navbar() {
                         Edit Profile
                       </MenuItemBtn>
                     </NextLink>
-                    {isLoggedIn && profile.roles?.includes(Roles.superAdmin) && (
-                      <NextLink href="/admin">
-                        <MenuItemBtn leftIcon={<FiSettings />}>
-                          Admin dashboard
-                        </MenuItemBtn>
-                      </NextLink>
-                    )}
+                    {isLoggedIn &&
+                      profile.roles?.includes(Roles.superAdmin) && (
+                        <NextLink href="/admin">
+                          <MenuItemBtn leftIcon={<FiSettings />}>
+                            Admin dashboard
+                          </MenuItemBtn>
+                        </NextLink>
+                      )}
                     <MenuItemBtn
                       color="gray"
                       leftIcon={<FiLogOut />}
@@ -247,7 +249,7 @@ export default function Navbar() {
                 fontWeight="bold"
                 textTransform="uppercase"
               >
-               Overmint
+                Overmint
               </Text>
             </Link>
             <DrawerCloseButton />
@@ -272,48 +274,68 @@ export default function Navbar() {
 const DesktopNav = () => {
   const { linkColor, linkHoverColor, popoverContentBgColor } =
     useCustomColors();
+
   return (
     <Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <Box key={navItem.label}>
-          <Popover trigger={"hover"} placement={"bottom-start"}>
-            <PopoverTrigger>
-              <Link
-                as={NextLink}
-                p={2}
-                href={navItem.href ?? "#"}
-                fontSize={"md"}
-                fontWeight="semibold"
-                color={linkColor}
-                _hover={{
-                  textDecoration: "none",
-                  color: linkHoverColor,
-                }}
-              >
-                {navItem.label}
-              </Link>
-            </PopoverTrigger>
-
-            {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow={"xl"}
-                bg={popoverContentBgColor}
-                p={4}
-                rounded={"xl"}
-                minW={"sm"}
-              >
-                <Stack>
-                  {navItem.children.map((child) => (
-                    <DesktopSubNav key={child.label} {...child} />
-                  ))}
-                </Stack>
-              </PopoverContent>
-            )}
-          </Popover>
-        </Box>
+        <DesktopMenuItem navItem={navItem} />
       ))}
     </Stack>
+  );
+};
+
+const DesktopMenuItem = ({ navItem }) => {
+  const router = useRouter();
+  const current = useMemo(() => {
+    if (router.pathname === navItem.href) {
+      return true;
+    }
+    if (navItem.children) {
+      return !!navItem.children.find((c) => router.pathname === c.href);
+    }
+    return false;
+  }, [router.pathname]);
+
+  const { linkColor, linkHoverColor, popoverContentBgColor } =
+    useCustomColors();
+  return (
+    <Box key={navItem.label}>
+      <Popover trigger={"hover"} placement={"bottom-start"}>
+        <PopoverTrigger>
+          <Link
+            as={NextLink}
+            p={2}
+            href={navItem.href ?? "#"}
+            fontSize={"md"}
+            fontWeight={current ? "bold" : "medium"}
+            color={linkColor}
+            _hover={{
+              textDecoration: "none",
+              color: linkHoverColor,
+            }}
+          >
+            {navItem.label}
+          </Link>
+        </PopoverTrigger>
+
+        {navItem.children && (
+          <PopoverContent
+            border={0}
+            boxShadow={"xl"}
+            bg={popoverContentBgColor}
+            p={4}
+            rounded={"xl"}
+            minW={"sm"}
+          >
+            <Stack>
+              {navItem.children.map((child) => (
+                <DesktopSubNav key={child.label} {...child} />
+              ))}
+            </Stack>
+          </PopoverContent>
+        )}
+      </Popover>
+    </Box>
   );
 };
 
@@ -444,12 +466,26 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "/explore/nfts",
       },
       {
-        label: "NFT collections",
+        label: "NFT Collections",
         href: "/explore/collections",
       },
       {
         label: "Games",
         href: "/explore/games",
+      },
+    ],
+  },
+  {
+    label: "Market",
+    href: "/market",
+    children: [
+      {
+        label: "NFTs Market",
+        href: "/market",
+      },
+      {
+        label: "Bundle Sale",
+        href: "/market/bundles",
       },
     ],
   },
@@ -470,15 +506,35 @@ const MOBILE_NAV_ITEMS: Array<NavItem> = [
     ],
   },
   {
-    label: "NFTs",
+    label: "Explore",
     href: "/explore/nfts",
+    children: [
+      {
+        label: "NFTs",
+        href: "/explore/nfts",
+      },
+      {
+        label: "NFT Collections",
+        href: "/explore/collections",
+      },
+      {
+        label: "Games",
+        href: "/explore/games",
+      },
+    ],
   },
   {
-    label: "NFT collections",
-    href: "/explore/collections",
-  },
-  {
-    label: "Games",
-    href: "/explore/games",
+    label: "Market",
+    href: "/market",
+    children: [
+      {
+        label: "NFTs Market",
+        href: "/market",
+      },
+      {
+        label: "Bundle Sale",
+        href: "/market/bundles",
+      },
+    ],
   },
 ];

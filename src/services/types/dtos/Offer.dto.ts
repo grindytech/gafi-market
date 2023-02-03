@@ -15,7 +15,7 @@ export class OfferDto extends BaseDocumentDto {
   seller: UserDto;
   nftContract: string;
   signature: string;
-  paymentToken: PaymentToken;
+  paymentToken: PaymentToken | string;
   status: OfferStatus;
   option: number;
   startTime: Date;
@@ -25,6 +25,6 @@ export class OfferDto extends BaseDocumentDto {
   name: string;
   tokenId: string;
   image: string;
-  nftCollection: NftCollectionDto;
+  nftCollection: NftCollectionDto | string;
   chain: ChainDto;
 }

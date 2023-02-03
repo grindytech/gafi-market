@@ -4,7 +4,26 @@ import useSwitchNetwork from "../connectWallet/useSwitchNetwork";
 import { selectProfile } from "../store/profileSlice";
 import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 
-export default function SwitchNetworkButton({
+export default function SwitchNetworkButtonWrapper({
+  symbol,
+  name,
+  children,
+  ...rest
+}: ButtonProps & {
+  symbol: string;
+  name: string;
+}) {
+  return (
+    name &&
+    symbol && (
+      <SwitchNetworkButton name={name} symbol={symbol} {...rest}>
+        {children}
+      </SwitchNetworkButton>
+    )
+  );
+}
+
+function SwitchNetworkButton({
   symbol,
   name,
   children,

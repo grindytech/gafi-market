@@ -3,18 +3,7 @@ import React from "react";
 import ReactPlayer from "react-player";
 import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
-
-function ImageViewer({ nft }: { nft: NftDto }) {
-  return (
-    <Image
-      fallbackSrc={Images.Placeholder.src}
-      w="100%"
-      h="100%"
-      objectFit="contain"
-      src={nft.image}
-    />
-  );
-}
+import ImageViewer from "./viewer/ImageViewer";
 
 function VideoViewer({ nft }: { nft: NftDto }) {
   return (

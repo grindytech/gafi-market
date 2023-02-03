@@ -147,6 +147,7 @@ function useWallet({
         setEthereum(provider);
         user && onConnect && (await onConnect(account, web3));
       } catch (error) {
+        console.error(error);
       } finally {
         setWaitToConnect(false);
       }

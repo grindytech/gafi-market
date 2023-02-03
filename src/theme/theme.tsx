@@ -119,14 +119,37 @@ const CardHeader: ComponentStyleConfig = {
     width: "100%",
   },
 };
+const nftCardActiveStyle = {
+  boxShadow: "md",
+  borderColor: "primary.300",
+  '[data-component-name="NFTImage"]': {
+    transform: "scale(1.05)",
+  },
+  '[data-component-name="ShowOnHover"]': {
+    background: "rgba(0,0,0,0.3)",
+    visibility: "visible",
+  },
+  bgGradient: ["linear(to-b, cyan.100, purple.100)"],
+  _dark: {
+    bgGradient: ["linear(to-b, orange.800, purple.900)"],
+  },
+  ".hover-hidden": {
+    display: "none",
+  },
+  ".hover-show": {
+    display: "block",
+  },
+};
 const NFTCard: ComponentStyleConfig = {
   ...Card,
   baseStyle: {
+    borderWidth: "1px",
     padding: 0,
     overflow: "hidden",
     cursor: "pointer",
     boxShadow: "sm",
-    "&.in-cart": {
+    "&.active": nftCardActiveStyle,
+    "&.selected": {
       borderColor: "primary.300",
       borderWidth: "3px",
       rounded: "xl",
@@ -135,27 +158,7 @@ const NFTCard: ComponentStyleConfig = {
     ".hover-show": {
       display: "none",
     },
-    _hover: {
-      boxShadow: "md",
-      borderColor: "primary.300",
-      '[data-component-name="NFTImage"]': {
-        // transform: "scale(1.05)",
-      },
-      '[data-component-name="ShowOnHover"]': {
-        background: "rgba(0,0,0,0.3)",
-        visibility: "visible",
-      },
-      bgGradient: ["linear(to-b, cyan.100, purple.100)"],
-      _dark: {
-        bgGradient: ["linear(to-b, orange.800, purple.900)"],
-      },
-      ".hover-hidden": {
-        display: "none",
-      },
-      ".hover-show": {
-        display: "block",
-      },
-    },
+    _hover: nftCardActiveStyle,
     '[data-component-name="NFTImage"]': {
       transition: "all ease 0.5s",
     },

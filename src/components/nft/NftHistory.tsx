@@ -16,6 +16,10 @@ import { useMemo, useRef } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { useInfiniteQuery } from "react-query";
 import { useSelector } from "react-redux";
+import {
+  useGetChainInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
@@ -40,8 +44,7 @@ export default function NftHistory({ nft }: { nft: NftDto }) {
     ["NftHistory", nft?.id],
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getHistories({
-        nftCollection: nft.nftCollection.id,
-        tokenId: nft.tokenId,
+        nft: nft.id,
         page: pageParam,
         orderBy: "createdAt",
         desc: "desc",
@@ -135,6 +138,10 @@ function HistoryListItem({
   history?: NftHistoryDto;
 }) {
   const { user } = useSelector(selectProfile);
+  const { chainInfo } = useGetChainInfo({ chainId: history?.chain });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: history?.paymentToken,
+  });
   return (
     <VStack w="full" spacing={0}>
       <Skeleton w="full" isLoaded={!loading}>
@@ -171,9 +178,7 @@ function HistoryListItem({
           <HStack alignItems="end">
             {history?.price && (
               <Text noOfLines={1} fontSize="sm" color="gray">
-                {`${numeralFormat(history?.price)} ${
-                  history?.paymentToken?.symbol
-                }`}{" "}
+                {`${numeralFormat(history?.price)} ${paymentInfo?.symbol}`}{" "}
               </Text>
             )}
             {history?.priceInUsd && (
@@ -185,18 +190,24 @@ function HistoryListItem({
         </Skeleton>
         <Skeleton w="full" isLoaded={!loading}>
           <HStack justifyContent="end" color="gray">
-            <Tooltip label={new Date(history?.createdAt).toUTCString()}>
+            <Tooltip
+              label={new Date((history?.blockTime || 0) * 1e3).toUTCString()}
+            >
               <Text fontSize="sm">
-                {formatDistance(new Date(history?.createdAt || 0), Date.now(), {
-                  includeSeconds: false,
-                  addSuffix: true,
-                })}
+                {formatDistance(
+                  new Date((history?.blockTime || 0) * 1e3),
+                  Date.now(),
+                  {
+                    includeSeconds: false,
+                    addSuffix: true,
+                  }
+                )}
               </Text>
             </Tooltip>
             <Link
               target="_blank"
               fontSize="sm"
-              href={`${history?.chain.explore}/tx/${history?.txHash}`}
+              href={`${chainInfo?.explore}/tx/${history?.txHash}`}
             >
               <ExternalLinkIcon />
             </Link>

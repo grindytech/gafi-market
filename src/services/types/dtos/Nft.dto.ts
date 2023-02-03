@@ -23,11 +23,11 @@ export class NftDto extends BaseDocumentDto {
   name: string;
   saltNonce: number;
   bundle: string;
-  nftCollection: NftCollectionDto;
+  nftCollection: NftCollectionDto | string;
   price: number;
   lastSold: number;
   lastSoldToken: string;
-  chain: ChainDto;
+  chain: ChainDto | string;
   description: string;
   externalUrl: string;
 }

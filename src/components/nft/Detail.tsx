@@ -12,6 +12,7 @@ import {
   Heading,
   HStack,
   Icon,
+  IconButton,
   Link,
   SimpleGrid,
   Stack,
@@ -25,13 +26,21 @@ import { get } from "lodash";
 import NextLink from "next/link";
 import { useMemo, useState } from "react";
 import Countdown from "react-countdown";
-import { FiClock } from "react-icons/fi";
+import { FiClock, FiRefreshCw } from "react-icons/fi";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import nftService from "../../services/nft.service";
+import { ChainDto } from "../../services/types/dtos/ChainDto";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
+import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/string.util";
@@ -75,6 +84,14 @@ export default function Detail({ id }: { id: string }) {
       },
     }
   );
+  const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: nft?.sale?.paymentToken,
+  });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
+  });
+
   const { user } = useSelector(selectProfile);
   const isOwner = useMemo(() => user === nft?.owner?.address, [user, nft]);
   const { borderColor } = useCustomColors();
@@ -103,53 +120,55 @@ export default function Detail({ id }: { id: string }) {
         </Box>
       )}
       {nft && (
-        <Container maxW="container.lg">
-          <Stack
-            position="relative"
-            direction={{ base: "column", md: "row" }}
+        <Stack
+          position="relative"
+          direction={{ base: "column", md: "row" }}
+          w="full"
+        >
+          <VStack w="full" spacing={5}>
+            <Box w="full" display="flex" justifyContent="center">
+              <Card display="flex" maxW="full" rounded="lg">
+                <Skeleton isLoaded={!isLoading}>
+                  <CardBody>
+                    <NftViewer nft={nft} />
+                  </CardBody>
+                </Skeleton>
+              </Card>
+            </Box>
+            {md && <NftDetailSection chain={chainInfo} nft={nft} />}
+            {md && <NftStatsSection nftCollection={collectionInfo} nft={nft} />}
+            {md && <NftHistorySection nft={nft} />}
+          </VStack>
+          <VStack
+            position="sticky"
+            height={{ base: "auto", md: "800px" }}
+            spacing={5}
+            pl={{ base: 0, md: 10 }}
             w="full"
+            top="90px"
           >
-            <VStack w="full" spacing={5}>
-              <Box w="full" display="flex" justifyContent="center">
-                <Card display="flex" maxW="full" rounded="lg">
-                  <Skeleton isLoaded={!isLoading}>
-                    <CardBody>
-                      <NftViewer nft={nft} />
-                    </CardBody>
-                  </Skeleton>
-                </Card>
-              </Box>
-              {md && <NftDetailSection nft={nft} />}
-              {md && <NftStatsSection nft={nft} />}
-              {md && <NftHistorySection nft={nft} />}
-            </VStack>
-            <VStack
-              position="sticky"
-              height={{ base: "auto", md: "100vh" }}
-              spacing={5}
-              pl={{ base: 0, md: 10 }}
-              w="full"
-              top="90px"
-            >
-              <PriceSection
-                onMakeOffer={() => {
-                  setLoadOfferRime(Date.now());
-                }}
-                isOwner={isOwner}
-                nft={nft}
-                refetch={refetch}
-              />
-              {!md && <NftDetailSection nft={nft} />}
-              {!md && <NftStatsSection nft={nft} />}
+            <PriceSection
+              nftCollection={collectionInfo}
+              paymentToken={paymentInfo}
+              onMakeOffer={() => {
+                setLoadOfferRime(Date.now());
+              }}
+              isOwner={isOwner}
+              nft={nft}
+              refetch={refetch}
+            />
+            {!md && <NftDetailSection chain={chainInfo} nft={nft} />}
+            {!md && (
+              <NftStatsSection nftCollection={collectionInfo} nft={nft} />
+            )}
 
-              <NftOfferSection
-                key={`NftOfferSection-${loadOfferTime}`}
-                nft={nft}
-              />
-              {!md && <NftHistorySection nft={nft} />}
-            </VStack>
-          </Stack>
-        </Container>
+            <NftOfferSection
+              key={`NftOfferSection-${loadOfferTime}`}
+              nft={nft}
+            />
+            {!md && <NftHistorySection nft={nft} />}
+          </VStack>
+        </Stack>
       )}
     </>
   );
@@ -214,11 +233,17 @@ const NftOfferSection = ({ nft }: { nft: NftDto }) => {
     </Box>
   );
 };
-const NftStatsSection = ({ nft }: { nft: NftDto }) => {
-  const stats = get(STATS, nft.nftCollection.key);
+const NftStatsSection = ({
+  nft,
+  nftCollection,
+}: {
+  nft: NftDto;
+  nftCollection: NftCollectionDto;
+}) => {
+  const stats = get(STATS, nftCollection?.key);
   return stats ? stats({ nft }) : <></>;
 };
-const NftDetailSection = ({ nft }: { nft: NftDto }) => {
+const NftDetailSection = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
   return (
     <Box
       borderTop="none"
@@ -277,7 +302,7 @@ const NftDetailSection = ({ nft }: { nft: NftDto }) => {
             <AccordionIcon />
           </AccordionButton>
           <AccordionPanel pb={4}>
-            <NftDetail nft={nft} />
+            <NftDetail chain={chain} nft={nft} />
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
@@ -285,7 +310,7 @@ const NftDetailSection = ({ nft }: { nft: NftDto }) => {
   );
 };
 
-const NftDetail = ({ nft }: { nft: NftDto }) => {
+const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
   return (
     <VStack alignItems="start" w="full">
       <VStack
@@ -308,7 +333,7 @@ const NftDetail = ({ nft }: { nft: NftDto }) => {
             size="md"
             variant="link"
             as={Link}
-            href={`${nft.chain.explore}/token/${nft.nftContract}`}
+            href={`${chain?.explore}/token/${nft.nftContract}`}
           >
             {shorten(nft.nftContract)}
           </Button>
@@ -321,14 +346,14 @@ const NftDetail = ({ nft }: { nft: NftDto }) => {
             size="md"
             variant="link"
             as={Link}
-            href={`${nft.chain.explore}/token/${nft.nftContract}?a=${nft.tokenId}`}
+            href={`${chain?.explore}/token/${nft.nftContract}?a=${nft.tokenId}`}
           >
             {nft.tokenId}
           </Button>
         </HStack>
         <HStack w="full" justifyContent="space-between">
           <Text fontSize="md">Chain</Text>
-          <Text fontSize="md">{nft.chain.name} </Text>
+          <Text fontSize="md">{chain?.name} </Text>
         </HStack>
         <HStack w="full" justifyContent="space-between">
           <Text fontSize="md">Token standard</Text>
@@ -401,25 +426,29 @@ const PriceSection = ({
   refetch,
   isOwner,
   onMakeOffer,
+  paymentToken,
+  nftCollection,
 }: {
   nft: NftDto;
   refetch: any;
   isOwner: boolean;
   onMakeOffer?: () => void;
+  paymentToken: PaymentToken;
+  nftCollection: NftCollectionDto;
 }) => {
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: !!nft?.sale,
-    paymentSymbol: nft?.sale?.paymentToken.symbol,
+    paymentSymbol: paymentToken?.symbol,
   });
   const { borderColor } = useCustomColors();
   const { user } = useSelector(selectProfile);
   return (
     <VStack spacing={1} w="full" alignItems="start">
       <HStack w="full" justifyContent="space-between">
-        <NextLink href={`/collection/${nft.nftCollection.id}`}>
+        <NextLink href={`/collection/${nftCollection?.id}`}>
           <Text color="primary.50" fontWeight="semibold" fontSize="xl">
-            {nft?.nftCollection.name}{" "}
-            {nft?.nftCollection.verified && (
+            {nftCollection?.name}{" "}
+            {nftCollection?.verified && (
               <Icon color="primary.50" h={4} w={4}>
                 <HiBadgeCheck size="25px" />
               </Icon>
@@ -429,12 +458,16 @@ const PriceSection = ({
         <HStack>
           <ShareButton
             aria-label="share button"
-            title={`${nft.nftCollection.name} | ${nft.name}`}
+            title={`${nftCollection?.name} | ${nft.name}`}
             link={window.location.href}
           />
-          <Tooltip label="Refresh metadata">
-            <RefreshMetadataButton nftId={nft.id} />
-          </Tooltip>
+          <RefreshMetadataButton nftId={nft.id}>
+            <Tooltip label="Refresh metadata">
+              <IconButton size="sm" aria-label="refresh metadata">
+                <FiRefreshCw />
+              </IconButton>
+            </Tooltip>
+          </RefreshMetadataButton>
         </HStack>
       </HStack>
       <Heading>{nft.name}</Heading>
@@ -465,8 +498,7 @@ const PriceSection = ({
                 {nft.sale && (
                   <>
                     <Text fontSize="xl" fontWeight="semibold">
-                      {numeralFormat(nft.sale.price)}{" "}
-                      {nft.sale.paymentToken.symbol}
+                      {numeralFormat(nft.sale.price)} {paymentToken?.symbol}
                     </Text>
                     <Skeleton isLoaded={!isPriceAsUsdLoading}>
                       <Text color="gray" fontWeight="semibold" fontSize="sm">
@@ -492,6 +524,11 @@ const PriceSection = ({
                         refetch();
                       }}
                       nft={nft}
+                      as={Button}
+                      bg="red.500"
+                      _hover={{
+                        bg: "red.600",
+                      }}
                     >
                       Cancel sale
                     </CancelBtn>
@@ -503,6 +540,7 @@ const PriceSection = ({
                         refetch();
                       }}
                       nft={nft}
+                      as={PrimaryButton}
                     >
                       Put on sale
                     </SaleButton>
@@ -514,33 +552,29 @@ const PriceSection = ({
                   {nft.sale && (
                     <>
                       <HStack w="full">
-                        <BuyButton w="full" nft={nft}>
+                        <BuyButton as={PrimaryButton} w="60%" nft={nft}>
                           Buy now
                         </BuyButton>
-                        <AddToCartButton nft={nft} />
+                        <AddToCartButton
+                          showIcon={true}
+                          as={Button}
+                          w="40%"
+                          nft={nft}
+                        />
                       </HStack>
-                      <OfferButton
-                        onSuccess={() => {
-                          onMakeOffer && onMakeOffer();
-                        }}
-                        nft={nft}
-                        w="full"
-                      >
-                        Make offer
-                      </OfferButton>
                     </>
                   )}
                   {!nft.sale && (
-                    <PrimaryButton
+                    <OfferButton
                       onSuccess={() => {
                         onMakeOffer && onMakeOffer();
                       }}
-                      as={OfferButton}
+                      as={PrimaryButton}
                       nft={nft}
                       w="full"
                     >
                       Make offer
-                    </PrimaryButton>
+                    </OfferButton>
                   )}
                 </>
               )}

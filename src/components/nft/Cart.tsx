@@ -28,21 +28,19 @@ import { HiBadgeCheck } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
 import { Chain } from "../../contracts";
+import {
+  useGetChainInfo,
+  useGetCollectionInfo,
+  useGetPaymentTokenInfo,
+} from "../../hooks/useGetSystemInfo";
 import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { adds, remove, reset, selectBag } from "../../store/bagSlice";
 import { selectProfile } from "../../store/profileSlice";
-import useCustomColors from "../../theme/useCustomColors";
-import { convertToContractValue, numeralFormat } from "../../utils/utils";
+import { numeralFormat } from "../../utils/utils";
 import { EmptyState } from "../EmptyState";
-import erc20Contract from "../../contracts/erc20.contract";
-import mpContract from "../../contracts/marketplace.contract";
-import useCustomToast from "../../hooks/useCustomToast";
-import useSwal from "../../hooks/useSwal";
-import { useRouter } from "next/router";
 import SwitchNetworkButton from "../SwitchNetworkButton";
-import PrimaryButton from "../PrimaryButton";
 import CartCheckoutButton from "./CartCheckoutButton";
 
 export default function Cart() {
@@ -74,6 +72,12 @@ export default function Cart() {
     setSoldOutItems(sold);
   };
   const { user } = useSelector(selectProfile);
+  const { chainInfo: chain } = useGetChainInfo({
+    chainId: items.length > 0 ? items[0].chain : undefined,
+  });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: items.length > 0 ? items[0].sale?.paymentToken : undefined,
+  });
   const {
     data: balance,
     refetch: refetchBalance,
@@ -81,13 +85,9 @@ export default function Cart() {
     isFetching: fetchingBalance,
   } = useBalanceOf({
     account: user,
-    chain:
-      items.length > 0
-        ? (items[0].chain.symbol.toUpperCase() as Chain)
-        : undefined,
-    tokenAddress:
-      items.length > 0 ? items[0].sale.paymentToken.contractAddress : undefined,
-    isNative: false,
+    chain: chain?.symbol.toUpperCase() as Chain,
+    tokenAddress: paymentInfo?.contractAddress,
+    isNative: paymentInfo?.isNative,
   });
 
   const total = useMemo(() => {
@@ -177,7 +177,13 @@ export default function Cart() {
               {validItems.map((item, index) => (
                 <>
                   {index !== 0 && <Divider />}
-                  <NftItem showRemove={true} item={item} onClose={onClose} />
+                  <NftItem
+                    onRemove={() => {
+                      dispatch(remove({ id: item.id }));
+                    }}
+                    showRemove={true}
+                    item={item}
+                  />
                 </>
               ))}
               {soldOutItems.length > 0 && (
@@ -207,10 +213,12 @@ export default function Cart() {
                     <>
                       {index !== 0 && <Divider />}
                       <NftItem
+                        onRemove={() => {
+                          dispatch(remove({ id: item.id }));
+                        }}
                         showRemove={true}
                         opacity={0.6}
                         item={item}
-                        onClose={onClose}
                       />
                     </>
                   ))}
@@ -233,14 +241,10 @@ export default function Cart() {
                     Total
                   </Text>
                   <Text>
-                    {numeralFormat(total)}{" "}
-                    {validItems[0].sale.paymentToken.symbol}
+                    {numeralFormat(total)} {paymentInfo?.symbol}
                   </Text>
                 </HStack>
-                <SwitchNetworkButton
-                  symbol={validItems[0].chain.symbol}
-                  name={validItems[0].chain.name}
-                >
+                <SwitchNetworkButton symbol={chain?.symbol} name={chain?.name}>
                   <CartCheckoutButton
                     onSuccess={onClose}
                     onError={onClose}
@@ -264,15 +268,20 @@ export default function Cart() {
 
 export const NftItem = ({
   item,
-  onClose,
   showRemove,
+  onRemove,
   ...rest
 }: {
   item: NftDto;
-  onClose: () => void;
   showRemove?: boolean;
+  onRemove?: () => void;
 } & StackProps) => {
-  const dispatch = useDispatch();
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: item.nftCollection,
+  });
+  const { paymentInfo } = useGetPaymentTokenInfo({
+    paymentId: item.sale?.paymentToken,
+  });
   return (
     <HStack {...rest} w="full" justifyContent="space-between">
       <HStack>
@@ -282,40 +291,41 @@ export const NftItem = ({
           fallbackSrc={Images.Placeholder.src}
           w={16}
           h={16}
+          objectFit="cover"
         />
         <VStack spacing={0} alignItems="start">
           <Link
-            onClick={onClose}
             as={NextLink}
-            href={`/collection/${item.nftCollection.id}}`}
+            target="_blank"
+            href={`/collection/${collectionInfo?.id}}`}
           >
             <Text color="primary.50" fontWeight="semibold" fontSize="sm">
-              {item?.nftCollection.name}{" "}
-              {item?.nftCollection.verified && (
+              {collectionInfo?.name}{" "}
+              {collectionInfo?.verified && (
                 <Icon color="primary.50" h={4} w={4}>
                   <HiBadgeCheck size="25px" />
                 </Icon>
               )}
             </Text>
           </Link>
-          <Link onClick={onClose} as={NextLink} href={`/nft/${item.id}`}>
+          <Link target="_blank" as={NextLink} href={`/nft/${item.id}`}>
             <Text>{item.name}</Text>
           </Link>
-          {item?.sale?.price && (
+
+          {item?.sale?.price ? (
             <Text color="gray" fontSize="sm">
               {numeralFormat(item?.sale?.price)}&nbsp;
-              {item.sale.paymentToken.symbol}
+              {paymentInfo?.symbol}
+            </Text>
+          ) : (
+            <Text color="gray" fontSize="sm">
+              #{item.tokenId}
             </Text>
           )}
         </VStack>
       </HStack>
       {showRemove && (
-        <IconButton
-          aria-label="remove"
-          onClick={() => {
-            dispatch(remove({ id: item.id }));
-          }}
-        >
+        <IconButton aria-label="remove" onClick={onRemove}>
           <DeleteIcon />
         </IconButton>
       )}
