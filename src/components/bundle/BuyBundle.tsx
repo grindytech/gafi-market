@@ -97,7 +97,7 @@ export default function BuyBundle({
         saltNonce: String(bundle.saltNonce),
         seller: bundle.seller.address,
         signedSignature: bundle.signedSignature,
-        tokenIds: bundle.items.map((nft) => nft.tokenId),
+        tokenIds: bundle.items.map((nft) => Number(nft.tokenId)).sort(),
       });
       onClose();
       onSuccess && onSuccess();

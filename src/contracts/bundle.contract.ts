@@ -11,7 +11,7 @@ type CancelBundleParam = {
   paymentTokenAddress: string;
   saltNonce: string;
   price: string;
-  tokenIds: string[];
+  tokenIds: number[];
   bundleId: string;
   signedSignature: string;
 };
@@ -48,7 +48,7 @@ type MatchBundleParam = {
   paymentToken: string;
   price: string;
   saltNonce: string;
-  tokenIds: string[];
+  tokenIds: number[];
   bundleId: string;
   signedSignature: string;
 };

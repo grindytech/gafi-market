@@ -47,5 +47,5 @@ export enum BundleStatus {
   onSale = "onSale",
   sold = "sold",
   expired = "expired",
-  cancel = "cancel",
+  cancelled = "cancelled",
 }

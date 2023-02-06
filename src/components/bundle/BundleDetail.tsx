@@ -131,13 +131,12 @@ export default function BundleDetail({ id }: { id: string }) {
               top={[0, "90px"]}
               w={["full", "50%"]}
               spacing={5}
-              p={2}
               rounded="xl"
               borderColor={borderColor}
               bg={bgColor}
               alignItems="start"
             >
-              <HStack w="full" justifyContent="start">
+              <HStack px={2} w="full" justifyContent="start">
                 <Tooltip label={chainInfo?.name}>
                   <Icon blur="xl" w={5} h={5}>
                     {Icons.chain[String(chainInfo?.symbol).toUpperCase()]
@@ -147,49 +146,55 @@ export default function BundleDetail({ id }: { id: string }) {
                 </Tooltip>
                 <Heading fontSize="xl">{bundle?.items.length} items</Heading>
               </HStack>
-              <SimpleGrid
-                justifyContent="center"
-                w="full"
-                columns={[2, 2, 3, 3]}
-                gap="15px"
-                px={0}
-              >
-                {bundle.items.map((nft) => {
-                  return (
-                    <Link target="_blank" href={`/nft/${nft.id}`}>
-                      <NftCard
-                        image={nft.image}
-                        mask={mask ? mask({ nft: nft }) : <></>}
+              <Box w="full" h="full" overflow="auto" px={2}>
+                <SimpleGrid
+                  justifyContent="center"
+                  w="full"
+                  columns={[2, 2, 3, 3]}
+                  gap="15px"
+                  px={0}
+                >
+                  {bundle.items.map((nft) => {
+                    return (
+                      <Link
+                        key={nft.id}
+                        target="_blank"
+                        href={`/nft/${nft.id}`}
                       >
-                        <HStack
-                          alignItems="start"
-                          w="full"
-                          justifyContent="space-between"
-                          p={2}
+                        <NftCard
+                          image={nft.image}
+                          mask={mask ? mask({ nft: nft }) : <></>}
                         >
-                          <VStack spacing={0} alignItems="start">
-                            <Text
-                              noOfLines={1}
-                              fontSize="md"
-                              fontWeight="semibold"
-                            >
-                              {nft?.name || <>&nbsp;</>}
-                            </Text>
-                            <Text
-                              noOfLines={1}
-                              color="gray"
-                              fontSize="xs"
-                              fontWeight="semibold"
-                            >
-                              #{nft?.tokenId}
-                            </Text>
-                          </VStack>
-                        </HStack>
-                      </NftCard>
-                    </Link>
-                  );
-                })}
-              </SimpleGrid>
+                          <HStack
+                            alignItems="start"
+                            w="full"
+                            justifyContent="space-between"
+                            p={2}
+                          >
+                            <VStack spacing={0} alignItems="start">
+                              <Text
+                                noOfLines={1}
+                                fontSize="md"
+                                fontWeight="semibold"
+                              >
+                                {nft?.name || <>&nbsp;</>}
+                              </Text>
+                              <Text
+                                noOfLines={1}
+                                color="gray"
+                                fontSize="xs"
+                                fontWeight="semibold"
+                              >
+                                #{nft?.tokenId}
+                              </Text>
+                            </VStack>
+                          </HStack>
+                        </NftCard>
+                      </Link>
+                    );
+                  })}
+                </SimpleGrid>
+              </Box>
             </VStack>
           )}
 
@@ -319,7 +324,7 @@ export default function BundleDetail({ id }: { id: string }) {
                           <CancelBundle
                             w="full"
                             onSuccess={async () => {
-                              setBundleStatus(BundleStatus.cancel);
+                              setBundleStatus(BundleStatus.cancelled);
                             }}
                             bundle={bundle}
                             as={Button}
@@ -341,7 +346,7 @@ export default function BundleDetail({ id }: { id: string }) {
                         )
                       ) : (
                         <Button disabled w="full">
-                          {bundleStatus === BundleStatus.cancel
+                          {bundleStatus === BundleStatus.cancelled
                             ? "Cancelled"
                             : bundleStatus === BundleStatus.expired
                             ? "Expired"

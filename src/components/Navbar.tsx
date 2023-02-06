@@ -193,7 +193,7 @@ export default function Navbar() {
                   <MenuList px={2}>
                     <MenuItemBtn
                       onClick={() => {
-                        navigator.clipboard.writeText(String(user));
+                        window.navigator.clipboard.writeText(String(user));
                         toast.success("Copied!");
                       }}
                       rightIcon={<CopyIcon color="gray" />}
@@ -278,7 +278,7 @@ const DesktopNav = () => {
   return (
     <Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <DesktopMenuItem navItem={navItem} />
+        <DesktopMenuItem key={navItem.href} navItem={navItem} />
       ))}
     </Stack>
   );

@@ -31,7 +31,7 @@ export default function ShareButton({
         <MenuList zIndex={99}>
           <MenuItem
             onClick={() => {
-              navigator.clipboard.writeText(link);
+              window.navigator.clipboard.writeText(link);
               toast.success("Copied!");
             }}
             justifyContent="start"

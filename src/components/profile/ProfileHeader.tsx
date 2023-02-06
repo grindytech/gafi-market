@@ -112,7 +112,7 @@ export default function ProfileHeader({
                   {address && (
                     <Button
                       onClick={() => {
-                        navigator.clipboard.writeText(String(address));
+                        window.navigator.clipboard.writeText(String(address));
                         toast.success("Copied!");
                       }}
                       rightIcon={<CopyIcon color="gray.300" />}

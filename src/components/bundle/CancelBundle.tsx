@@ -48,8 +48,7 @@ export default function CancelBundle({
   const cancel = async () => {
     try {
       setLoading(true);
-      const tokenIds = bundle?.items.map((item) => item.tokenId);
-      debugger
+      const tokenIds = bundle?.items.map((item) => Number(item.tokenId)).sort();
       const price = convertToContractValue({
         amount: bundle.price,
         decimal: paymentInfo.decimals,
