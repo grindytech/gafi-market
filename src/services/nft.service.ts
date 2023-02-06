@@ -178,6 +178,10 @@ const getBundle = async (id: string): Promise<BaseResult<BundleDto>> => {
   return await client.get(`/market/api/bundles/${id}/detail`);
 };
 
+const getFeeds = async () => {
+  return await client.get("/market/api/blog");
+};
+
 export default {
   getNfts,
   getNft,
@@ -214,4 +218,6 @@ export default {
   createBundle,
   getBundles,
   getBundle,
+
+  getFeeds,
 };

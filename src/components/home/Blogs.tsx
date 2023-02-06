@@ -1,25 +1,34 @@
 import {
-  VStack,
-  HStack,
-  Heading,
-  Button,
   Box,
-  useColorModeValue,
+  Button,
+  Heading,
+  HStack,
   Text,
+  useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import ScrollSlide from "../hScroll/ScrollSlide";
-import NextLink from "next/link";
 
-import { ImageWithFallback } from "../LazyImage";
+import { useQuery } from "react-query";
+import nftService from "../../services/nft.service";
 import useCustomColors from "../../theme/useCustomColors";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
+import { ImageWithFallback } from "../LazyImage";
+import Skeleton from "../Skeleton";
 const IMAGE =
   "https://liquidifty.imgix.net/QmXSgpjF9SdNz3Rjqs6cTKfGaRRE3iupF6W3iYp9CpCCNW?auto=compress,format";
-
 export default function Blogs() {
-  const { borderColor } = useCustomColors();
+  const {
+    data: rssItems,
+    isError,
+    isLoading,
+  } = useQuery("Blogs", async () => {
+    const rs = (await nftService.getFeeds()) as any;
+    return rs.items;
+  });
 
   return (
     <VStack w="full">
@@ -40,7 +49,8 @@ export default function Blogs() {
               rightIcon={<FiArrowRight className="right-arrow-icon" />}
               textTransform="uppercase"
               as={NextLink}
-              href="/games"
+              href="https://blog.heroesempires.com/"
+              target="_blank"
             >
               View all
             </Button>
@@ -48,68 +58,100 @@ export default function Blogs() {
         </Heading>
       </HStack>
       <Box w="full" position="relative">
-        <ScrollSlide>
-          {Array.from(Array(12).keys()).map((k) => (
-            <NextLink href="#" key={`Blogs-${k + 1}`}>
-              <Box pb={5} mr={4}>
-                <Card
-                  _hover={{
-                    boxShadow: "md",
-                    borderColor: "primary.300",
-                  }}
-                  p={0}
-                  rounded="xl"
-                  boxShadow="sm"
-                  border="1px solid"
-                  borderColor={borderColor}
-                >
-                  <CardBody p={0} m={0}>
-                    <VStack w="full" p={3}>
-                      <Box
-                        pos={"relative"}
-                        overflow="hidden"
-                        bg={useColorModeValue("gray.600", "gray.800")}
-                        rounded="xl"
-                        w={300}
-                        h={225}
-                        maxW="full"
-                        border={"1px solid"}
-                        borderColor={useColorModeValue("gray.200", "gray.700")}
-                      >
-                        <ImageWithFallback
-                          // data-component-name="NFTImage"
-                          h="full"
-                          w="full"
-                          src={IMAGE}
-                          objectFit="cover"
-                        />
-                      </Box>
-                      <VStack w="full" alignItems="start">
-                        <Text
-                          title="BEAR MARKET: WHY DID IT HAPPEN?"
-                          noOfLines={2}
-                          fontSize="lg"
-                          fontWeight="semibold"
-                          h="2lg"
-                        >
-                          BEAR MARKET: WHY DID IT HAPPEN?
-                        </Text>
-                        <Text h="rem" fontSize="md" noOfLines={3}>
-                          Usually, a bear market causes doubts even among
-                          full-fledged investors and traders, not to mention
-                          beginners. Hopefully, our tips may assist you in
-                          staying optimistic, preserving, and even increasing
-                          your assets.
-                        </Text>
-                      </VStack>
-                    </VStack>
-                  </CardBody>
-                </Card>
-              </Box>
-            </NextLink>
-          ))}
-        </ScrollSlide>
+        {!isLoading ? (
+          <ScrollSlide>
+            {rssItems.map((rss) => (
+              <NextLink href={rss.link} target={"_blank"} key={rss.title}>
+                <Box w={300} pb={5} mr={4}>
+                  <Blog
+                    content={rss["content:encodedSnippet"]}
+                    image={rss.enclosure?.url}
+                    isLoading={false}
+                    title={rss.title}
+                  />
+                </Box>
+              </NextLink>
+            ))}
+          </ScrollSlide>
+        ) : (
+          <HStack overflow="auto" w="full">
+            {Array.from(Array(6).keys()).map((k, i) => (
+              <Blog key={`blog-skeleton-${i}`} isLoading />
+            ))}
+          </HStack>
+        )}
       </Box>
     </VStack>
+  );
+}
+
+function Blog({
+  content,
+  image,
+  title,
+  isLoading,
+}: {
+  title?: string;
+  content?: string;
+  image?: string;
+  isLoading?: boolean;
+}) {
+  const { borderColor } = useCustomColors();
+
+  return (
+    <Card
+      _hover={{
+        boxShadow: "md",
+        borderColor: "primary.300",
+      }}
+      p={0}
+      rounded="xl"
+      boxShadow="sm"
+      border="1px solid"
+      borderColor={borderColor}
+    >
+      <CardBody p={0} m={0}>
+        <VStack w="full" p={3}>
+          <Skeleton isLoaded={!isLoading}>
+            <Box
+              pos={"relative"}
+              overflow="hidden"
+              bg={useColorModeValue("gray.600", "gray.800")}
+              rounded="xl"
+              w={272}
+              h={178}
+              maxW="full"
+              border={"1px solid"}
+              borderColor={useColorModeValue("gray.200", "gray.700")}
+            >
+              <ImageWithFallback
+                h="full"
+                w="full"
+                src={image}
+                objectFit="fill"
+              />
+            </Box>
+          </Skeleton>
+          <VStack w="full" overflow="hidden" alignItems="start">
+            <Skeleton isLoaded={!isLoading}>
+              <Text
+                title={title}
+                noOfLines={2}
+                fontSize="lg"
+                fontWeight="semibold"
+                h="3em"
+              >
+                {title}
+              </Text>
+            </Skeleton>
+            <Skeleton w="full" isLoaded={!isLoading}>
+              <Text h="4.5em" w="full" fontSize="md" noOfLines={3}>
+                {content}
+              </Text>
+            </Skeleton>
+          </VStack>
+        </VStack>
+      </CardBody>
+    </Card>
   );
 }
