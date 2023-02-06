@@ -100,7 +100,7 @@ export default function NftCardMarket({
             top={0}
             p={3}
           >
-            <Menu>
+            <Menu isLazy>
               <MenuButton
                 aria-label="Menu"
                 as={IconButton}

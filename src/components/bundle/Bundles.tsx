@@ -197,7 +197,7 @@ export default function Bundles() {
             minW="350px"
             w="350px"
             top="125px"
-            height="calc( 100vh - 60px )"
+            height="calc( 100vh - 125px )"
             minH={500}
             overflow="hidden"
           >

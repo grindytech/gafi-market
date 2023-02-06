@@ -32,7 +32,7 @@ import SyncNfts from "../profile/syncNfts/SyncNfts";
 import { useSelector } from "react-redux";
 import { selectProfile } from "../../store/profileSlice";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
-import CreateBundle from "./CreateBundle";
+import CreateBundle, { CreateBundleMobile } from "./CreateBundle";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 
 export default function Nfts({
@@ -60,6 +60,7 @@ export default function Nfts({
   const [bundleItems, setBundleItems] = useState<NftDto[]>([]);
   const [createBundleMode, setCreateBundleMode] = useState(false);
   const [bundleCollection, setBundleCollection] = useState<string>();
+  const maxBundleItem = 50;
   useEffect(() => {
     if (bundleItems.length === 0) {
       setBundleCollection(undefined);
@@ -251,7 +252,7 @@ export default function Nfts({
             minW="350px"
             w="350px"
             top="125px"
-            height="calc( 100vh - 60px )"
+            height="calc( 100vh - 125px )"
             minH={500}
             overflow="hidden"
           >
@@ -306,10 +307,12 @@ export default function Nfts({
             >
               {!isLoading &&
                 marketNfts.map((nft) => {
-                  const someBundleCollection =
+                  const sameBundleCollection =
                     bundleCollection === nft.nftCollection ||
                     bundleCollection ===
                       (nft.nftCollection as NftCollectionDto)?.id;
+                  const isMaxLength = bundleItems.length >= maxBundleItem;
+                  const isSelected = !!bundleItems.find((b) => b.id === nft.id);
                   return nft ? (
                     <Box position="relative">
                       {createBundleMode && (
@@ -320,7 +323,10 @@ export default function Nfts({
                             if (createBundleMode) {
                               e.preventDefault();
                               e.stopPropagation();
-                              if (bundleCollection && !someBundleCollection) {
+                              if (
+                                (bundleCollection && !sameBundleCollection) ||
+                                (isMaxLength && !isSelected)
+                              ) {
                                 return;
                               }
                               if (bundleItems.find((b) => b.id === nft.id)) {
@@ -342,10 +348,13 @@ export default function Nfts({
                           <Tooltip
                             label={
                               createBundleMode
-                                ? bundleCollection && !someBundleCollection
+                                ? bundleCollection && !sameBundleCollection
                                   ? "You can only select items from the same collection"
                                   : !!nft.bundle
                                   ? "This item actually in a bundle"
+                                  : isMaxLength && !isSelected
+                                  ? "Maximum items in a bundle is " +
+                                    maxBundleItem
                                   : ""
                                 : ""
                             }
@@ -362,10 +371,11 @@ export default function Nfts({
                         <NftCardMarket
                           disabled={
                             createBundleMode &&
-                            ((bundleCollection && !someBundleCollection) ||
-                              !!nft.bundle)
+                            ((bundleCollection && !sameBundleCollection) ||
+                              !!nft.bundle ||
+                              (isMaxLength && !isSelected))
                           }
-                          selected={!!bundleItems.find((b) => b.id === nft.id)}
+                          selected={isSelected}
                           showMenu={!createBundleMode}
                           menuItems={
                             owner === user &&
@@ -409,21 +419,39 @@ export default function Nfts({
             <div ref={loadingRef} />
           )}
         </Box>
-        {createBundleMode && (
-          <Box
-            display={md && createBundleMode ? "block" : "none"}
-            position="sticky"
-            border="1px solid"
-            borderColor={borderColor}
-            rounded="xl"
-            minW="350px"
-            w="350px"
-            top="125px"
-            height="calc( 100vh - 60px )"
-            minH={500}
-            overflow="hidden"
-          >
-            <CreateBundle
+        {createBundleMode &&
+          (md ? (
+            <Box
+              display={md && createBundleMode ? "block" : "none"}
+              position="sticky"
+              border="1px solid"
+              borderColor={borderColor}
+              rounded="xl"
+              minW="350px"
+              w="350px"
+              top="125px"
+              height="calc( 100vh - 60px )"
+              minH={500}
+              overflow="hidden"
+            >
+              <CreateBundle
+                items={bundleItems}
+                onClose={() => {
+                  setBundleItems([]);
+                  setCreateBundleMode(false);
+                }}
+                onRemove={(nftId) => {
+                  setBundleItems(
+                    Array.from(bundleItems.filter((b) => b.id !== nftId))
+                  );
+                }}
+                onReset={() => {
+                  setBundleItems([]);
+                }}
+              />
+            </Box>
+          ) : (
+            <CreateBundleMobile
               items={bundleItems}
               onClose={() => {
                 setBundleItems([]);
@@ -438,8 +466,7 @@ export default function Nfts({
                 setBundleItems([]);
               }}
             />
-          </Box>
-        )}
+          ))}
       </HStack>
     </VStack>
   );

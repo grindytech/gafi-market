@@ -4,6 +4,7 @@ import {
   Button,
   HStack,
   Icon,
+  useBreakpointValue,
   useColorModeValue,
   useStyleConfig,
   VStack,
@@ -44,9 +45,9 @@ export default function NftCard({
   const imageStyles = useStyleConfig("NFTCardImage");
   const videoRef = useRef<any>(null);
   const bgColor =
-    cardStyle === "nftCard"
-      ? useColorModeValue("white", "gray.800")
-      : "none";
+    cardStyle === "nftCard" ? useColorModeValue("white", "gray.800") : "none";
+  const md = useBreakpointValue({ base: false, md: true });
+
   return (
     <Box w="full">
       <Card
@@ -91,7 +92,7 @@ export default function NftCard({
                   <Box>
                     {showOnHover && !loading && (
                       <HStack
-                        className="hover-show"
+                        className={md ? "hover-show" : ""}
                         position="absolute"
                         top={0}
                         left={0}

@@ -56,11 +56,13 @@ export default function ReactSlide({
       width={"full"}
       overflow={"hidden"}
     >
-      <Box position="absolute" top={0} right={0} px={2}>
-        <Text color="gray.500" fontSize="sm">
-          {index + 1} of {length}
-        </Text>
-      </Box>
+      {length > 0 && (
+        <Box position="absolute" top={0} right={0} px={2}>
+          <Text color="gray.500" fontSize="sm">
+            {index + 1} of {length}
+          </Text>
+        </Box>
+      )}
       {/* Left Icon */}
       {index > 0 && length > 0 && (
         <IconButton
@@ -100,7 +102,7 @@ export default function ReactSlide({
           zIndex={9}
           onClick={(e) => {
             e.preventDefault();
-            slider?.slickNext()
+            slider?.slickNext();
           }}
           rounded="full"
         >

@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   CardBody,
@@ -6,7 +7,13 @@ import {
   CardHeader,
   CloseButton,
   Divider,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   HStack,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -19,11 +26,13 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import { FiChevronRight } from "react-icons/fi";
 import {
   useGetChainInfo,
   useGetCollectionInfo,
 } from "../../hooks/useGetSystemInfo";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
+import useCustomColors from "../../theme/useCustomColors";
 import { NftItem } from "../nft/Cart";
 import PrimaryButton from "../PrimaryButton";
 import CreateBundleConfirm from "./CreateBundleConfirm";
@@ -68,6 +77,7 @@ export default function CreateBundle({
             <>
               {index !== 0 && <Divider />}
               <NftItem
+                key={item.id}
                 onRemove={() => {
                   onRemove(item.id);
                 }}
@@ -118,5 +128,58 @@ export default function CreateBundle({
         </VStack>
       </CardFooter>
     </Card>
+  );
+}
+
+export function CreateBundleMobile({
+  items,
+  onClose,
+  onReset,
+  onRemove,
+}: Props) {
+  const { isOpen, onOpen, onClose: closeDrawer } = useDisclosure();
+  const { borderColor } = useCustomColors();
+  return (
+    <Box w="full" zIndex={99} position="fixed" bottom={0} left={0} p={2}>
+      <HStack
+        p={2}
+        bg={borderColor}
+        rounded="xl"
+        w="full"
+        justifyContent="space-between"
+        alignContent="center"
+      >
+        <VStack spacing={0} alignItems="start">
+          <Text>Bundle sale {items.length} items</Text>
+          <Button
+            onClick={() => {
+              onReset();
+              onClose();
+            }}
+            size="xs"
+            variant="link"
+            colorScheme="red"
+          >
+            Cancel
+          </Button>
+        </VStack>
+        <IconButton rounded="full" onClick={onOpen} aria-label="next">
+          <FiChevronRight />
+        </IconButton>
+      </HStack>
+      <Drawer placement="bottom" onClose={closeDrawer} isOpen={isOpen}>
+        <DrawerOverlay />
+        <DrawerContent bg="none">
+          <DrawerBody p={0}>
+            <CreateBundle
+              items={items}
+              onClose={closeDrawer}
+              onRemove={onRemove}
+              onReset={onReset}
+            />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </Box>
   );
 }

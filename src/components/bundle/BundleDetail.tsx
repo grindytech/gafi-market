@@ -348,8 +348,7 @@ export default function BundleDetail({ id }: { id: string }) {
                             : "Sold out"}
                         </Button>
                       )}
-                      {(bundleStatus === BundleStatus.onSale ||
-                        bundleStatus === BundleStatus.expired) && (
+                      {bundleStatus === BundleStatus.onSale && (
                         <Tooltip label={new Date(bundle.endTime).toUTCString()}>
                           <HStack w="full" spacing={1} justifyContent="start">
                             <FiClock color="gray" />

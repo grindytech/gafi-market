@@ -112,6 +112,7 @@ export default function CreateBundleConfirm({
         paymentTokenId: paymentToken.id,
         idList,
       };
+      debugger
       const hashMessageRsp = await nftService.getBundleHashMessage(
         hashMessageParam
       );

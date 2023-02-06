@@ -34,8 +34,11 @@ export default function RecentlySold() {
       <Box w="full" position="relative">
         <ScrollSlide>
           {data?.items.map((item, k) => (
-            <Link href={`/nft/${item.nftContract}:${item.tokenId}`}>
-              <Box key={`nft-sold-${item.id}`} w={250} pr={3} pb={5}>
+            <Link
+              key={`nft-sold-${item.id}`}
+              href={`/nft/${item.nftContract}:${item.tokenId}`}
+            >
+              <Box w={250} pr={3} pb={5}>
                 <NftCardRecentlySold history={item} />
               </Box>
             </Link>

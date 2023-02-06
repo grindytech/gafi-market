@@ -18,6 +18,7 @@ const SocialGroup = ({ socials }: { socials: Socials }) => {
         return (
           social && (
             <IconButton
+              key={item}
               onClick={() => {
                 window.open(social, "_blank");
               }}

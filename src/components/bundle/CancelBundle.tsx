@@ -49,6 +49,7 @@ export default function CancelBundle({
     try {
       setLoading(true);
       const tokenIds = bundle?.items.map((item) => item.tokenId);
+      debugger
       const price = convertToContractValue({
         amount: bundle.price,
         decimal: paymentInfo.decimals,

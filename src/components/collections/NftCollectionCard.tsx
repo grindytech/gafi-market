@@ -135,7 +135,7 @@ export default function NftCollectionCard({
                 </Box>
               )}
             </HStack>
-            {!top && (
+            {/* {!top && (
               <Box w="full" px={1} overflow="hidden">
                 <Text
                   textColor="gray.500"
@@ -148,7 +148,7 @@ export default function NftCollectionCard({
                   {collection?.description}
                 </Text>
               </Box>
-            )}
+            )} */}
           </VStack>
         </CardBody>
       </Card>

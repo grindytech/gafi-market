@@ -35,6 +35,17 @@ export default function Collections({ statusAll = undefined }) {
   const [showFilter, setShowFilter] = useState(false);
   const md = useBreakpointValue({ base: false, md: true });
   const { borderColor } = useCustomColors();
+  const baseCols = [2, 4, 4, 5,5];
+  const col = useBreakpointValue(
+    !md
+      ? baseCols
+      : baseCols.map((v, i) => {
+          if (i > 1) {
+            const newV = v - (showFilter ? 1 : 0);
+            return newV;
+          } else return v;
+        })
+  );
   const {
     data,
     isFetching,
@@ -89,22 +100,6 @@ export default function Collections({ statusAll = undefined }) {
   return (
     <VStack px={0} spacing={5} w="full" alignItems="start">
       <HStack w="full" alignItems="start" spacing={0}>
-        <Box
-          display={md && showFilter ? "block" : "none"}
-          position="sticky"
-          border="1px solid"
-          borderColor={borderColor}
-          rounded="xl"
-          minW="350px"
-          w="350px"
-          top="65px"
-          height="calc( 100vh - 60px )"
-          minH={500}
-          mr={3}
-          overflow="hidden"
-        >
-          <NftsFilter options={COLLECTIONS_FILTER_OPTIONS} />
-        </Box>
         <VStack w="full" p={0}>
           <Stack
             zIndex={10}
@@ -183,73 +178,94 @@ export default function Collections({ statusAll = undefined }) {
               <Sort option="collection" />
             </HStack>
           </Stack>
-          <Box w="full">
-            {isEmpty && (
-              <Box w="full" py={10}>
-                <EmptyState>
-                  <Button
-                    onClick={() => {
-                      refetch();
-                    }}
-                    isLoading={isLoading || isFetching}
-                  >
-                    Try again
-                  </Button>
-                </EmptyState>
-              </Box>
-            )}
-            {isError && (
-              <Box w="full" py={10}>
-                <ErrorState>
-                  <Button
-                    onClick={() => {
-                      refetch();
-                    }}
-                  >
-                    Try again
-                  </Button>
-                </ErrorState>
-              </Box>
-            )}
-            {!isError && !isEmpty && (
-              <SimpleGrid
-                justifyContent="center"
-                w="full"
-                columns={showFilter && md ? [2, 2, 3, 3, 5] : [2, 2, 3, 4, 5]}
-                gap="15px"
-                px={1}
+          <HStack w="full" alignItems="start" spacing={[0, 3]}>
+            {md && showFilter && (
+              <Box
+                position="sticky"
+                border="1px solid"
+                borderColor={borderColor}
+                rounded="xl"
+                minW="350px"
+                w="350px"
+                top="125px"
+                height="calc( 100vh - 125px )"
+                minH={500}
+                overflow="hidden"
               >
-                {!isLoading &&
-                  nftCollections.map((c) => {
-                    return c ? (
-                      <NextLink key={c.id} href={`/collection/${c.key}`}>
-                        <NftCollectionCard collection={c} />
-                      </NextLink>
+                <NftsFilter options={COLLECTIONS_FILTER_OPTIONS} />
+              </Box>
+            )}
+            <Box w="full">
+              {isEmpty && (
+                <Box w="full" py={10}>
+                  <EmptyState>
+                    <Button
+                      onClick={() => {
+                        refetch();
+                      }}
+                      isLoading={isLoading || isFetching}
+                    >
+                      Try again
+                    </Button>
+                  </EmptyState>
+                </Box>
+              )}
+              {isError && (
+                <Box w="full" py={10}>
+                  <ErrorState>
+                    <Button
+                      onClick={() => {
+                        refetch();
+                      }}
+                    >
+                      Try again
+                    </Button>
+                  </ErrorState>
+                </Box>
+              )}
+              {!isError && !isEmpty && (
+                <SimpleGrid
+                  justifyContent="center"
+                  w="full"
+                  columns={col}
+                  gap="15px"
+                  px={1}
+                >
+                  {!isLoading &&
+                    nftCollections.map((c) => {
+                      return c ? (
+                        <NextLink key={c.id} href={`/collection/${c.key}`}>
+                          <NftCollectionCard collection={c} />
+                        </NextLink>
+                      ) : (
+                        <></>
+                      );
+                    })}
+
+                  {(isLoading || isFetching) &&
+                    nftCollections.length === 0 &&
+                    Array.from(Array(12).keys()).map((k) => (
+                      <NftCollectionCard isLoading key={`nft-template-${k}`} />
+                    ))}
+
+                  {hasNextPage &&
+                    (isFetchingNextPage ? (
+                      Array.from(Array(6).keys()).map((k) => (
+                        <NftCollectionCard
+                          isLoading
+                          key={`nft-template-${k}`}
+                        />
+                      ))
                     ) : (
                       <></>
-                    );
-                  })}
-
-                {(isLoading || isFetching) &&
-                  nftCollections.length === 0 &&
-                  Array.from(Array(12).keys()).map((k) => (
-                    <NftCollectionCard isLoading key={`nft-template-${k}`} />
-                  ))}
-
-                {hasNextPage &&
-                  (isFetchingNextPage ? (
-                    Array.from(Array(6).keys()).map((k) => (
-                      <NftCollectionCard isLoading key={`nft-template-${k}`} />
-                    ))
-                  ) : (
-                    <></>
-                  ))}
-              </SimpleGrid>
-            )}
-            {!isLoading && !isFetching && hasNextPage && (
-              <div ref={loadingRef} />
-            )}
-          </Box>
+                    ))}
+                </SimpleGrid>
+              )}
+              {!isLoading && !isFetching && hasNextPage && (
+                <div ref={loadingRef} />
+              )}
+            </Box>
+          </HStack>
         </VStack>
       </HStack>
     </VStack>
