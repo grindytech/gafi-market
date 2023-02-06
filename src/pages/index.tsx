@@ -13,8 +13,8 @@ const Index = () => {
       <Box w="full" rounded="xl" overflow="hidden">
         <HomeSlide />
       </Box>
-      {/* <HotCollections /> */}
-      <FeaturedGames />
+      <HotCollections />
+      {/* <FeaturedGames /> */}
       <RecentlySold />
       <NftExplore />
       <Blogs />

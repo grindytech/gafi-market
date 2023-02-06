@@ -32,7 +32,7 @@ import SyncNfts from "../profile/syncNfts/SyncNfts";
 import { useSelector } from "react-redux";
 import { selectProfile } from "../../store/profileSlice";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
-import CreateBundle, { CreateBundleMobile } from "./CreateBundle";
+import CreateBundle, { CreateBundleMobile } from "../bundle/CreateBundle";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 
 export default function Nfts({
@@ -242,9 +242,10 @@ export default function Nfts({
           </HStack>
         </Stack>
       )}
-      <HStack w="full" alignItems="start" spacing={[0, 3]}>
-        {enableFilter && md && showFilter && (
+      <HStack w="full" alignItems="start" spacing={showFilter ? [0, 3] : 0}>
+        {enableFilter && (
           <Box
+            display={md && showFilter ? "block" : "none"}
             position="sticky"
             border="1px solid"
             borderColor={borderColor}

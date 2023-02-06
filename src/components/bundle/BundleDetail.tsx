@@ -397,7 +397,7 @@ export default function BundleDetail({ id }: { id: string }) {
                 <Box pt={3} w="full">
                   <Card rounded="xl" borderWidth={1} p={3}>
                     <CardBody>
-                      <VStack w="full">
+                      <VStack spacing={0} w="full">
                         <HStack
                           w="full"
                           alignItems="start"
@@ -429,7 +429,7 @@ export default function BundleDetail({ id }: { id: string }) {
                             </Text>
                           </Button>
                         </HStack>
-                        <HStack justifyContent="end" color="gray">
+                        <HStack w="full" justifyContent="end" color="gray">
                           <Tooltip
                             label={new Date(bundle.updatedAt).toUTCString()}
                           >

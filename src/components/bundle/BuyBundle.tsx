@@ -78,13 +78,14 @@ export default function BuyBundle({
       });
       const allowance = await erc20Contract.getAllowance(
         paymentInfo?.contractAddress,
-        chainInfo?.mpContract,
+        chainInfo?.bundleContract,
         user
       );
+      debugger
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(
           paymentInfo.contractAddress,
-          chainInfo?.mpContract,
+          chainInfo?.bundleContract,
           user,
           approvePrice
         );
@@ -131,7 +132,7 @@ export default function BuyBundle({
   return (
     <>
       <Countdown
-        date={bundle.startTime}
+        date={new Date(bundle.startTime)}
         renderer={({ hours, minutes, seconds, completed }) => {
           if (completed) {
             return (
@@ -148,7 +149,7 @@ export default function BuyBundle({
           }
           return (
             <Box {...rest}>
-              Listing {hours ? hours : ""}:
+              Listing {hours ? hours + ":" : ""}
               {minutes < 10 ? `0${minutes}` : minutes}:
               {seconds < 10 ? `0${seconds}` : seconds}
             </Box>
