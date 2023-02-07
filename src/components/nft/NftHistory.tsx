@@ -186,6 +186,24 @@ function HistoryListItem({
                 &nbsp;${numeralFormat(history?.priceInUsd)}
               </Text>
             )}
+            {history?.bundle && (
+              <Button
+                color="gray"
+                variant="link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(`/bundle/${history.bundle.id}`, "_blank");
+                }}
+                size="xs"
+                rounded="xl"
+              >
+                <HStack spacing={1} alignItems="center">
+                  <Text fontSize="xs">Bundle sale</Text>
+                  <ExternalLinkIcon w={3} h={3} />
+                </HStack>
+              </Button>
+            )}
           </HStack>
         </Skeleton>
         <Skeleton w="full" isLoaded={!loading}>

@@ -196,7 +196,9 @@ export default function SaleButton({
                           onChangeToken={(p) => {
                             setPaymentToken(p);
                           }}
-                          idList={collectionInfo?.paymentTokens as string[]}
+                          idList={collectionInfo?.paymentTokens.map((c) =>
+                            typeof c === "string" ? c : c.id
+                          )}
                         />
                       </Box>
                     }

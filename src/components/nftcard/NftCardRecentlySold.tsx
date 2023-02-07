@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -24,6 +25,7 @@ import Icons from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { selectProfile } from "../../store/profileSlice";
+import useCustomColors from "../../theme/useCustomColors";
 import { getUserName, numeralFormat } from "../../utils/utils";
 import FloatIconWithText from "../FloatIconWithText";
 import Skeleton from "../Skeleton";
@@ -50,7 +52,7 @@ export default function NftCardRecentlySold({
     paymentSymbol: paymentInfo?.symbol,
   });
   const mask = get(MASKS, collectionInfo?.key);
-
+  const { borderColor } = useCustomColors();
   return (
     <NftCard
       mask={mask ? mask({ nft: history?.nft }) : <></>}
@@ -130,7 +132,7 @@ export default function NftCardRecentlySold({
               </HStack>
             </VStack>
           </Skeleton>
-          <HStack w="full" alignItems="center">
+          <HStack spacing={0} h="1rem" w="full" alignItems="center">
             <Skeleton isLoaded={!loading}>
               <Text
                 fontWeight="semibold"
@@ -156,9 +158,26 @@ export default function NftCardRecentlySold({
                 textAlign="left"
                 title={`${prefix}${history.priceInUsd}`}
               >
-                ~{prefix}
+                &nbsp;~{prefix}
                 {numeralFormat(history.priceInUsd, 4)}
               </Text>
+            )}
+            {history.bundle && (
+              <Button
+                variant='link'
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(`/bundle/${history.bundle.id}`, "_blank");
+                }}
+                size="xs"
+                rounded="xl"
+              >
+                <HStack spacing={1} alignItems="center">
+                  <Text fontSize="xs">Bundle sale</Text>
+                  <ExternalLinkIcon w={3} h={3} />
+                </HStack>
+              </Button>
             )}
           </HStack>
         </VStack>

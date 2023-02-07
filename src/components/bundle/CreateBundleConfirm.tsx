@@ -175,7 +175,9 @@ export default function CreateBundleConfirm({
                   onChangeToken={(p) => {
                     setPaymentToken(p);
                   }}
-                  idList={nftCollection?.paymentTokens as string[]}
+                  idList={nftCollection?.paymentTokens.map((c) =>
+                    typeof c === "string" ? c : c.id
+                  )}
                 />
               </Box>
             }

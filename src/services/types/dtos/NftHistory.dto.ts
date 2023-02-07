@@ -1,6 +1,7 @@
 import { HistoryType } from "../enum";
 import { Attribute } from "./Attribute";
 import { BaseDocumentDto } from "./BaseDocumentDto";
+import { BundleDto } from "./BundleDto";
 import { ChainDto } from "./ChainDto";
 import { NftDto } from "./Nft.dto";
 import { NftCollectionDto } from "./NftCollectionDto";
@@ -25,4 +26,5 @@ export class NftHistoryDto extends BaseDocumentDto {
   type: HistoryType;
   image?: string;
   blockTime?: number;
+  bundle?: BundleDto;
 }

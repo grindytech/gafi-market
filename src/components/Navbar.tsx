@@ -53,6 +53,7 @@ import Avatar from "./Avatar";
 import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import Cart from "./nft/Cart";
+import NotificationButton from "./notification/NotificationButton";
 import SearchBox from "./SearchBox";
 export const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
   return (
@@ -162,16 +163,7 @@ export default function Navbar() {
           </Stack>
           {user ? (
             <>
-              <IconButton
-                variant="ghost"
-                borderRadius={50}
-                aria-label="notification"
-                icon={
-                  <Icon w={5} h={5}>
-                    <BellIcon />
-                  </Icon>
-                }
-              />
+              <NotificationButton />
               {md && (
                 <Menu>
                   <MenuButton

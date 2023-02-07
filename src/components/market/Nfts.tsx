@@ -242,10 +242,9 @@ export default function Nfts({
           </HStack>
         </Stack>
       )}
-      <HStack w="full" alignItems="start" spacing={showFilter ? [0, 3] : 0}>
-        {enableFilter && (
+      <HStack w="full" alignItems="start" spacing={[0, 3]}>
+        {enableFilter && md && showFilter && (
           <Box
-            display={md && showFilter ? "block" : "none"}
             position="sticky"
             border="1px solid"
             borderColor={borderColor}

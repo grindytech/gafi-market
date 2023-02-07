@@ -59,7 +59,7 @@ export default function BuyButton({
     isFetching: fetchingBalance,
   } = useBalanceOf({
     account: user,
-    chain: chainInfo?.symbol.toUpperCase() as Chain,
+    chain: chainInfo?.symbol?.toUpperCase() as Chain,
     tokenAddress: paymentInfo?.contractAddress,
     isNative: paymentInfo?.isNative,
   });
@@ -159,10 +159,12 @@ export default function BuyButton({
           <ModalBody>
             <VStack pt={5} px={5} w="full">
               <Heading fontSize="2xl">BUY NFT</Heading>
-              <HStack spacing={0}>
-                <Text>You are about buy&nbsp;</Text>
-                <Text color="gray">
-                  {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+              <HStack justifyContent="center" spacing={0}>
+                <Text w="full" textAlign="center">
+                  You are about buy{" "}
+                  <b>
+                    {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+                  </b>
                 </Text>
               </HStack>
               <Box py={3}>

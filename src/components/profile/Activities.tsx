@@ -260,6 +260,24 @@ function HistoryItemDesktop({
                 &nbsp;${numeralFormat(history?.priceInUsd)}
               </Text>
             )}
+            {history?.bundle && (
+              <Button
+                color="gray.500"
+                variant="link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(`/bundle/${history.bundle.id}`, "_blank");
+                }}
+                size="xs"
+                rounded="xl"
+              >
+                <HStack spacing={1} alignItems="center">
+                  <Text fontSize="xs">Bundle sale</Text>
+                  <ExternalLinkIcon w={3} h={3} />
+                </HStack>
+              </Button>
+            )}
           </VStack>
         </Skeleton>
       </Td>
@@ -424,6 +442,24 @@ function HistoryListItem({
                 <Text noOfLines={1} fontSize="xs" color="gray.500">
                   &nbsp;${numeralFormat(history?.priceInUsd)}
                 </Text>
+              )}
+              {history?.bundle && (
+                <Button
+                  color="gray.500"
+                  variant="link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(`/bundle/${history.bundle.id}`, "_blank");
+                  }}
+                  size="xs"
+                  rounded="xl"
+                >
+                  <HStack spacing={1} alignItems="center">
+                    <Text fontSize="xs">Bundle sale</Text>
+                    <ExternalLinkIcon w={3} h={3} />
+                  </HStack>
+                </Button>
               )}
             </HStack>
           </Skeleton>

@@ -1,7 +1,10 @@
 import { client } from "./client";
 import { BaseResult } from "./types/dtos/BaseResult";
+import { NotificationDto } from "./types/dtos/Notification.dto";
 import { PaginationDto } from "./types/dtos/PaginationDto";
 import { UserDto } from "./types/dtos/UserDto";
+import { NotificationStatus } from "./types/enum";
+import { GetNotificationsDto } from "./types/params/GetNotifications";
 import { ProfileUploadFile } from "./types/params/ProfileUploadFile";
 import { QueryAccounts } from "./types/params/QueryAccounts";
 
@@ -42,6 +45,24 @@ const updateProfile = async (body: UserDto): Promise<UserDto> => {
 const manageInfo = async (body: UserDto): Promise<UserDto> => {
   return await client.post("/account/api/manageInfo", body);
 };
+const getNotifications = async (
+  params: GetNotificationsDto
+): Promise<BaseResult<PaginationDto<NotificationDto>>> => {
+  return await client.get("/account/api/notifications", { params });
+};
+const updateNotificationStatus = async (
+  id: string,
+  status: NotificationStatus
+): Promise<BaseResult<string>> => {
+  return await client.post("/account/api/notifications/status", {
+    id,
+    status,
+  });
+};
+const seenAllNotification = async () => {
+  return await client.post("/account/api/notifications/seenAll");
+};
+
 export const accountService = {
   nonce,
   login,
@@ -54,4 +75,8 @@ export const accountService = {
   updateProfile,
 
   manageInfo,
+
+  getNotifications,
+  updateNotificationStatus,
+  seenAllNotification,
 };

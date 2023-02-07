@@ -49,3 +49,8 @@ export enum BundleStatus {
   expired = "expired",
   cancelled = "cancelled",
 }
+
+export enum NotificationStatus {
+  Seen = "Seen",
+  UnSeen = "UnSeen",
+}

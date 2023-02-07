@@ -10,7 +10,7 @@ export default function RecentlySold() {
   const { data } = useQuery(["RecentlySold"], async () => {
     const rs = await nftService.getHistories({
       type: [HistoryType.Sale],
-      orderBy: "updatedAt",
+      orderBy: "createdAt",
       desc: "desc",
     });
     return rs.data;
