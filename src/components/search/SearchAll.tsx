@@ -186,7 +186,7 @@ export default function SearchAll() {
                             w="full"
                             alignItems="start"
                           >
-                            <HStack>
+                            <HStack spacing={1}>
                               <Text
                                 fontWeight="semibold"
                                 noOfLines={1}
@@ -195,7 +195,7 @@ export default function SearchAll() {
                                 {collection.name}
                               </Text>
                               {collection?.verified && (
-                                <Icon h={4} w={4}>
+                                <Icon h={3} w={3}>
                                   <HiBadgeCheck size="25px" />
                                 </Icon>
                               )}
