@@ -1,7 +1,16 @@
+import { HamburgerIcon } from "@chakra-ui/icons";
 import {
   HStack,
+  Icon,
+  IconButton,
   Link,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Stack,
   StackProps,
+  useBreakpointValue,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
@@ -12,6 +21,7 @@ import Collections from "../components/collections/Collections";
 import AddGame from "../components/game/AddGame";
 import Games from "../components/game/Games";
 import UserManager from "../components/profile/UserManager";
+import useCustomColors from "../theme/useCustomColors";
 type LinkTab = {
   key: string;
   name: string;
@@ -53,42 +63,77 @@ export default function AdminPageLayout({
   useEffect(() => {
     if (!tab) setTab(ADMIN_LINKS[0].key);
   }, [tab]);
+  const md = useBreakpointValue({ base: false, md: true });
+  const { borderColor } = useCustomColors();
   return (
     <VStack w="full" {...rest}>
-      <HStack w="full" alignItems="start">
-        <VStack
-          position="sticky"
-          borderWidth={1}
-          minW="300px"
-          p={3}
-          rounded="lg"
-          w="300px"
-          top="75px"
-          mr={5}
-          overflow="hidden"
-          spacing={5}
-          py={3}
-          alignItems="start"
-        >
-          {links.map((link) => (
-            <Link
-              key={`${link.key}`}
-              _hover={{
-                color: highlightColor,
-              }}
-              onClick={() => {
-                setTab(link.key);
-              }}
-              color={tab === link.key ? highlightColor : "gray.400"}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </VStack>
-        <VStack w="full">
+      <Stack direction={["column", "row"]} w="full" alignItems="start">
+        {md ? (
+          <VStack
+            position="sticky"
+            borderWidth={1}
+            minW="300px"
+            p={3}
+            rounded="lg"
+            w="300px"
+            top="75px"
+            mr={5}
+            overflow="hidden"
+            spacing={5}
+            py={3}
+            alignItems="start"
+          >
+            {links.map((link) => (
+              <Link
+                key={`${link.key}`}
+                _hover={{
+                  color: highlightColor,
+                }}
+                onClick={() => {
+                  setTab(link.key);
+                }}
+                color={tab === link.key ? highlightColor : "gray.400"}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </VStack>
+        ) : (
+          <>
+            <Menu>
+              <MenuButton zIndex={99} position="fixed" top="135px" left="10px">
+                <IconButton bg={borderColor} aria-label="menu">
+                  <Icon as={HamburgerIcon} />
+                </IconButton>
+              </MenuButton>
+
+              <MenuList zIndex={99}>
+                <VStack alignItems="start">
+                  {links.map((link) => (
+                    <MenuItem>
+                      <Link
+                        key={`${link.key}`}
+                        _hover={{
+                          color: highlightColor,
+                        }}
+                        onClick={() => {
+                          setTab(link.key);
+                        }}
+                        color={tab === link.key ? highlightColor : "gray.400"}
+                      >
+                        {link.name}
+                      </Link>
+                    </MenuItem>
+                  ))}
+                </VStack>
+              </MenuList>
+            </Menu>
+          </>
+        )}
+        <VStack w="full" id="main">
           {ADMIN_LINKS.find((l) => l.key === tab)?.children}
         </VStack>
-      </HStack>
+      </Stack>
     </VStack>
   );
 }

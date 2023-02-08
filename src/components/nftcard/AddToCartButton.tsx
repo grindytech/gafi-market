@@ -39,12 +39,12 @@ export function AddToCartButton({
   return (
     <Tooltip
       label={
-        isDifferentPaymentToken
+        isInCart
+          ? "Remove from cart"
+          : isDifferentPaymentToken
           ? "Items from different payment token can't be purchased together"
           : isDifferentChain
           ? `Items from different chain can't be purchased together`
-          : isInCart
-          ? "Remove from cart"
           : "Put to cart"
       }
     >
@@ -52,10 +52,10 @@ export function AddToCartButton({
         disabled={isDifferentChain || isDifferentPaymentToken}
         onClick={(e) => {
           e.preventDefault();
-          if (isDifferentChain || isDifferentPaymentToken) return;
           if (isInCart) {
             dispatch(remove({ id: nft.id }));
           } else {
+            if (isDifferentChain || isDifferentPaymentToken) return;
             dispatch(add({ item: nft }));
           }
         }}

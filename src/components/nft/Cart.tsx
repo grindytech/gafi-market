@@ -17,6 +17,7 @@ import {
   Link,
   StackProps,
   Text,
+  useBreakpointValue,
   useColorModeValue,
   useDisclosure,
   VStack,
@@ -101,6 +102,7 @@ export default function Cart() {
   useEffect(() => {
     fetchData();
   }, [items]);
+  const md = useBreakpointValue({ base: false, md: true });
 
   return (
     <Box position="relative">
@@ -133,9 +135,8 @@ export default function Cart() {
         </Box>
       )}
       <Drawer
-        size={{ base: "full", sm: "sm" }}
         isOpen={isOpen}
-        placement="right"
+        placement={!md ? "bottom" : "right"}
         onClose={onClose}
         finalFocusRef={btnRef}
       >

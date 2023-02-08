@@ -10,6 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { HiBadgeCheck } from "react-icons/hi";
+import { useGetChainInfo } from "../../hooks/useGetSystemInfo";
 import Icons from "../../images";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import { Status } from "../../services/types/enum";
@@ -38,6 +39,11 @@ export default function NftCollectionCard({
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
   const { borderColor } = useCustomColors();
+  const { chainInfo } = useGetChainInfo({
+    chainId: Array.isArray(collection?.chain)
+      ? collection?.chain[0]
+      : collection?.chain,
+  });
   return (
     <Box w="full" h="full">
       <Card
@@ -68,14 +74,10 @@ export default function NftCollectionCard({
                     src={collection?.featuredImage || collection?.cover}
                   />
                   <Box zIndex={2} p={1} position="absolute" top={0} left={0}>
-                    <FloatIconWithText
-                      h={6}
-                      w={6}
-                      title={collection?.chain.name}
-                    >
+                    <FloatIconWithText h={6} w={6} title={chainInfo?.name}>
                       <Icon w={4} h={4}>
-                        {Icons.chain[collection?.chain.symbol] ? (
-                          Icons.chain[collection?.chain.symbol]()
+                        {Icons.chain[chainInfo?.symbol] ? (
+                          Icons.chain[chainInfo?.symbol]()
                         ) : (
                           <></>
                         )}

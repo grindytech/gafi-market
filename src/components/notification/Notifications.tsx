@@ -7,14 +7,17 @@ import {
   Icon,
   IconButton,
   Image,
+  Link,
   MenuItem,
   Text,
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import { formatDistance } from "date-fns";
+import { useRouter } from "next/router";
 import { useMemo, useRef, useState } from "react";
 import { BiCheckDouble } from "react-icons/bi";
+import { BsBox } from "react-icons/bs";
 import { useInfiniteQuery } from "react-query";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
 import { Images } from "../../images";
@@ -54,9 +57,9 @@ export default function Notifications({
     },
     {
       getNextPageParam: (lastPage) =>
-        lastPage.hasNext ? lastPage.currentPage + 1 : undefined,
+        lastPage.hasNext ? Number(lastPage.currentPage) + 1 : undefined,
       getPreviousPageParam: (firstPage) =>
-        firstPage.hasPrevious ? firstPage.currentPage - 1 : undefined,
+        firstPage.hasPrevious ? Number(firstPage.currentPage) - 1 : undefined,
       onSuccess: () => {},
       onError: (error) => {
         console.error(error);
@@ -90,14 +93,21 @@ export default function Notifications({
       setSeenAllLoading(false);
     }
   };
+  const route = useRouter();
   return (
-    <VStack px={0} spacing={5} w="full" alignItems="start">
+    <VStack
+      px={0}
+      spacing={5}
+      maxW="calc(100vw - 10px)"
+      w="400px"
+      alignItems="start"
+    >
       <Box w="full">
         <VStack maxH="800px" ref={containerRef} w="full">
-          <HStack p={2} w="full" justifyContent="space-between">
+          <HStack py={2} px={4} w="full" justifyContent="space-between">
             <HStack>
               <Button
-                colorScheme="primary"
+                // colorScheme="primary"
                 variant={!status ? "solid" : "outline"}
                 size="sm"
                 rounded="full"
@@ -108,7 +118,7 @@ export default function Notifications({
                 All
               </Button>
               <Button
-                colorScheme="primary"
+                // colorScheme="primary"
                 onClick={() => {
                   setStatus(NotificationStatus.UnSeen);
                 }}
@@ -160,39 +170,52 @@ export default function Notifications({
               </ErrorState>
             </Box>
           )}
-          {!isError && !isEmpty && (
-            <VStack w="full" spacing={0} p={1} overflow="auto">
-              {isLoading || isFetching
-                ? Array.from(Array(6).keys()).map((k) => (
+          <VStack w="full" spacing={0} p={1} overflow="auto">
+            {!isError && !isEmpty && (
+              <>
+                {isLoading || (isFetching && notifications.length === 0)
+                  ? Array.from(Array(6).keys()).map((k) => (
+                      <NotificationItem isLoading={true} />
+                    ))
+                  : notifications.map((notification, i) => (
+                      <Box
+                        onClick={() => {
+                          if (
+                            notification.status === NotificationStatus.UnSeen
+                          ) {
+                            accountService.updateNotificationStatus(
+                              notification.id,
+                              NotificationStatus.Seen
+                            );
+                            notification.status = NotificationStatus.Seen;
+                            refetchCount();
+                          }
+                          if (notification.nft) {
+                            route.push(`/nft/${notification.nft.id}`);
+                          }
+                          if (notification.bundle) {
+                            route.push(`/bundle/${notification.bundle.id}`);
+                          }
+                        }}
+                        w="full"
+                        key={notification.id}
+                      >
+                        {/* {i > 0 && <Divider />} */}
+                        <MenuItem bg="none">
+                          <NotificationItem notification={notification} />
+                        </MenuItem>
+                      </Box>
+                    ))}
+                {isFetchingNextPage &&
+                  Array.from(Array(6).keys()).map((k) => (
                     <NotificationItem isLoading={true} />
-                  ))
-                : notifications.map((notification, i) => (
-                    <Box
-                      onClick={() => {
-                        if (notification.status === NotificationStatus.UnSeen) {
-                          accountService.updateNotificationStatus(
-                            notification.id,
-                            NotificationStatus.Seen
-                          );
-                          notification.status = NotificationStatus.Seen;
-                          refetchCount();
-                        }
-                        if (notification.externalLink) {
-                          window.open(notification.externalLink, "_blank");
-                        }
-                      }}
-                      w="full"
-                      key={notification.id}
-                    >
-                      {i > 0 && <Divider />}
-                      <MenuItem bg="none">
-                        <NotificationItem notification={notification} />
-                      </MenuItem>
-                    </Box>
                   ))}
-            </VStack>
-          )}
-          {!isLoading && !isFetching && hasNextPage && <div ref={loadingRef} />}
+              </>
+            )}
+            {!isLoading && !isFetching && hasNextPage && (
+              <div ref={loadingRef} />
+            )}
+          </VStack>
         </VStack>
       </Box>
     </VStack>
@@ -224,14 +247,25 @@ function NotificationItem({
       rounded="md"
     >
       <Skeleton isLoaded={!isLoading}>
-        <Image
-          src={notification?.nft?.image}
-          rounded="md"
-          fallbackSrc={Images.Placeholder.src}
+        <Box
+          display="flex"
           w="50px"
           h="50px"
-          objectFit="contain"
-        />
+          justifyContent="center"
+          alignItems="center"
+        >
+          {notification?.nft && (
+            <Image
+              src={notification?.nft?.image}
+              rounded="md"
+              fallbackSrc={Images.Placeholder.src}
+              w="50px"
+              h="50px"
+              objectFit="contain"
+            />
+          )}
+          {notification?.bundle && <Icon w="30px" h="30px" as={BsBox} />}
+        </Box>
       </Skeleton>
       <VStack w="full" alignItems="start" spacing={0}>
         <Skeleton w="full" isLoaded={!isLoading}>
@@ -251,31 +285,43 @@ function NotificationItem({
             {notification?.content}
           </Text>
         </Skeleton>
-        <Skeleton isLoaded={!isLoading}>
-          <Tooltip label={new Date(notification?.createdAt).toUTCString()}>
-            <Text
-              fontSize="sm"
-              color={
-                notification?.status === NotificationStatus.UnSeen
-                  ? textColor
-                  : "gray.500"
-              }
-              fontWeight={
-                notification?.status === NotificationStatus.UnSeen
-                  ? "semibold"
-                  : "normal"
-              }
+        <Skeleton w="full" isLoaded={!isLoading}>
+          <HStack w="full" justifyContent="end" color="gray">
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(notification.externalLink, "_blank");
+              }}
+              variant="link"
+              size="sm"
+              fontWeight="normal"
             >
-              {formatDistance(
-                new Date(notification?.createdAt || 0),
-                Date.now(),
-                {
-                  includeSeconds: false,
-                  addSuffix: true,
-                }
-              )}
-            </Text>
-          </Tooltip>
+              <HStack color="gray">
+                <Tooltip
+                  label={new Date(notification?.createdAt || 0).toUTCString()}
+                >
+                  <Text
+                    fontSize="sm"
+                    color={
+                      notification?.status === NotificationStatus.UnSeen
+                        ? textColor
+                        : "gray.500"
+                    }
+                  >
+                    {formatDistance(
+                      new Date(notification?.createdAt || 0),
+                      Date.now(),
+                      {
+                        includeSeconds: false,
+                        addSuffix: true,
+                      }
+                    )}
+                  </Text>
+                </Tooltip>
+                <ExternalLinkIcon />
+              </HStack>
+            </Button>
+          </HStack>
         </Skeleton>
       </VStack>
     </HStack>

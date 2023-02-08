@@ -1,10 +1,9 @@
 import {
-  BellIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   CloseIcon,
   CopyIcon,
-  HamburgerIcon,
+  HamburgerIcon
 } from "@chakra-ui/icons";
 import {
   Box,
@@ -35,7 +34,7 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -54,7 +53,7 @@ import ConnectWalletButton from "./connectWalletButton/ConnectWalletButton";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import Cart from "./nft/Cart";
 import NotificationButton from "./notification/NotificationButton";
-import SearchBox from "./SearchBox";
+import SearchAll from "./search/SearchAll";
 export const MenuItemBtn = ({ children, ...rest }: ButtonProps) => {
   return (
     <MenuItem
@@ -126,17 +125,6 @@ export default function Navbar() {
               <DesktopNav />
             </Flex>
           </Flex>
-          {md && (
-            <Stack w={400}>
-              <SearchBox
-                placeHolder="Search nfts, collections and creators,..."
-                value={search}
-                onChange={(v) => {
-                  setSearch(v);
-                }}
-              />
-            </Stack>
-          )}
 
           <Stack
             flex={{ base: 1, md: 0 }}
@@ -145,6 +133,7 @@ export default function Navbar() {
             direction={"row"}
             spacing={3}
           >
+            <SearchAll />
             {/* {!md && (
               <IconButton
                 onClick={() => {cell
@@ -371,11 +360,20 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 };
 
 const MobileNav = ({ onClose }: { onClose: () => void }) => {
+  const { isLoggedIn, profile } = useSelector(selectProfile);
   return (
     <Stack>
       {MOBILE_NAV_ITEMS.map((navItem) => (
         <MobileNavItem onClose={onClose} key={navItem.label} {...navItem} />
       ))}
+      {isLoggedIn && profile.roles?.includes(Roles.superAdmin) && (
+        <MobileNavItem
+          onClose={onClose}
+          key={"admin dashboard"}
+          label="Admin dashboard"
+          href="/admin"
+        />
+      )}
     </Stack>
   );
 };

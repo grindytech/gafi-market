@@ -42,6 +42,7 @@ export default function TabPage({
               }
               href={link.href}
               as={NextLink}
+              id={link.name}
             >
               {link.name}
             </Link>

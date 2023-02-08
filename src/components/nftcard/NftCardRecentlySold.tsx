@@ -12,7 +12,6 @@ import {
 import { formatDistance } from "date-fns";
 import { get } from "lodash";
 import NextLink from "next/link";
-import { BsBox } from "react-icons/bs";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import {
@@ -22,12 +21,10 @@ import {
 } from "../../hooks/useGetSystemInfo";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import Icons from "../../images";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import { getUserName, numeralFormat } from "../../utils/utils";
-import FloatIconWithText from "../FloatIconWithText";
 import Skeleton from "../Skeleton";
 import { MASKS } from "./mask";
 import NftCard from "./NftCard";
@@ -58,7 +55,6 @@ export default function NftCardRecentlySold({
       mask={mask ? mask({ nft: history?.nft }) : <></>}
       loading={loading}
       image={history?.image}
-      // bundle={history?.nft?.bundle}
     >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>
@@ -164,7 +160,7 @@ export default function NftCardRecentlySold({
             )}
             {history.bundle && (
               <Button
-                variant='link'
+                variant="link"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();

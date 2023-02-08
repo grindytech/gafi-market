@@ -51,7 +51,7 @@ export default function NotificationButton() {
             </Icon>
           }
         />
-        <MenuList w="400px" bg={bgColor}>
+        <MenuList bg={bgColor}>
           <Notifications refetchCount={refetch} />
         </MenuList>
       </Menu>

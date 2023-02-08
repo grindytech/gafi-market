@@ -64,7 +64,6 @@ export default function UserManager() {
           <Thead>
             <Tr>
               <Th>User</Th>
-              <Th>Address</Th>
               <Th>Roles</Th>
               <Th top={0} bg={bgColor} right={0} w={200} position={"sticky"}>
                 Action
@@ -85,15 +84,14 @@ export default function UserManager() {
                     />
                     <VStack alignItems="start" spacing={1}>
                       <Text>{u.name || "Unnamed"}</Text>
-                      <Text color="gray.500">{u.username || "--"}</Text>
+                      <Text color="gray.500">{u.address}</Text>
                     </VStack>
                   </HStack>
                 </Td>
-                <Td>{u.address}</Td>
                 <Td>{u.roles?.join(",")}</Td>
-                <Td top={0} right={0} bg={bgColor} w={200} zIndex={1}>
+                <Td top={0} right={0} position={"sticky"} w={200} zIndex={1}>
                   <Menu>
-                    <MenuButton zIndex={10}>
+                    <MenuButton>
                       <IconButton aria-label="menu">
                         <BsThreeDots />
                       </IconButton>
@@ -112,14 +110,14 @@ export default function UserManager() {
             ))}
           </Tbody>
         </Table>
-        <HStack mt={3} w="full" justifyContent="end">
-          <Paginator
-            onChange={(p) => setPage(p)}
-            page={page}
-            totalPage={users?.pages || 0}
-          />
-        </HStack>
       </TableContainer>
+      <HStack mt={3} w="full" justifyContent="end">
+        <Paginator
+          onChange={(p) => setPage(p)}
+          page={page}
+          totalPage={users?.pages || 0}
+        />
+      </HStack>
     </VStack>
   );
 }

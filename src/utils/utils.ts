@@ -220,3 +220,8 @@ export const generateId = () => {
   const nanoid = customAlphabet("1234567890qwertyuiopasdfghjklZxcvbnm", 10);
   return nanoid();
 };
+
+export const isETHAddress = (address: string): boolean => {
+  const regex = /^(0x)?[0-9a-fA-F]{40}$/;
+  return regex.test(address);
+};

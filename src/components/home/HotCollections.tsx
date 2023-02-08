@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Heading,
   HStack,
   Icon,
@@ -8,13 +7,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import NextLink from "next/link";
-import { FiArrowRight } from "react-icons/fi";
-import Icons from "../../images";
-import ScrollSlide from "../hScroll/ScrollSlide";
-import NftCollectionCard from "../collections/NftCollectionCard";
 import { useQuery } from "react-query";
+import Icons from "../../images";
 import nftService from "../../services/nft.service";
+import NftCollectionCard from "../collections/NftCollectionCard";
+import ScrollSlide from "../hScroll/ScrollSlide";
 export default function HotCollections() {
   const sliderBox = useStyleConfig("SliderBox");
   const { data } = useQuery(["HotCollections"], async () => {
