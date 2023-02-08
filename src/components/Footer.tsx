@@ -29,7 +29,7 @@ const Logo = (props: any) => {
   //     />
   //   </svg>
   // );
-  return <>LOGO</>
+  return <>OVERMINT</>;
 };
 
 const ListHeader = ({ children }: { children: ReactNode }) => {
@@ -52,11 +52,9 @@ export default function Footer() {
             <Box>
               <Logo color="white" />
             </Box>
-            <Text fontSize={"sm"}>
-              © 2022 Overmint. All rights reserved
-            </Text>
+            <Text fontSize={"sm"}>© 2022 Overmint. All rights reserved</Text>
           </Stack>
-          <Stack align={"flex-start"}>
+          {/* <Stack align={"flex-start"}>
             <ListHeader>Product</ListHeader>
             <Link href={"#"}>Overview</Link>
             <Link href={"#"}>Features</Link>
@@ -79,14 +77,18 @@ export default function Footer() {
             <Link href={"#"}>Legal</Link>
             <Link href={"#"}>Privacy Policy</Link>
             <Link href={"#"}>Status</Link>
-          </Stack>
+          </Stack> */}
           <Stack align={"flex-start"}>
             <ListHeader>Follow Us</ListHeader>
-            <Link href={"#"}>Facebook</Link>
-            <Link href={"#"}>Twitter</Link>
-            <Link href={"#"}>Dribbble</Link>
-            <Link href={"#"}>Instagram</Link>
-            <Link href={"#"}>LinkedIn</Link>
+            <Stack direction={["column", "row"]} align={"flex-start"}>
+              <Link href={"#"}>Facebook</Link>
+              <Link href={"#"}>Twitter</Link>
+              <Link href={"#"}>Telegram</Link>
+              <Link href={"#"}>LinkedIn</Link>
+              <Link href={"https://blog.heroesempires.com/"} target="_blank">
+                News
+              </Link>
+            </Stack>
           </Stack>
         </SimpleGrid>
       </Container>
