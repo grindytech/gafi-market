@@ -235,6 +235,7 @@ export default function SearchAll() {
                             fallbackSrc={Images.Placeholder.src}
                             w="40px"
                             h="40px"
+                            objectFit='cover'
                           />
                           <VStack
                             overflow="hidden"

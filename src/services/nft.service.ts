@@ -2,6 +2,7 @@ import { client } from "./client";
 import { BaseResult } from "./types/dtos/BaseResult";
 import { BundleDto } from "./types/dtos/BundleDto";
 import { BundleHashMessageDto } from "./types/dtos/BundleHashMessageDto";
+import { CollectionStatistic } from "./types/dtos/CollectionStatistic.dto";
 import { GameDto } from "./types/dtos/GameDto";
 import { HashMessageDto } from "./types/dtos/HashMessageDto";
 import { NftDto } from "./types/dtos/Nft.dto";
@@ -182,6 +183,12 @@ const getFeeds = async () => {
   return await client.get("/market/api/blog");
 };
 
+const getCollectionStatistic = async (
+  id: string
+): Promise<BaseResult<CollectionStatistic>> => {
+  return await client.get(`/market/api/nftcollections/${id}/statistic`);
+};
+
 export default {
   getNfts,
   getNft,
@@ -220,4 +227,6 @@ export default {
   getBundle,
 
   getFeeds,
+
+  getCollectionStatistic,
 };

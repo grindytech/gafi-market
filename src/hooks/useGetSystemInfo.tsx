@@ -2,6 +2,7 @@ import { useQuery } from "react-query";
 import nftService from "../services/nft.service";
 import systemService from "../services/system.service";
 import { ChainDto } from "../services/types/dtos/ChainDto";
+import { CollectionStatistic } from "../services/types/dtos/CollectionStatistic.dto";
 import { NftCollectionDto } from "../services/types/dtos/NftCollectionDto";
 import { PaymentToken } from "../services/types/dtos/PaymentToken.dto";
 
@@ -49,4 +50,18 @@ export const useGetPaymentTokenInfo = ({ paymentId }) => {
     }
   );
   return { paymentInfo };
+};
+
+export const useGetCollectionStatistic = ({ collectionId }) => {
+  const { data: collectionStatistic } = useQuery(
+    ["useGetCollectionStatistic", collectionId],
+    async (): Promise<CollectionStatistic> => {
+      const collection = await nftService.getCollectionStatistic(collectionId);
+      return collection?.data;
+    },
+    {
+      enabled: !!collectionId,
+    }
+  );
+  return { collectionStatistic };
 };

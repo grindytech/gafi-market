@@ -21,12 +21,15 @@ import { UserDto } from "../../services/types/dtos/UserDto";
 import { Roles } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { shorten } from "../../utils/utils";
+import { numeralFormat, shorten } from "../../utils/utils";
 import CustomTab from "../CustomTab";
 import Nfts from "../market/Nfts";
 import UserActivities from "../profile/Activities";
 import ProfileHeader from "../profile/ProfileHeader";
 import NextLink from "next/link";
+import { useGetCollectionStatistic } from "../../hooks/useGetSystemInfo";
+import { useMemo } from "react";
+import numeral from "numeral";
 
 export default function Collection({ id }: { id: string }) {
   const [tab, setTab] = useQueryParam("tab", withDefault(StringParam, "nfts"));
@@ -56,24 +59,43 @@ export default function Collection({ id }: { id: string }) {
   ];
   const tabIndex = tab ? TABS.findIndex((t) => t.key === tab) : 0;
   const { borderColor } = useCustomColors();
-  const STATS = [
-    {
-      label: "items",
-      value: 100,
-    },
-    {
-      label: "owner",
-      value: 100,
-    },
-    {
-      label: "floor price",
-      value: "$100",
-    },
-    {
-      label: "total volume",
-      value: "$100",
-    },
-  ];
+
+  const { collectionStatistic } = useGetCollectionStatistic({
+    collectionId: collection?.id,
+  });
+  const stats = useMemo(
+    () =>
+      collectionStatistic
+        ? [
+            {
+              label: "items",
+              value: numeral(Number(collectionStatistic?.totalItems)).format(
+                "0,0.[00]a"
+              ),
+            },
+            {
+              label: "owner",
+              value: numeral(Number(collectionStatistic?.totalOwners)).format(
+                "0,0.[00]a"
+              ),
+            },
+            {
+              label: "floor price",
+              value:
+                "$" + numeralFormat(Number(collectionStatistic?.floorPrice)),
+            },
+            {
+              label: "total volume",
+              value: "$" + numeralFormat(Number(collectionStatistic?.totalVol)),
+            },
+            {
+              label: "24h volume",
+              value: "$" + numeralFormat(Number(collectionStatistic?.vol24h)),
+            },
+          ]
+        : [],
+    [collectionStatistic]
+  );
   return (
     collection && (
       <VStack id="main" w="full" alignItems="start" spacing={5}>
@@ -99,8 +121,8 @@ export default function Collection({ id }: { id: string }) {
             </NextLink>
           )}
           <Box pt={3}>
-            <SimpleGrid columns={[2, 2, 4]} rounded="lg" bg={borderColor}>
-              {STATS.map((stat, index) => (
+            <SimpleGrid columns={[3, 3, 5]} rounded="lg" bg={borderColor}>
+              {stats.map((stat, index) => (
                 <VStack minW={120} p={3} spacing={0}>
                   <Text fontSize="xl" fontWeight="semibold">
                     {stat.value}
