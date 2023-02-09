@@ -1,6 +1,4 @@
 import * as ethers from "ethers";
-import { reject } from "lodash";
-import { resolve } from "path";
 import Web3 from "web3";
 import { AbiItem } from "web3-utils";
 import { web3Inject } from ".";
