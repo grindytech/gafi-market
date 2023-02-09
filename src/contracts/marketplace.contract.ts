@@ -1,15 +1,35 @@
+import * as ethers from "ethers";
+import { reject } from "lodash";
+import { resolve } from "path";
 import Web3 from "web3";
 import { AbiItem } from "web3-utils";
 import { web3Inject } from ".";
+import configs from "../configs";
 import { NftDto } from "../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../services/types/dtos/PaymentToken.dto";
 import { SaleType } from "../services/types/enum";
 import { convertToContractValue } from "../utils/utils";
+import { default as forwarderAbi } from "./abi/forwarderDOS.abi.json";
 import { default as mpContractAbi } from "./abi/mpContract.abi.json";
+import { signMetaTxRequest } from "./Signer";
 
 const marketplaceContract = (address: string, provider: any) => {
   const w3 = new Web3(provider);
   return new w3.eth.Contract(mpContractAbi as AbiItem[], address);
+};
+
+const getMPContract = (address: string) => {
+  let currentProvider = new ethers.BrowserProvider(
+    web3Inject.currentProvider as any
+  );
+  return new ethers.Contract(address, mpContractAbi, currentProvider);
+};
+
+const getForwarderContract = (address: string) => {
+  let currentProvider = new ethers.BrowserProvider(
+    web3Inject.currentProvider as any
+  );
+  return new ethers.Contract(address, forwarderAbi, currentProvider);
 };
 
 type CancelMessageParam = {
@@ -28,9 +48,43 @@ const cancelMessage = async (
   mpContract: string,
   user: string
 ) => {
-  const contract = marketplaceContract(mpContract, web3Inject);
-  const rs = await contract.methods
-    .cancelMessage(
+  const chainId = await web3Inject.eth.getChainId();
+  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
+    const rs = await cancelMessageDOS(params, mpContract, user);
+    return rs;
+  } else {
+    const contract = marketplaceContract(mpContract, web3Inject);
+    const rs = await contract.methods
+      .cancelMessage(
+        [params.ownerAddress, params.nftContract, params.paymentContract],
+        [
+          params.tokenId,
+          params.contractPrice,
+          params.saltNonce,
+          params.period,
+          params.saleOption,
+        ],
+        params.signature
+      )
+      .send({ from: user });
+    return rs;
+  }
+};
+
+const cancelMessageDOS = (
+  params: CancelMessageParam,
+  mpContractAddress: string,
+  user: string
+): Promise<any> =>
+  new Promise(async (resolve, reject) => {
+    let currentProvider = new ethers.BrowserProvider(
+      web3Inject.currentProvider as any
+    );
+    const mpContract = getMPContract(mpContractAddress);
+    const forwarderContract = getForwarderContract(
+      configs.DOS_FORWARDER_CONTRACT
+    );
+    const data = mpContract.interface.encodeFunctionData("cancelMessage", [
       [params.ownerAddress, params.nftContract, params.paymentContract],
       [
         params.tokenId,
@@ -39,11 +93,32 @@ const cancelMessage = async (
         params.period,
         params.saleOption,
       ],
-      params.signature
-    )
-    .send({ from: user });
-  return rs;
-};
+      params.signature,
+    ]);
+    const result = await signMetaTxRequest(currentProvider, forwarderContract, {
+      to: mpContractAddress,
+      user,
+      data,
+    });
+    const ws = new WebSocket(configs.DOS_GAS_LESS_URL);
+    const apiCall = {
+      event: "gas-less-tx",
+      data: result,
+    };
+
+    ws.onopen = (event) => {
+      ws.send(JSON.stringify(apiCall));
+    };
+    ws.onmessage = function (event) {
+      ws.close();
+      const data = JSON.parse(event.data);
+      if (data.success == undefined) {
+        reject(data);
+      } else {
+        resolve(data);
+      }
+    };
+  });
 
 type GetMessageParam = {
   nftAddress: string;
@@ -85,49 +160,204 @@ const matchTransaction = async (
   user: string,
   mpContract: string
 ) => {
-  const contract = marketplaceContract(mpContract, web3Inject);
-  await contract.methods
-    .matchTransaction(
+  const chainId = await web3Inject.eth.getChainId();
+  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
+    await matchTransactionDOS(param, user, mpContract);
+  } else {
+    const contract = marketplaceContract(mpContract, web3Inject);
+    await contract.methods
+      .matchTransaction(
+        [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
+        [param.tokenId, param.price, param.saltNonce, param.period],
+        param.signature
+      )
+      .send({ from: user });
+  }
+};
+
+const matchTransactionDOS = (
+  param: MatchTransactionParam,
+  user: string,
+  mpContractAddress: string
+) =>
+  new Promise<any>(async (resolve, reject) => {
+    let currentProvider = new ethers.BrowserProvider(
+      web3Inject.currentProvider as any
+    );
+    const mpContract = getMPContract(mpContractAddress);
+    const forwarderContract = getForwarderContract(
+      configs.DOS_FORWARDER_CONTRACT
+    );
+    const data = mpContract.interface.encodeFunctionData("matchTransaction", [
       [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
       [param.tokenId, param.price, param.saltNonce, param.period],
-      param.signature
-    )
-    .send({ from: user });
-};
+      param.signature,
+    ]);
+    const result = await signMetaTxRequest(currentProvider, forwarderContract, {
+      to: mpContractAddress,
+      user,
+      data,
+    });
+    const ws = new WebSocket(configs.DOS_GAS_LESS_URL);
+    const apiCall = {
+      event: "gas-less-tx",
+      data: result,
+    };
+
+    ws.onopen = (event) => {
+      ws.send(JSON.stringify(apiCall));
+    };
+    ws.onmessage = function (event) {
+      ws.close();
+      const data = JSON.parse(event.data);
+      if (data.success == undefined) {
+        reject(data);
+      } else {
+        resolve(data);
+      }
+    };
+  });
 const matchBag = async (
   nfts: NftDto[],
   user: string,
   mpContract: string,
   paymentToken: PaymentToken
 ) => {
-  const params = nfts.map((nft) => {
-    const approvePrice = convertToContractValue({
-      amount: nft.sale.price,
-      decimal: paymentToken.decimals,
+  const chainId = await web3Inject.eth.getChainId();
+  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
+    const rs = await matchBagDOS(nfts, user, mpContract, paymentToken);
+    return rs;
+  } else {
+    const params = nfts.map((nft) => {
+      const approvePrice = convertToContractValue({
+        amount: nft.sale.price,
+        decimal: paymentToken.decimals,
+      });
+      return [
+        [nft.owner.address, nft.nftContract, paymentToken.contractAddress],
+        [nft.tokenId, approvePrice, nft.sale.saltNonce, nft.sale.period],
+        nft.sale.signedSignature,
+      ];
     });
-    return [
-      [nft.owner.address, nft.nftContract, paymentToken.contractAddress],
-      [nft.tokenId, approvePrice, nft.sale.saltNonce, nft.sale.period],
-      nft.sale.signedSignature,
-    ];
-  });
-  const contract = marketplaceContract(mpContract, web3Inject);
-  return await contract.methods.bag(params).send({ from: user });
+    const contract = marketplaceContract(mpContract, web3Inject);
+    return await contract.methods.bag(params).send({ from: user });
+  }
 };
+const matchBagDOS = (
+  nfts: NftDto[],
+  user: string,
+  mpContractAddress: string,
+  paymentToken: PaymentToken
+) =>
+  new Promise<any>(async (resolve, reject) => {
+    const currentProvider = new ethers.BrowserProvider(
+      web3Inject.currentProvider as any
+    );
+    const mpContract = getMPContract(mpContractAddress);
+    const forwarderContract = getForwarderContract(
+      configs.DOS_FORWARDER_CONTRACT
+    );
+    const params = nfts.map((nft) => {
+      const approvePrice = convertToContractValue({
+        amount: nft.sale.price,
+        decimal: paymentToken.decimals,
+      });
+      return [
+        [nft.owner.address, nft.nftContract, paymentToken.contractAddress],
+        [nft.tokenId, approvePrice, nft.sale.saltNonce, nft.sale.period],
+        nft.sale.signedSignature,
+      ];
+    });
+    const data = mpContract.interface.encodeFunctionData("bag", params);
+    const result = await signMetaTxRequest(currentProvider, forwarderContract, {
+      to: mpContractAddress,
+      user,
+      data,
+    });
+    const ws = new WebSocket(configs.DOS_GAS_LESS_URL);
+    const apiCall = {
+      event: "gas-less-tx",
+      data: result,
+    };
+
+    ws.onopen = (event) => {
+      ws.send(JSON.stringify(apiCall));
+    };
+    ws.onmessage = function (event) {
+      ws.close();
+      const data = JSON.parse(event.data);
+      if (data.success == undefined) {
+        reject(data);
+      } else {
+        resolve(data);
+      }
+    };
+  });
 const matchOffer = async (
   param: MatchTransactionParam,
   user: string,
   mpContract: string
 ) => {
-  const contract = marketplaceContract(mpContract, web3Inject);
-  await contract.methods
-    .matchOffer(
+  const chainId = await web3Inject.eth.getChainId();
+  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
+    const rs = await matchOfferDOS(param, user, mpContract);
+    return rs;
+  } else {
+    const contract = marketplaceContract(mpContract, web3Inject);
+    const rs = await contract.methods
+      .matchOffer(
+        [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
+        [param.tokenId, param.price, param.saltNonce, param.period],
+        param.signature
+      )
+      .send({ from: user });
+    return rs;
+  }
+};
+
+const matchOfferDOS = (
+  param: MatchTransactionParam,
+  user: string,
+  mpContractAddress: string
+) =>
+  new Promise<any>(async (resolve, reject) => {
+    const currentProvider = new ethers.BrowserProvider(
+      web3Inject.currentProvider as any
+    );
+    const mpContract = getMPContract(mpContractAddress);
+    const forwarderContract = getForwarderContract(
+      configs.DOS_FORWARDER_CONTRACT
+    );
+
+    const data = mpContract.interface.encodeFunctionData("matchOffer", [
       [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
       [param.tokenId, param.price, param.saltNonce, param.period],
-      param.signature
-    )
-    .send({ from: user });
-};
+      param.signature,
+    ]);
+    const result = await signMetaTxRequest(currentProvider, forwarderContract, {
+      to: mpContractAddress,
+      user,
+      data,
+    });
+    const ws = new WebSocket(configs.DOS_GAS_LESS_URL);
+    const apiCall = {
+      event: "gas-less-tx",
+      data: result,
+    };
+
+    ws.onopen = (event) => {
+      ws.send(JSON.stringify(apiCall));
+    };
+    ws.onmessage = function (event) {
+      ws.close();
+      const data = JSON.parse(event.data);
+      if (data.success == undefined) {
+        reject(data);
+      } else {
+        resolve(data);
+      }
+    };
+  });
 
 const mpContract = {
   cancelMessage,

@@ -26,5 +26,8 @@ const configs: Configs = {
     },
   },
   API_URL: "http://115.79.142.60:8086/",
+  DOS_SYMBOL: "DOS",
+  DOS_FORWARDER_CONTRACT: "0x337c38208357D61Ce83E613F1E561fA67741E3cF",
+  DOS_GAS_LESS_URL: "ws://13.214.143.14:8999/",
 };
 export default configs;

@@ -15,6 +15,9 @@ export type Network = {
 export type Configs = {
   NETWORKS: { [n: string]: Network };
   API_URL: string;
+  DOS_SYMBOL: string;
+  DOS_FORWARDER_CONTRACT: string;
+  DOS_GAS_LESS_URL: string;
 };
 
 const envConfigs =
