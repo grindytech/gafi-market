@@ -63,7 +63,7 @@ export default function UserActivities({
     async ({ pageParam = 1 }) => {
       const rs = await nftService.getHistories({
         page: pageParam,
-        orderBy: "createdAt",
+        orderBy: "blockTime",
         desc: "desc",
         userAddress: address,
         nftCollection: collection,

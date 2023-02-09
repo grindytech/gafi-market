@@ -131,7 +131,6 @@ export default function NftCollectionsList({
     () => data?.pages.flatMap((page) => page.items) || [],
     [data]
   );
-  console.log(collections);
   const selected = useMemo(
     () => collections.find((c) => c.id === collectionId),
     [collections, collectionId]

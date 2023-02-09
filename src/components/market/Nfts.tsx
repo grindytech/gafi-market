@@ -314,7 +314,7 @@ export default function Nfts({
                   const isMaxLength = bundleItems.length >= maxBundleItem;
                   const isSelected = !!bundleItems.find((b) => b.id === nft.id);
                   return nft ? (
-                    <Box key={`bundle item ${nft.id}`} position="relative">
+                    <Box key={nft.id} position="relative">
                       {createBundleMode && (
                         <Box
                           zIndex={9}
@@ -415,9 +415,11 @@ export default function Nfts({
                 ))}
             </SimpleGrid>
           )}
-          {!hideLoadMore && !isLoading && !isFetching && hasNextPage && (
-            <div ref={loadingRef} />
-          )}
+          {!isError &&
+            !hideLoadMore &&
+            !isLoading &&
+            !isFetching &&
+            hasNextPage && <div ref={loadingRef} />}
         </Box>
         {createBundleMode &&
           (md ? (

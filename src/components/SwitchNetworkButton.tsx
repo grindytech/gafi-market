@@ -36,7 +36,7 @@ function SwitchNetworkButton({
   const { isLoggedIn } = useSelector(selectProfile);
   return !isLoggedIn ? (
     <ConnectWalletButton w="full" />
-  ) : isWrongNetwork(symbol.toUpperCase()) ? (
+  ) : isWrongNetwork(symbol) ? (
     <Button
       w="full"
       variant="solid"
@@ -44,7 +44,7 @@ function SwitchNetworkButton({
       bg="primary.500"
       color="gray.50"
       onClick={() => {
-        changeNetwork(symbol.toUpperCase());
+        changeNetwork(symbol);
       }}
       {...rest}
     >

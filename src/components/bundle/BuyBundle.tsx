@@ -1,7 +1,6 @@
 import {
   Box,
   BoxProps,
-  Button,
   Heading,
   HStack,
   Link,
@@ -21,8 +20,8 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Countdown from "react-countdown";
 import { useSelector } from "react-redux";
+import configs from "../../configs";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
-import { Chain } from "../../contracts";
 import bundleContract from "../../contracts/bundle.contract";
 import erc20Contract from "../../contracts/erc20.contract";
 import {
@@ -65,7 +64,7 @@ export default function BuyBundle({
     isFetching: fetchingBalance,
   } = useBalanceOf({
     account: user,
-    chain: chainInfo?.symbol.toUpperCase() as Chain,
+    chainSymbol: chainInfo.symbol,
     tokenAddress: paymentInfo?.contractAddress,
     isNative: paymentInfo?.isNative,
   });
@@ -79,9 +78,9 @@ export default function BuyBundle({
       const allowance = await erc20Contract.getAllowance(
         paymentInfo?.contractAddress,
         chainInfo?.bundleContract,
-        user
+        user,
+        chainInfo.symbol
       );
-      debugger
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(
           paymentInfo.contractAddress,

@@ -8,39 +8,37 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Select,
   Text,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
-import { SalePeriod } from "../../services/types/enum";
-import TokenSymbolToken from "../filters/TokenSymbolButton";
-import * as yup from "yup";
-import useYupValidationResolver from "../../hooks/useYupValidationResolver";
-import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 import { useState } from "react";
-import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
-import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
+import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { selectProfile } from "../../store/profileSlice";
-import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
-import PrimaryButton from "../PrimaryButton";
-import SwitchNetworkButton from "../SwitchNetworkButton";
-import { ChainDto } from "../../services/types/dtos/ChainDto";
-import { NftItem } from "../nft/Cart";
+import * as yup from "yup";
+import { web3Inject } from "../../contracts";
 import erc721Contract from "../../contracts/erc721.contract";
+import useSwal from "../../hooks/useSwal";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
+import useYupValidationResolver from "../../hooks/useYupValidationResolver";
+import nftService from "../../services/nft.service";
+import { ChainDto } from "../../services/types/dtos/ChainDto";
+import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
+import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
+import { CreateBundleDto } from "../../services/types/params/CreateBundle.dto";
+import { GetBundleHashMessageDto } from "../../services/types/params/GetBundleHashMessage.dto";
+import { selectProfile } from "../../store/profileSlice";
 import {
   convertToContractValue,
   generateId,
   numeralFormat,
 } from "../../utils/utils";
-import { GetBundleHashMessageDto } from "../../services/types/params/GetBundleHashMessage.dto";
-import nftService from "../../services/nft.service";
-import { web3Inject } from "../../contracts";
-import { CreateBundleDto } from "../../services/types/params/CreateBundle.dto";
-import useSwal from "../../hooks/useSwal";
-import { useRouter } from "next/router";
+import TokenSymbolToken from "../filters/TokenSymbolButton";
+import { NftItem } from "../nft/Cart";
+import PrimaryButton from "../PrimaryButton";
+import SwitchNetworkButton from "../SwitchNetworkButton";
 
 type Props = {
   items: NftDto[];
@@ -96,7 +94,8 @@ export default function CreateBundleConfirm({
       await erc721Contract.approveForAll(
         nftCollection.nftContract,
         user,
-        chain.bundleContract
+        chain.bundleContract,
+        chain.symbol
       );
       const priceContractValue = convertToContractValue({
         amount: Number(price),

@@ -28,7 +28,6 @@ import { FiShoppingBag } from "react-icons/fi";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
-import { Chain } from "../../contracts";
 import {
   useGetChainInfo,
   useGetCollectionInfo,
@@ -86,7 +85,7 @@ export default function Cart() {
     isFetching: fetchingBalance,
   } = useBalanceOf({
     account: user,
-    chain: chain?.symbol.toUpperCase() as Chain,
+    chainSymbol: chain?.symbol,
     tokenAddress: paymentInfo?.contractAddress,
     isNative: paymentInfo?.isNative,
   });

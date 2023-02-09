@@ -272,7 +272,6 @@ export default function OfferButton({
                       borderWidth: "1px",
                     }}
                     onChange={(e) => {
-                      console.log(e.target.value);
                       setPeriod(Number(e.target.value));
                     }}
                   >

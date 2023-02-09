@@ -93,7 +93,8 @@ export default function SaleButton({
       await erc721Contract.approveForAll(
         nft.nftContract,
         user,
-        chainInfo?.mpContract
+        chainInfo?.mpContract,
+        chainInfo.symbol
       );
       // const priceContractValue = convertToContractValue({
       //   amount: Number(price),
@@ -231,7 +232,6 @@ export default function SaleButton({
                       borderWidth: "1px",
                     }}
                     onChange={(e) => {
-                      console.log(e.target.value);
                       setPeriod(Number(e.target.value));
                     }}
                   >

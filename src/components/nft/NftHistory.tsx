@@ -46,7 +46,7 @@ export default function NftHistory({ nft }: { nft: NftDto }) {
       const rs = await nftService.getHistories({
         nft: nft.id,
         page: pageParam,
-        orderBy: "createdAt",
+        orderBy: "blockTime",
         desc: "desc",
         type: [
           HistoryType.Burn,

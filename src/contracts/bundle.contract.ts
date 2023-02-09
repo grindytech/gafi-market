@@ -1,8 +1,10 @@
+import Web3 from "web3";
+import { AbiItem } from "web3-utils";
 import { web3Inject } from ".";
 import { default as bundleContractAbi } from "./abi/bundleContract.abi.json";
-import { AbiItem } from "web3-utils";
 
-const createBundleContract = (address: string, web3 = web3Inject) => {
+const createBundleContract = (address: string, provider: any) => {
+  const web3 = new Web3(provider);
   return new web3.eth.Contract(bundleContractAbi as AbiItem[], address);
 };
 type CancelBundleParam = {
@@ -30,7 +32,7 @@ const cancelBundle = async (
     signedSignature,
     tokenIds,
   } = param;
-  const contract = createBundleContract(address);
+  const contract = createBundleContract(address, web3Inject);
   const rs = await contract.methods
     .cancelListing(
       [seller, nftContract, paymentTokenAddress],
@@ -67,7 +69,7 @@ const match = async (
     signedSignature,
     tokenIds,
   } = param;
-  const contract = createBundleContract(address);
+  const contract = createBundleContract(address, web3Inject);
   const rs = await contract.methods
     .matchTransaction(
       [seller, nftContract, paymentToken],

@@ -1,17 +1,23 @@
+import { useSelector } from "react-redux";
+import Web3 from "web3";
 import configs from "../configs";
+import { selectSystem } from "../store/systemSlice";
 import { useConnectWallet, Wallet } from "./useWallet";
 
 const useSwitchNetwork = () => {
   const { chainId, ethereum, connect, wallet } = useConnectWallet();
-  function isWrongNetwork(network: string) {
-    return configs.NETWORKS[network].chainIdNumber !== chainId;
+  const { chains } = useSelector(selectSystem);
+  function isWrongNetwork(chainSymbol: string) {
+    const chain = chains.find((c) => c.symbol === chainSymbol);
+    return chain.chainNumber !== chainId;
   }
-  function switchEthereumChain(chainId: string) {
+  function switchEthereumChain(changeChainId: number) {
+    const chainIdHex = Web3.utils.toHex(changeChainId);
     return (
       ethereum?.request &&
       ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: chainId }],
+        params: [{ chainId: chainIdHex }],
       })
     );
   }
@@ -24,10 +30,11 @@ const useSwitchNetwork = () => {
       })
     );
   }
-  async function changeNetwork(chain: string) {
-    const network = configs.NETWORKS[chain];
+  async function changeNetwork(chainSymbol: string) {
+    const chain = chains.find((c) => c.symbol === chainSymbol);
+    const network = configs.NETWORKS[chain.symbol];
     try {
-      await switchEthereumChain(String(network.chainId));
+      await switchEthereumChain(chain.chainNumber);
       connect(wallet || Wallet.METAMASK);
     } catch (err: any) {
       if (err.code === 4902) {

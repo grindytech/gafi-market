@@ -18,6 +18,7 @@ import {
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import configs from "../../configs";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
 import {
@@ -70,7 +71,8 @@ export default function CartCheckoutButton({
       const allowance = await erc20Contract.getAllowance(
         paymentInfo?.contractAddress,
         chainInfo?.mpContract,
-        user
+        user,
+        chainInfo.symbol
       );
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(

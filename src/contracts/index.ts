@@ -1,34 +1,13 @@
-
 import Web3 from "web3";
-
-import { AbiItem } from "web3-utils";
 import configs from "../configs";
-
-
-
-const DEFAULT_CHAIN = configs.DEFAULT_CHAIN;
-
-export enum Chain {
-  BSC = "BSC",
-  DOS = "DOS",
-}
-
-const PROVIDER = configs.DEFAULT_NETWORK().rpcUrls[0];
-const NETWORKS = configs.NETWORKS;
-export const web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER));
-export const web3Inject = web3;
-export const WEB3_HTTP_PROVIDERS: { [n: string]: Web3 } = {};
-for (const k of Object.keys(NETWORKS)) {
-  const network = NETWORKS[k];
-  const provider = new Web3.providers.HttpProvider(network.rpcUrls[0]);
-  WEB3_HTTP_PROVIDERS[k] = new Web3(provider);
-}
-
 interface SafeAmountParams {
   str: string;
   decimal?: number;
   significant?: number;
 }
+export const web3Inject = new Web3(
+  Object.values(configs.NETWORKS)[0].rpcUrls[0]
+);
 
 export const safeAmount = ({
   str,
@@ -46,11 +25,9 @@ export const safeAmount = ({
   return parseInt(trimmedStr) / 10 ** significant;
 };
 
-export const getNativeBalance = async (
-  account: string,
-  chain: string = DEFAULT_CHAIN
-) => {
-  const web3Http = WEB3_HTTP_PROVIDERS[chain];
+export const getNativeBalance = async (account: string, chainSymbol: string) => {
+  const provider = configs.NETWORKS[chainSymbol].rpcUrls[0];
+  const web3Http = new Web3(provider);
   const bnbBalance = await web3Http.eth.getBalance(account);
   return safeAmount({ str: bnbBalance, decimal: 18 });
 };

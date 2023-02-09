@@ -11,7 +11,7 @@ export default function Sort({ option }: { option: "nft" | "collection" }) {
       label: "Newest",
       onClick: () => {
         setQuery({
-          sort: { orderBy: "updatedAt", desc: "desc" },
+          sort: { orderBy: "createdAt", desc: "desc" },
         });
       },
       key: "updatedAt_desc",

@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import Web3 from "web3";
 import { AbstractProvider } from "web3-core";
-import { web3 } from "../contracts";
+import { web3Inject } from "../contracts";
 import { chainName, chainStringId } from "./connectors";
 import { getWalletConnectProvider } from "./WalletConnectProvider";
 
@@ -187,7 +187,7 @@ function useWallet({
   }, [autoConnect]);
 
   useEffect(() => {
-    if (ethereum) web3.setProvider(ethereum);
+    if (ethereum) web3Inject.setProvider(ethereum);
   }, [ethereum]);
 
   return {
