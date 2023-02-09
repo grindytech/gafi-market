@@ -225,3 +225,24 @@ export const isETHAddress = (address: string): boolean => {
   const regex = /^(0x)?[0-9a-fA-F]{40}$/;
   return regex.test(address);
 };
+
+export const wsCall = (wsUrl: string, dataSend: Object) =>
+  new Promise<any>((resolve, reject) => {
+    const ws = new WebSocket(wsUrl);
+    ws.onopen = (event) => {
+      ws.send(JSON.stringify(dataSend));
+    };
+    ws.onmessage = function (event) {
+      ws.close();
+      const data = JSON.parse(event.data);
+      if (data.success == undefined) {
+        reject(data);
+      } else {
+        resolve(data);
+      }
+    };
+    ws.onerror = (ev) => {
+      ws.close();
+      reject(ev);
+    };
+  });
