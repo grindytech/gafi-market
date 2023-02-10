@@ -86,7 +86,12 @@ export default function NftCardMarket({
       disabled={disabled}
       className={isInCart || selected ? "selected" : ""}
       loading={loading}
-      image={nft?.image}
+      image={nft?.image || collectionInfo?.avatar}
+      bgImage={
+        !nft?.image
+          ? collectionInfo?.featuredImage || collectionInfo?.cover
+          : undefined
+      }
       showOnHover={
         nft &&
         showMenu && (

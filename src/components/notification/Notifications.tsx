@@ -288,6 +288,7 @@ function NotificationItem({
         <Skeleton w="full" isLoaded={!isLoading}>
           <HStack w="full" justifyContent="end" color="gray">
             <Button
+              disabled={!notification?.externalLink}
               onClick={(e) => {
                 e.preventDefault();
                 window.open(notification.externalLink, "_blank");

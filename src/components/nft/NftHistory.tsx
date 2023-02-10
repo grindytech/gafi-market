@@ -106,7 +106,7 @@ export default function NftHistory({ nft }: { nft: NftDto }) {
       )}
       {!isLoading &&
         histories.map((h) => (
-          <Box p={2} w="full" _hover={{ boxShadow: "md" }}>
+          <Box key={h.id} p={2} w="full" _hover={{ boxShadow: "md" }}>
             <HistoryListItem history={h} />
           </Box>
         ))}

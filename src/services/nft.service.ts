@@ -154,7 +154,7 @@ const getGame = async (id: string): Promise<BaseResult<GameDto>> => {
 };
 
 const fetchNftsOnchain = async (cId: string): Promise<void> => {
-  return await client.get(`/market/api/nft/sync/${cId}`);
+  return await client.post(`/market/api/nft/sync/${cId}`);
 };
 
 const getBundleHashMessage = async (

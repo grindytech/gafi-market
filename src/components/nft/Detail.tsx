@@ -5,6 +5,7 @@ import {
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
+  Avatar,
   Box,
   Button,
   Container,
@@ -125,12 +126,44 @@ export default function Detail({ id }: { id: string }) {
           direction={{ base: "column", md: "row" }}
           w="full"
         >
-          <VStack w="full" spacing={5}>
-            <Box w="full" display="flex" justifyContent="center">
+          <VStack px={5} w="full" spacing={5}>
+            <Box
+              boxShadow="md"
+              borderWidth={1}
+              rounded="xl"
+              w="full"
+              display="flex"
+              justifyContent="center"
+            >
               <Card display="flex" maxW="full" rounded="lg">
                 <Skeleton isLoaded={!isLoading}>
                   <CardBody>
-                    <NftViewer nft={nft} />
+                    {nft.image ? (
+                      <NftViewer nft={nft} />
+                    ) : (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        w="full"
+                        minH="400px"
+                        position="relative"
+                      >
+                        <Box
+                          position="absolute"
+                          w="full"
+                          h="full"
+                          bgImage={
+                            collectionInfo?.featuredImage ||
+                            collectionInfo?.cover
+                          }
+                          bgPosition="center center"
+                          bgSize="cover"
+                          filter="blur(30px)"
+                        ></Box>
+                        <Avatar size="2xl" src={collectionInfo?.avatar} />
+                      </Box>
+                    )}
                   </CardBody>
                 </Skeleton>
               </Card>
@@ -529,6 +562,7 @@ const PriceSection = ({
                       _hover={{
                         bg: "red.600",
                       }}
+                      color="white"
                     >
                       Cancel sale
                     </CancelBtn>
@@ -564,18 +598,16 @@ const PriceSection = ({
                       </HStack>
                     </>
                   )}
-                  {!nft.sale && (
-                    <OfferButton
-                      onSuccess={() => {
-                        onMakeOffer && onMakeOffer();
-                      }}
-                      as={PrimaryButton}
-                      nft={nft}
-                      w="full"
-                    >
-                      Make offer
-                    </OfferButton>
-                  )}
+                  <OfferButton
+                    onSuccess={() => {
+                      onMakeOffer && onMakeOffer();
+                    }}
+                    as={Button}
+                    nft={nft}
+                    w="full"
+                  >
+                    Make offer
+                  </OfferButton>
                 </>
               )}
 

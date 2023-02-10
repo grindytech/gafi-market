@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   BoxProps,
   Button,
@@ -27,6 +28,7 @@ type Props = {
   disabled?: boolean;
   bundle?: string;
   cardStyle?: "unstyle" | "nftCard";
+  bgImage?: string;
 };
 
 export default function NftCard({
@@ -39,6 +41,7 @@ export default function NftCard({
   disabled,
   bundle,
   cardStyle = "nftCard",
+  bgImage,
   ...rest
 }: Props & BoxProps) {
   const cardStyles = cardStyle === "nftCard" ? useStyleConfig("NFTCard") : {};
@@ -129,13 +132,36 @@ export default function NftCard({
                     >
                       {mask}
                     </HStack>
-                    <LazyImage
-                      className={videoUri && "hover-hidden"}
-                      __css={imageStyles}
-                      src={image}
-                      h="full"
-                      objectFit="contain"
-                    />
+
+                    {bgImage ? (
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        w="full"
+                        h="full"
+                        position='relative'
+                      >
+                        <Box
+                          position='absolute'
+                          w="full"
+                          h="full"
+                          bgImage={bgImage}
+                          bgPosition="center center"
+                          bgSize="cover"
+                          filter={bgImage ? "blur(30px)" : "none"}
+                        ></Box>
+                        <Avatar size="xl" boxShadow="xl" src={image} />
+                      </Box>
+                    ) : (
+                      <LazyImage
+                        className={videoUri && "hover-hidden"}
+                        __css={imageStyles}
+                        src={image}
+                        h="full"
+                        objectFit="contain"
+                      />
+                    )}
                   </Box>
                 </Box>
               </Skeleton>

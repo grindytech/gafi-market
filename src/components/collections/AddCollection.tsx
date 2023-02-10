@@ -147,6 +147,7 @@ export default function AddCollection({
       lockTransfer: collection?.lockTransfer,
       description: collection?.description,
       owner: collection?.owners ? collection?.owners[0] : undefined,
+      status: collection?.status,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -503,7 +504,7 @@ export default function AddCollection({
           onChange={(v) => {
             setValue("status", v);
           }}
-          value={collectionStatus||collection?.status}
+          value={collectionStatus || collection?.status}
         >
           <Stack direction="row">
             {Object.values(Status).map((v) => (
