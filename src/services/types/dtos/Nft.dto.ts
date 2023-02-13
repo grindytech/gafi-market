@@ -14,7 +14,7 @@ export class NftDto extends BaseDocumentDto {
   media: MediaDto[];
   image: string;
   originImage: string;
-  animation_url: string;
+  animationUrl: string;
   animationPlayType: "image" | "video" | "glb" | "iframe";
   owner: UserDto;
   creator: UserDto;
@@ -30,4 +30,5 @@ export class NftDto extends BaseDocumentDto {
   chain: ChainDto | string;
   description: string;
   externalUrl: string;
+  tokenUrl: string;
 }

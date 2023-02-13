@@ -24,7 +24,7 @@ import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue } from "../../utils/utils";
+import { convertToContractValue, getUrl } from "../../utils/utils";
 import PrimaryButton from "../PrimaryButton";
 import nftService from "../../services/nft.service";
 import SwitchNetworkButton from "../SwitchNetworkButton";
@@ -122,7 +122,7 @@ export default function CancelBtn({
               <Box py={3}>
                 <Image
                   w="300px"
-                  src={nft.image}
+                  src={getUrl(nft.image)}
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>
@@ -135,6 +135,7 @@ export default function CancelBtn({
                 name={chainInfo?.name}
               >
                 <PrimaryButton
+                  colorScheme="red"
                   w="full"
                   isLoading={loading}
                   onClick={cancelSale}

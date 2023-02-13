@@ -66,12 +66,12 @@ const validationSchema = yup.object({
       checkIfFilesAreTooBig(files, 5)
     ),
   name: yup.string().required("Name is required").max(200),
-  description: yup.string().required("Description is required").max(200),
+  description: yup.string().required("Description is required").max(1000),
   owner: yup.string().required("Owner address is required"),
   alias: yup.string().required("Short url is required").max(200),
   nftContract: yup.string().required("NFT contract is required").max(200),
   chain: yup.string().required("Chain is required"),
-  paymentTokens: yup.string().required("Payment token is required"),
+  paymentTokens: yup.string(),
   // processByWorker: yup.string().notRequired(),
   autoDetect: yup.boolean().notRequired(),
   enableSendExternalTransfer: yup.boolean().notRequired(),
@@ -257,7 +257,7 @@ export default function AddCollection({
             {...register("avatar")}
             display="none"
             type="file"
-            accept="image/png,image/jpeg,image/gif"
+            accept="image/png,image/jpeg,image/gif/,image/jpg"
           />
         </ChooseFileImage>
       </FormControl>
@@ -279,7 +279,7 @@ export default function AddCollection({
             {...register("featuredImage")}
             display="none"
             type="file"
-            accept="image/png,image/jpeg,image/gif"
+            accept="image/png,image/jpeg,image/gif,image/jpg"
           />
         </ChooseFileImage>
       </FormControl>
@@ -300,7 +300,7 @@ export default function AddCollection({
             {...register("cover")}
             display="none"
             type="file"
-            accept="image/png,image/jpeg,image/gif"
+            accept="image/png,image/jpeg,image/gif,image/jpg"
           />
         </ChooseFileImage>
       </FormControl>

@@ -33,7 +33,7 @@ import useSwal from "../../hooks/useSwal";
 import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue } from "../../utils/utils";
+import { convertToContractValue, getUrl } from "../../utils/utils";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
@@ -171,7 +171,7 @@ export default function BuyButton({
               <Box py={3}>
                 <Image
                   w="300px"
-                  src={nft.image}
+                  src={getUrl(nft.image)}
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>

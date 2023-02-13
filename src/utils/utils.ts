@@ -246,3 +246,6 @@ export const wsCall = (wsUrl: string, dataSend: Object) =>
       reject(ev);
     };
   });
+
+export const getUrl = (url: string) =>
+  url?.replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/");

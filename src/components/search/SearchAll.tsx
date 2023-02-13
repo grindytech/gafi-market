@@ -24,7 +24,7 @@ import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { accountService } from "../../services/user.service";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUserName } from "../../utils/utils";
+import { getUrl, getUserName } from "../../utils/utils";
 import Avatar from "../Avatar";
 import SearchBox from "../SearchBox";
 
@@ -231,7 +231,7 @@ export default function SearchAll() {
                           transition="all ease 0.1s"
                         >
                           <Image
-                            src={nft.image}
+                            src={getUrl(nft.image)}
                             fallbackSrc={Images.Placeholder.src}
                             w="40px"
                             h="40px"

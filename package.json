@@ -21,6 +21,8 @@
     "ethers": "^6.0.2",
     "framer-motion": "^6.3.0",
     "jwt-decode": "^3.1.2",
+    "linkify-string": "^4.1.0",
+    "linkifyjs": "^4.1.0",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.0",
     "next": "latest",

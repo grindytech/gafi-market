@@ -1,15 +1,19 @@
 import { CopyIcon } from "@chakra-ui/icons";
 import {
+  Accordion,
   Box,
   Button,
+  Collapse,
   Heading,
   HStack,
   Stack,
   StackProps,
   Text,
   useColorModeValue,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import linkifyStr from "linkify-string";
 import useCustomToast from "../../hooks/useCustomToast";
 import { Socials } from "../../services/types/dtos/Socials";
 import useCustomColors from "../../theme/useCustomColors";
@@ -39,6 +43,8 @@ export default function ProfileHeader({
   ...rest
 }: Props & StackProps) {
   const toast = useCustomToast();
+  const { isOpen: showDescription, onToggle: toggleDescription } =
+    useDisclosure();
   return (
     <VStack w="full" position="relative">
       <Box
@@ -85,7 +91,7 @@ export default function ProfileHeader({
       </Box>
       <VStack w="full" alignItems="start">
         <Stack
-          direction={["column", "row"]}
+          direction={["column"]}
           alignItems="start"
           justifyContent="space-between"
           w="full"
@@ -129,11 +135,27 @@ export default function ProfileHeader({
               </VStack>
             </Stack>
             {description && (
-              <Box>
-                <Text color="gray.400" size="sm">
-                  {description}
-                </Text>
-              </Box>
+              <>
+                <Collapse startingHeight={75} in={showDescription}>
+                  <VStack>
+                    <Text
+                      dangerouslySetInnerHTML={{
+                        __html: linkifyStr(description),
+                      }}
+                      color="gray.500"
+                      size="sm"
+                    ></Text>
+                  </VStack>
+                </Collapse>
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={toggleDescription}
+                  mt="1rem"
+                >
+                  {showDescription ? "Less" : "More"}
+                </Button>
+              </>
             )}
           </VStack>
 

@@ -29,6 +29,7 @@ const colors = {
 };
 const styles = {
   global: {
+    "p a": { color: "primary.200" },
     ".multi-slick-list .slick-list": { margin: "0 -10px" },
     ".multi-slick-list .slick-slide > div": { padding: "0 10px" },
     ".right-arrow-btn:hover .right-arrow-icon": {

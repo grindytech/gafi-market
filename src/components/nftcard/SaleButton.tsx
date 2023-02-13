@@ -42,7 +42,7 @@ import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue, numeralFormat } from "../../utils/utils";
+import { convertToContractValue, getUrl, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
@@ -178,7 +178,7 @@ export default function SaleButton({
               <Box py={3}>
                 <Image
                   w="300px"
-                  src={nft.image}
+                  src={getUrl(nft.image)}
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>

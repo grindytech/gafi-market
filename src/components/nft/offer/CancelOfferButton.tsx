@@ -25,7 +25,7 @@ import nftService from "../../../services/nft.service";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { SaleType } from "../../../services/types/enum";
 import { selectProfile } from "../../../store/profileSlice";
-import { convertToContractValue } from "../../../utils/utils";
+import { convertToContractValue, getUrl } from "../../../utils/utils";
 import PrimaryButton from "../../PrimaryButton";
 import SwitchNetworkButton from "../../SwitchNetworkButton";
 
@@ -114,7 +114,7 @@ export default function CancelOfferButton({
               <Box py={3}>
                 <Image
                   w="300px"
-                  src={offer.image}
+                  src={getUrl(offer.image)}
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>

@@ -5,12 +5,14 @@ import {
   Button,
   HStack,
   Icon,
+  IconButton,
   useBreakpointValue,
   useColorModeValue,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
 import { useRef } from "react";
+import { BiPlay } from "react-icons/bi";
 import { BsBox } from "react-icons/bs";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
@@ -107,13 +109,32 @@ export default function NftCard({
                       </HStack>
                     )}
                     {videoUri && (
-                      <video
-                        className="hover-show"
-                        ref={videoRef}
-                        height="280px"
-                      >
-                        <source src={videoUri} />
-                      </video>
+                      <>
+                        <video
+                          className="hover-show"
+                          ref={videoRef}
+                          height="280px"
+                        >
+                          <source src={videoUri} />
+                        </video>
+                        <IconButton
+                          rounded="full"
+                          aria-label="play"
+                          zIndex={9}
+                          position="absolute"
+                          top={2}
+                          right={2}
+                          backdropFilter="blur(30px)"
+                          bgColor="rgba(255, 255, 255, 0.2)"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            videoRef.current.play();
+                          }}
+                        >
+                          <Icon color='gray.300' as={BiPlay} />
+                        </IconButton>
+                      </>
                     )}
                   </Box>
                   <Box
@@ -140,10 +161,10 @@ export default function NftCard({
                         alignItems="center"
                         w="full"
                         h="full"
-                        position='relative'
+                        position="relative"
                       >
                         <Box
-                          position='absolute'
+                          position="absolute"
                           w="full"
                           h="full"
                           bgImage={bgImage}

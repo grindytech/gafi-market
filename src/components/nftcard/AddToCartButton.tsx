@@ -10,8 +10,9 @@ import { add, remove, selectBag } from "../../store/bagSlice";
 export function AddToCartButton({
   nft,
   showIcon,
+  showText = true,
   ...rest
-}: { nft: NftDto; showIcon?: boolean } & BoxProps) {
+}: { nft: NftDto; showIcon?: boolean; showText?: boolean } & BoxProps) {
   const dispatch = useDispatch();
   const { items } = useSelector(selectBag);
 
@@ -69,7 +70,9 @@ export function AddToCartButton({
         }
       >
         {showIcon && <Icon as={isInCart ? FiX : FiPlus} />}
-        <Text> {isInCart ? "Remove from cart" : "Add to cart"}</Text>
+        {showText && (
+          <Text> {isInCart ? "Remove from cart" : "Add to cart"}</Text>
+        )}
       </HStack>
     </Tooltip>
   );

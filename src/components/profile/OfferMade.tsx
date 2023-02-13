@@ -28,7 +28,7 @@ import { OfferDto } from "../../services/types/dtos/Offer.dto";
 import Skeleton from "../Skeleton";
 import NextLink from "next/link";
 import { HiBadgeCheck } from "react-icons/hi";
-import { getUserName, numeralFormat, shorten } from "../../utils/utils";
+import { getUrl, getUserName, numeralFormat, shorten } from "../../utils/utils";
 import { useSelector } from "react-redux";
 import { selectProfile } from "../../store/profileSlice";
 import { formatDistance } from "date-fns";
@@ -189,7 +189,7 @@ function OfferListItem({
         <Skeleton w="full" isLoaded={!loading}>
           <HStack w="full">
             <Image
-              src={offer?.image}
+              src={getUrl(offer?.image)}
               rounded="md"
               fallbackSrc={Images.Placeholder.src}
               w={14}

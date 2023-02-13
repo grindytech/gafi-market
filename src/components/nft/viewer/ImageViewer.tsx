@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Images } from "../../../images";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
 import ImageView from "react-simple-image-viewer";
+import { getUrl } from "../../../utils/utils";
 
 export default function ImageViewer({ nft }: { nft: NftDto }) {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -22,7 +23,7 @@ export default function ImageViewer({ nft }: { nft: NftDto }) {
         w="100%"
         h="100%"
         objectFit="contain"
-        src={nft.image}
+        src={getUrl(nft.image)}
       />
       {isViewerOpen && (
         <ImageView

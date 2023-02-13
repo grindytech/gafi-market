@@ -29,7 +29,7 @@ import { Images } from "../../../images";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { selectProfile } from "../../../store/profileSlice";
-import { convertToContractValue, numeralFormat } from "../../../utils/utils";
+import { convertToContractValue, getUrl, numeralFormat } from "../../../utils/utils";
 import PrimaryButton from "../../PrimaryButton";
 import SwitchNetworkButton from "../../SwitchNetworkButton";
 
@@ -133,7 +133,7 @@ export default function AcceptOfferButton({
               <Box py={3}>
                 <Image
                   w="300px"
-                  src={nft.image}
+                  src={getUrl(nft.image)}
                   fallbackSrc={Images.Placeholder.src}
                 />
               </Box>

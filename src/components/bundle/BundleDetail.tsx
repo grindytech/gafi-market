@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -14,8 +15,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AxiosResponse } from "axios";
+import { formatDistance } from "date-fns";
 import { get } from "lodash";
+import NextLink from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import Countdown from "react-countdown";
+import { FiArrowRight, FiClock } from "react-icons/fi";
+import { HiBadgeCheck } from "react-icons/hi";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import {
@@ -23,31 +29,25 @@ import {
   useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import Icons from "../../images";
 import nftService from "../../services/nft.service";
+import { BundleStatus } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
+import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import Card from "../card/Card";
+import CardBody from "../card/CardBody";
 import EmptyState, { ErrorState } from "../EmptyState";
+import ScrollSlide from "../hScroll/ScrollSlide";
 import LoadingPage from "../LoadingPage";
 import { MASKS } from "../nftcard/mask";
 import NftCard from "../nftcard/NftCard";
-import NextLink from "next/link";
-import { HiBadgeCheck } from "react-icons/hi";
-import ShareButton from "../ShareButton";
-import { getUserName, numeralFormat } from "../../utils/utils";
-import Skeleton from "../Skeleton";
-import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
-import Card from "../card/Card";
-import CardBody from "../card/CardBody";
-import CancelBundle from "./CancelBundle";
-import { BundleStatus } from "../../services/types/enum";
-import BuyBundle from "./BuyBundle";
 import PrimaryButton from "../PrimaryButton";
-import { FiArrowRight, FiClock } from "react-icons/fi";
-import Countdown from "react-countdown";
-import { formatDistance } from "date-fns";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
-import ScrollSlide from "../hScroll/ScrollSlide";
+import ShareButton from "../ShareButton";
+import Skeleton from "../Skeleton";
+import BuyBundle from "./BuyBundle";
+import CancelBundle from "./CancelBundle";
 
 export default function BundleDetail({ id }: { id: string }) {
   const sliderBox = useStyleConfig("SliderBox");
@@ -162,7 +162,7 @@ export default function BundleDetail({ id }: { id: string }) {
                         href={`/nft/${nft.id}`}
                       >
                         <NftCard
-                          image={nft.image}
+                          image={getUrl(nft.image)}
                           mask={mask ? mask({ nft: nft }) : <></>}
                         >
                           <HStack
@@ -254,7 +254,7 @@ export default function BundleDetail({ id }: { id: string }) {
                           <Link target="_blank" href={`/nft/${nft.id}`}>
                             <Box py={3} pr={3} maxW="100%" w="250px">
                               <NftCard
-                                image={nft.image}
+                                image={getUrl(nft.image)}
                                 mask={mask ? mask({ nft: nft }) : <></>}
                               >
                                 <HStack

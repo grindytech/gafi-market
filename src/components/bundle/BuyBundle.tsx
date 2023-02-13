@@ -33,7 +33,7 @@ import useSwal from "../../hooks/useSwal";
 import { BundleDto } from "../../services/types/dtos/BundleDto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { convertToContractValue } from "../../utils/utils";
+import { convertToContractValue, getUrl } from "../../utils/utils";
 import { MASKS } from "../nftcard/mask";
 import NftCard from "../nftcard/NftCard";
 import PrimaryButton from "../PrimaryButton";
@@ -177,7 +177,7 @@ export default function BuyBundle({
                     return (
                       <Link href={`/nft/${nft.id}`} target="_blank">
                         <NftCard
-                          image={nft.image}
+                          image={getUrl(nft.image)}
                           mask={mask ? mask({ nft: nft }) : <></>}
                         >
                           <HStack

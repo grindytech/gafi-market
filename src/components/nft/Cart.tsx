@@ -38,7 +38,7 @@ import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { adds, remove, reset, selectBag } from "../../store/bagSlice";
 import { selectProfile } from "../../store/profileSlice";
-import { numeralFormat } from "../../utils/utils";
+import { getUrl, numeralFormat } from "../../utils/utils";
 import { EmptyState } from "../EmptyState";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 import CartCheckoutButton from "./CartCheckoutButton";
@@ -286,7 +286,7 @@ export const NftItem = ({
     <HStack {...rest} w="full" justifyContent="space-between">
       <HStack>
         <Image
-          src={item.image}
+          src={getUrl(item.image)}
           rounded="md"
           fallbackSrc={Images.Placeholder.src}
           w={16}

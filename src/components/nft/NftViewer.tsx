@@ -3,20 +3,20 @@ import React from "react";
 import ReactPlayer from "react-player";
 import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { getUrl } from "../../utils/utils";
 import ImageViewer from "./viewer/ImageViewer";
 
 function VideoViewer({ nft }: { nft: NftDto }) {
   return (
-    <Box position="relative">
+    <Box w="full" h="full" position="relative">
       <ReactPlayer
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-        }}
-        url={nft.animation_url}
+        url={getUrl(nft.animationUrl)}
         width="100%"
         height="100%"
+        controls={true}
+        loop={true}
+        volume={0}
+        playing={true}
       />
     </Box>
   );
@@ -33,12 +33,23 @@ function IframeEmbedded({ nft }: { nft: NftDto }) {
 const Viewers = {
   image: ImageViewer,
   video: VideoViewer,
-  glb: GLBViewer,
-  iframe: IframeEmbedded,
+  model: GLBViewer,
+  html: IframeEmbedded,
 };
 
 export default function NftViewer({ nft }: { nft: NftDto }) {
-  const viewer = nft.animation_url ? Viewers[nft.animation_url] : Viewers.image;
+  const type = nft?.animationPlayType
+    ? nft?.animationPlayType?.includes("image")
+      ? "image"
+      : nft.animationPlayType.includes("model")
+      ? "model"
+      : nft.animationPlayType.includes("video")
+      ? "video"
+      : nft.animationPlayType.includes("audio")
+      ? "audio"
+      : "html"
+    : "";
+  const viewer = Viewers[type] || Viewers.image;
   return (
     <Box w="full" h="full">
       {React.cloneElement(viewer({ nft: nft }))}

@@ -24,7 +24,7 @@ import Icons from "../../images";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUserName, numeralFormat } from "../../utils/utils";
+import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
 import Skeleton from "../Skeleton";
 import { MASKS } from "./mask";
 import NftCard from "./NftCard";
@@ -54,7 +54,7 @@ export default function NftCardRecentlySold({
     <NftCard
       mask={mask ? mask({ nft: history?.nft }) : <></>}
       loading={loading}
-      image={history?.image}
+      image={getUrl(history?.nft?.image)}
     >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>

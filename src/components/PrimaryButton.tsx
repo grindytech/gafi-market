@@ -8,7 +8,7 @@ export default function PrimaryButton({
     <Button
       variant="solid"
       colorScheme="primary"
-      bg="primary.500"
+      // bg="primary.500"
       color="gray.50"
       {...rest}
     >

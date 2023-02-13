@@ -120,20 +120,22 @@ export default function Collection({ id }: { id: string }) {
               </IconButton>
             </NextLink>
           )}
-          <Box pt={3}>
-            <SimpleGrid columns={[3, 3, 5]} rounded="lg" bg={borderColor}>
-              {stats.map((stat, index) => (
-                <VStack minW={120} p={3} spacing={0}>
-                  <Text fontSize="xl" fontWeight="semibold">
-                    {stat.value}
-                  </Text>
-                  <Text color="gray" fontSize="sm" fontWeight="semibold">
-                    {stat.label}
-                  </Text>
-                </VStack>
-              ))}
-            </SimpleGrid>
-          </Box>
+          <HStack w="full" justifyContent="end">
+            <Box pt={3}>
+              <SimpleGrid columns={[3, 3, 5]} rounded="lg" bg={borderColor}>
+                {stats.map((stat, index) => (
+                  <VStack minW={120} p={3} spacing={0}>
+                    <Text fontSize="xl" fontWeight="semibold">
+                      {stat.value}
+                    </Text>
+                    <Text color="gray" fontSize="sm" fontWeight="semibold">
+                      {stat.label}
+                    </Text>
+                  </VStack>
+                ))}
+              </SimpleGrid>
+            </Box>
+          </HStack>
         </ProfileHeader>
         <Tabs defaultIndex={tabIndex || 0} variant="enclosed" w="full" pt={5}>
           <TabList p={1} overflow="auto">

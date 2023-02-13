@@ -23,6 +23,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AxiosResponse } from "axios";
+import linkifyStr from "linkify-string";
 import { get } from "lodash";
 import NextLink from "next/link";
 import { useMemo, useState } from "react";
@@ -45,7 +46,7 @@ import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/string.util";
-import { getUserName, numeralFormat } from "../../utils/utils";
+import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import { EmptyState, ErrorState } from "../EmptyState";
@@ -125,17 +126,18 @@ export default function Detail({ id }: { id: string }) {
           position="relative"
           direction={{ base: "column", md: "row" }}
           w="full"
+          spacing={5}
         >
-          <VStack px={5} w="full" spacing={5}>
-            <Box
-              boxShadow="md"
-              borderWidth={1}
-              rounded="xl"
-              w="full"
-              display="flex"
-              justifyContent="center"
-            >
-              <Card display="flex" maxW="full" rounded="lg">
+          <VStack w="full" spacing={5}>
+            <Box boxShadow="md" w="full" display="flex" justifyContent="center">
+              <Card
+                borderWidth={1}
+                p={0}
+                overflow="hidden"
+                display="flex"
+                maxW="full"
+                rounded="lg"
+              >
                 <Skeleton isLoaded={!isLoading}>
                   <CardBody>
                     {nft.image ? (
@@ -301,7 +303,12 @@ const NftDetailSection = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
             </AccordionButton>
             <AccordionPanel pb={4}>
               <Box w="full" maxH={150} overflow="auto">
-                <Text>{nft.description}</Text>
+                <Text
+                  dangerouslySetInnerHTML={{
+                    __html: linkifyStr(nft.description),
+                  }}
+                >
+                </Text>
               </Box>
             </AccordionPanel>
           </AccordionItem>
@@ -379,7 +386,7 @@ const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
             size="md"
             variant="link"
             as={Link}
-            href={`${chain?.explore}/token/${nft.nftContract}?a=${nft.tokenId}`}
+            href={getUrl(nft.tokenUrl)}
           >
             {nft.tokenId}
           </Button>
@@ -402,7 +409,7 @@ const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
             variant="link"
             as={Link}
             target="_blank"
-            href={nft.originImage || nft.image}
+            href={getUrl(nft.animationUrl || nft.originImage || nft.image)}
           >
             Open origin&nbsp;
             <ExternalLinkIcon />
