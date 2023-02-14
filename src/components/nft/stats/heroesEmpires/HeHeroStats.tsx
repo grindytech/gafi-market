@@ -16,6 +16,7 @@ import {
 import { get } from "lodash";
 import { useEffect, useState } from "react";
 import { NftDto } from "../../../../services/types/dtos/Nft.dto";
+import { getUrl } from "../../../../utils/utils";
 import HeHeroBasicStat from "./HeHeroBasicStat";
 
 export default function HeHeroStats({ nft }: { nft: NftDto }) {
@@ -59,7 +60,10 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
             <AccordionPanel pb={4}>
               <VStack alignItems="start">
                 <HStack alignItems="start">
-                  <Image h="60px" src={attributes?.Signature?.icon} />
+                  <Image
+                    h="60px"
+                    src={getUrl(attributes?.Signature?.icon, 100)}
+                  />
                   <VStack spacing={0} fontSize="md" alignItems="start">
                     <HStack spacing={1}>
                       <Text>{attributes.Signature.name}</Text>
@@ -120,7 +124,10 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
                   <HStack alignItems="start" w="full">
                     <Image
                       h="60px"
-                      src={get(attributes.Abilities, "Ability-1-Icon")}
+                      src={getUrl(
+                        get(attributes.Abilities, "Ability-1-Icon"),
+                        100
+                      )}
                     />
                     <VStack spacing={0} fontSize="md" alignItems="start">
                       <Text>{get(attributes.Abilities, "Ability-1")}</Text>
@@ -153,7 +160,10 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
                   <HStack alignItems="start" w="full">
                     <Image
                       h="60px"
-                      src={get(attributes.Abilities, "Ultimates-Icon")}
+                      src={getUrl(
+                        get(attributes.Abilities, "Ultimates-Icon"),
+                        100
+                      )}
                     />
                     <VStack
                       spacing={0}

@@ -91,13 +91,13 @@ export default function NftCardMarket({
         disabled={disabled}
         className={isInCart || selected ? "selected" : ""}
         loading={loading}
-        image={getUrl(nft?.image || collectionInfo?.avatar)}
-        videoUri={isVideo ? getUrl(nft?.animationUrl) : undefined}
-        bgImage={getUrl(
+        image={nft?.image || collectionInfo?.avatar}
+        videoUri={isVideo ? nft?.animationUrl : undefined}
+        bgImage={
           !nft?.image
             ? collectionInfo?.featuredImage || collectionInfo?.cover
             : undefined
-        )}
+        }
         mask={mask ? mask({ nft: nft }) : <></>}
         bundle={nft?.bundle}
         showOnHover={
@@ -277,7 +277,7 @@ export default function NftCardMarket({
               <Box onClick={(e) => e.preventDefault()}>
                 <Menu>
                   <MenuButton
-                    color='gray.500'
+                    color="gray.500"
                     aria-label="Menu"
                     as={IconButton}
                     icon={<BsThreeDots />}

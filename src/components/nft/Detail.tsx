@@ -46,7 +46,12 @@ import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/string.util";
-import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import {
+  convertIpfsLink,
+  getUrl,
+  getUserName,
+  numeralFormat,
+} from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import { EmptyState, ErrorState } from "../EmptyState";
@@ -60,7 +65,7 @@ import PrimaryButton from "../PrimaryButton";
 import ShareButton from "../ShareButton";
 import Skeleton from "../Skeleton";
 import NftHistory from "./NftHistory";
-import NftViewer from "./NftViewer";
+import NftViewer from "./viewer/NftViewer";
 import NftOffers from "./offer/NftOffers";
 import RefreshMetadataButton from "./RefreshMetadataButton";
 import { STATS } from "./stats";
@@ -129,17 +134,18 @@ export default function Detail({ id }: { id: string }) {
           spacing={5}
         >
           <VStack w="full" spacing={5}>
-            <Box boxShadow="md" w="full" display="flex" justifyContent="center">
-              <Card
-                borderWidth={1}
-                p={0}
-                overflow="hidden"
-                display="flex"
-                maxW="full"
-                rounded="lg"
-              >
-                <Skeleton isLoaded={!isLoading}>
-                  <CardBody>
+            <Box
+              rounded="lg"
+              overflow="hidden"
+              boxShadow="sm"
+              w="full"
+              display="flex"
+              justifyContent="center"
+              borderWidth={1}
+            >
+              <Card p={0} h="full" overflow="hidden" display="flex" maxW="full">
+                <Skeleton h="full" w="full" isLoaded={!isLoading}>
+                  <CardBody h="full" w="full" minH={400}>
                     {nft.image ? (
                       <NftViewer nft={nft} />
                     ) : (
@@ -148,7 +154,7 @@ export default function Detail({ id }: { id: string }) {
                         justifyContent="center"
                         alignItems="center"
                         w="full"
-                        minH="400px"
+                        h="full"
                         position="relative"
                       >
                         <Box
@@ -307,8 +313,7 @@ const NftDetailSection = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
                   dangerouslySetInnerHTML={{
                     __html: linkifyStr(nft.description),
                   }}
-                >
-                </Text>
+                ></Text>
               </Box>
             </AccordionPanel>
           </AccordionItem>
@@ -409,7 +414,12 @@ const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
             variant="link"
             as={Link}
             target="_blank"
-            href={getUrl(nft.animationUrl || nft.originImage || nft.image)}
+            href={convertIpfsLink(
+              (String(nft.animationPlayType).includes("video") &&
+                nft.animationUrl) ||
+                nft.originImage ||
+                nft.image
+            )}
           >
             Open origin&nbsp;
             <ExternalLinkIcon />

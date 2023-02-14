@@ -23,14 +23,14 @@ export default function ImageViewer({ nft }: { nft: NftDto }) {
         w="100%"
         h="100%"
         objectFit="contain"
-        src={getUrl(nft.image)}
+        src={getUrl(nft.image, 1000)}
       />
       {isViewerOpen && (
         <ImageView
           backgroundStyle={{
             zIndex: 100,
           }}
-          src={[nft.image]}
+          src={[getUrl(nft.image, 1000)]}
           currentIndex={0}
           disableScroll={false}
           closeOnClickOutside={true}

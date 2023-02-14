@@ -120,7 +120,7 @@ export default function Collection({ id }: { id: string }) {
               </IconButton>
             </NextLink>
           )}
-          <HStack w="full" justifyContent="end">
+          <HStack w="full" justifyContent={["start", "end"]}>
             <Box pt={3}>
               <SimpleGrid columns={[3, 3, 5]} rounded="lg" bg={borderColor}>
                 {stats.map((stat, index) => (

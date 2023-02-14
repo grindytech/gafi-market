@@ -54,7 +54,7 @@ export default function NftCardRecentlySold({
     <NftCard
       mask={mask ? mask({ nft: history?.nft }) : <></>}
       loading={loading}
-      image={getUrl(history?.nft?.image)}
+      image={history?.nft?.image}
     >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>

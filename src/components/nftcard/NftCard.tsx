@@ -6,14 +6,17 @@ import {
   HStack,
   Icon,
   IconButton,
+  Image,
   useBreakpointValue,
   useColorModeValue,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
+import { bg } from "date-fns/locale";
 import { useRef } from "react";
 import { BiPlay } from "react-icons/bi";
 import { BsBox } from "react-icons/bs";
+import { getUrl } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import FloatIconWithText from "../FloatIconWithText";
@@ -51,8 +54,10 @@ export default function NftCard({
   const videoRef = useRef<any>(null);
   const bgColor =
     cardStyle === "nftCard" ? useColorModeValue("white", "gray.800") : "none";
-  const md = useBreakpointValue({ base: false, md: true });
 
+  const bgImageLink = getUrl(bgImage, 600);
+  const nftImageLink = getUrl(image, bgImage ? 200 : 600);
+  const videoLink = getUrl(videoUri);
   return (
     <Box w="full">
       <Card
@@ -97,7 +102,7 @@ export default function NftCard({
                   <Box>
                     {showOnHover && !loading && (
                       <HStack
-                        className={md ? "hover-show" : ""}
+                        className={"hover-show"}
                         position="absolute"
                         top={0}
                         left={0}
@@ -115,7 +120,7 @@ export default function NftCard({
                           ref={videoRef}
                           height="280px"
                         >
-                          <source src={videoUri} />
+                          <source src={videoLink} />
                         </video>
                         <IconButton
                           rounded="full"
@@ -132,7 +137,7 @@ export default function NftCard({
                             videoRef.current.play();
                           }}
                         >
-                          <Icon color='gray.300' as={BiPlay} />
+                          <Icon color="gray.300" as={BiPlay} />
                         </IconButton>
                       </>
                     )}
@@ -167,18 +172,25 @@ export default function NftCard({
                           position="absolute"
                           w="full"
                           h="full"
-                          bgImage={bgImage}
+                          bgImage={bgImageLink}
                           bgPosition="center center"
                           bgSize="cover"
                           filter={bgImage ? "blur(30px)" : "none"}
                         ></Box>
-                        <Avatar size="xl" boxShadow="xl" src={image} />
+                        <Image
+                          zIndex={3}
+                          objectFit="cover"
+                          src={nftImageLink}
+                          w="100px"
+                          h="100px"
+                          rounded="full"
+                        />
                       </Box>
                     ) : (
                       <LazyImage
                         className={videoUri && "hover-hidden"}
                         __css={imageStyles}
-                        src={image}
+                        src={nftImageLink}
                         h="full"
                         objectFit="contain"
                       />

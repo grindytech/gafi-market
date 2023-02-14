@@ -20,6 +20,7 @@ import "../styles/styles.scss";
 
 import Router from "next/router";
 import NProgress from "nprogress"; //nprogress module
+import Script from "next/script";
 // import "nprogress/nprogress.css"; //styles of nprogress
 //Route Events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -49,6 +50,12 @@ function MyApp({ Component, pageProps }: AppProps) {
                     title="Marketplace"
                   />
                   <Component {...pageProps} />
+                  <Script
+                    async
+                    strategy="afterInteractive"
+                    type="module"
+                    src="https://unpkg.com/@google/model-viewer@^2.1.1/dist/model-viewer.min.js"
+                  />
                 </Layout>
               </W3Provider>
             </PersistGate>
