@@ -2,10 +2,8 @@ import {
   Badge,
   Box,
   Button,
-  Divider,
   HStack,
   Icon,
-  Image,
   Link,
   Table,
   TableContainer,
@@ -16,32 +14,31 @@ import {
   Thead,
   Tooltip,
   Tr,
-  useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
-import { useMemo, useRef } from "react";
-import { useInfiniteQuery } from "react-query";
-import useIntersectionObserver from "../../hooks/useIntersectionObserver";
-import { Images } from "../../images";
-import nftService from "../../services/nft.service";
-import { OfferDto } from "../../services/types/dtos/Offer.dto";
-import Skeleton from "../Skeleton";
-import NextLink from "next/link";
-import { HiBadgeCheck } from "react-icons/hi";
-import { getUrl, getUserName, numeralFormat, shorten } from "../../utils/utils";
-import { useSelector } from "react-redux";
-import { selectProfile } from "../../store/profileSlice";
 import { formatDistance } from "date-fns";
-import { OfferStatus } from "../../services/types/enum";
-import CancelOfferButton from "../nft/offer/CancelOfferButton";
-import { EmptyState, ErrorState } from "../EmptyState";
-import useCustomColors from "../../theme/useCustomColors";
-import { GetOffers } from "../../services/types/params/GetOffers";
-import AcceptOfferButton from "../nft/offer/AcceptOfferButton";
+import NextLink from "next/link";
+import { useMemo, useRef } from "react";
+import { HiBadgeCheck } from "react-icons/hi";
+import { useInfiniteQuery } from "react-query";
+import { useSelector } from "react-redux";
 import {
   useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
+import useIntersectionObserver from "../../hooks/useIntersectionObserver";
+import nftService from "../../services/nft.service";
+import { OfferDto } from "../../services/types/dtos/Offer.dto";
+import { OfferStatus } from "../../services/types/enum";
+import { GetOffers } from "../../services/types/params/GetOffers";
+import { selectProfile } from "../../store/profileSlice";
+import useCustomColors from "../../theme/useCustomColors";
+import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import { EmptyState, ErrorState } from "../EmptyState";
+import { ImageWithFallback } from "../LazyImage";
+import AcceptOfferButton from "../nft/offer/AcceptOfferButton";
+import CancelOfferButton from "../nft/offer/CancelOfferButton";
+import Skeleton from "../Skeleton";
 
 export default function OfferMade({
   address,
@@ -188,10 +185,9 @@ function OfferListItem({
       <Td>
         <Skeleton w="full" isLoaded={!loading}>
           <HStack w="full">
-            <Image
-              src={getUrl(offer?.image)}
+            <ImageWithFallback
+              src={getUrl(offer?.image, 100)}
               rounded="md"
-              fallbackSrc={Images.Placeholder.src}
               w={14}
               h={14}
             />

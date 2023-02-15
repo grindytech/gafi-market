@@ -34,6 +34,7 @@ import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectProfile } from "../../store/profileSlice";
 import { convertToContractValue, getUrl } from "../../utils/utils";
+import { ImageWithFallback } from "../LazyImage";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
@@ -169,10 +170,9 @@ export default function BuyButton({
                 </Text>
               </HStack>
               <Box py={3}>
-                <Image
+                <ImageWithFallback
                   w="300px"
-                  src={getUrl(nft.image)}
-                  fallbackSrc={Images.Placeholder.src}
+                  src={getUrl(nft.image, 600)}
                 />
               </Box>
 

@@ -4,7 +4,6 @@ import {
   ButtonProps,
   Heading,
   HStack,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -29,7 +28,12 @@ import { Images } from "../../../images";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { selectProfile } from "../../../store/profileSlice";
-import { convertToContractValue, getUrl, numeralFormat } from "../../../utils/utils";
+import {
+  convertToContractValue,
+  getUrl,
+  numeralFormat,
+} from "../../../utils/utils";
+import { ImageWithFallback } from "../../LazyImage";
 import PrimaryButton from "../../PrimaryButton";
 import SwitchNetworkButton from "../../SwitchNetworkButton";
 
@@ -131,10 +135,9 @@ export default function AcceptOfferButton({
                 </Text>
               </HStack>
               <Box py={3}>
-                <Image
+                <ImageWithFallback
                   w="300px"
-                  src={getUrl(nft.image)}
-                  fallbackSrc={Images.Placeholder.src}
+                  src={getUrl(nft.image, 600)}
                 />
               </Box>
 

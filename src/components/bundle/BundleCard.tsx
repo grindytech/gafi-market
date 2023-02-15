@@ -100,7 +100,7 @@ export default function BundleCard({ bundle }: { bundle: BundleDto }) {
                 <NftCard
                   mask={mask ? mask({ nft: nft }) : <></>}
                   cardStyle="unstyle"
-                  image={getUrl(nft.image)}
+                  image={getUrl(nft.image, 600)}
                 >
                   <VStack p={2} spacing={0} alignItems="start" w="full">
                     <HStack w="full" justifyContent="space-between">

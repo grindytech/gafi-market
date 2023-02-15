@@ -2,12 +2,9 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  Divider,
   HStack,
   Icon,
   IconButton,
-  Image,
-  Link,
   MenuItem,
   Text,
   Tooltip,
@@ -20,13 +17,13 @@ import { BiCheckDouble } from "react-icons/bi";
 import { BsBox } from "react-icons/bs";
 import { useInfiniteQuery } from "react-query";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
-import { Images } from "../../images";
 import { NotificationDto } from "../../services/types/dtos/Notification.dto";
 import { NotificationStatus } from "../../services/types/enum";
 import { accountService } from "../../services/user.service";
 import useCustomColors from "../../theme/useCustomColors";
 import { getUrl } from "../../utils/utils";
 import EmptyState, { ErrorState } from "../EmptyState";
+import { ImageWithFallback } from "../LazyImage";
 import Skeleton from "../Skeleton";
 
 export default function Notifications({
@@ -256,10 +253,9 @@ function NotificationItem({
           alignItems="center"
         >
           {notification?.nft && (
-            <Image
-              src={getUrl(notification?.nft?.image)}
+            <ImageWithFallback
+              src={getUrl(notification?.nft?.image, 100)}
               rounded="md"
-              fallbackSrc={Images.Placeholder.src}
               w="50px"
               h="50px"
               objectFit="contain"

@@ -162,7 +162,7 @@ export default function BundleDetail({ id }: { id: string }) {
                         href={`/nft/${nft.id}`}
                       >
                         <NftCard
-                          image={getUrl(nft.image)}
+                          image={getUrl(nft.image, 600)}
                           mask={mask ? mask({ nft: nft }) : <></>}
                         >
                           <HStack
@@ -254,7 +254,7 @@ export default function BundleDetail({ id }: { id: string }) {
                           <Link target="_blank" href={`/nft/${nft.id}`}>
                             <Box py={3} pr={3} maxW="100%" w="250px">
                               <NftCard
-                                image={getUrl(nft.image)}
+                                image={getUrl(nft.image, 600)}
                                 mask={mask ? mask({ nft: nft }) : <></>}
                               >
                                 <HStack

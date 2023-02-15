@@ -1,11 +1,8 @@
 import {
   Box,
   BoxProps,
-  Button,
-  ButtonProps,
   Heading,
   HStack,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -19,20 +16,19 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import mpContract from "../../contracts/marketplace.contract";
-import useCustomToast from "../../hooks/useCustomToast";
-import { Images } from "../../images";
-import { NftDto } from "../../services/types/dtos/Nft.dto";
-import { SaleType } from "../../services/types/enum";
-import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue, getUrl } from "../../utils/utils";
-import PrimaryButton from "../PrimaryButton";
-import nftService from "../../services/nft.service";
-import SwitchNetworkButton from "../SwitchNetworkButton";
-import useSwal from "../../hooks/useSwal";
 import {
   useGetChainInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
+import useSwal from "../../hooks/useSwal";
+import nftService from "../../services/nft.service";
+import { NftDto } from "../../services/types/dtos/Nft.dto";
+import { SaleType } from "../../services/types/enum";
+import { selectProfile } from "../../store/profileSlice";
+import { convertToContractValue, getUrl } from "../../utils/utils";
+import { ImageWithFallback } from "../LazyImage";
+import PrimaryButton from "../PrimaryButton";
+import SwitchNetworkButton from "../SwitchNetworkButton";
 
 export default function CancelBtn({
   nft,
@@ -120,11 +116,7 @@ export default function CancelBtn({
                 </Text>
               </VStack>
               <Box py={3}>
-                <Image
-                  w="300px"
-                  src={getUrl(nft.image)}
-                  fallbackSrc={Images.Placeholder.src}
-                />
+                <ImageWithFallback w="300px" src={getUrl(nft.image, 600)} />
               </Box>
             </VStack>
           </ModalBody>

@@ -5,7 +5,6 @@ import {
   Divider,
   HStack,
   Icon,
-  Image,
   Link,
   Stack,
   Table,
@@ -33,13 +32,13 @@ import {
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import useIntersectionObserver from "../../hooks/useIntersectionObserver";
-import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { HistoryType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
 import EmptyState, { ErrorState } from "../EmptyState";
+import { ImageWithFallback } from "../LazyImage";
 import Skeleton from "../Skeleton";
 
 export default function UserActivities({
@@ -199,10 +198,9 @@ function HistoryItemDesktop({
       <Td>
         <Skeleton isLoaded={!loading}>
           <HStack w="full">
-            <Image
-              src={getUrl(history?.image)}
+            <ImageWithFallback
+              src={getUrl(history?.image, 100)}
               rounded="md"
-              fallbackSrc={Images.Placeholder.src}
               w={14}
               h={14}
             />
@@ -360,10 +358,9 @@ function HistoryListItem({
       direction={{ base: "column", sm: "row" }}
     >
       <HStack w="full">
-        <Image
-          src={getUrl(history?.nft?.image)}
+        <ImageWithFallback
+          src={getUrl(history?.nft?.image, 100)}
           rounded="md"
-          fallbackSrc={Images.Placeholder.src}
           w={14}
           h={14}
         />

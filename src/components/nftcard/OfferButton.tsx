@@ -1,15 +1,12 @@
 import {
   Box,
   BoxProps,
-  Button,
-  ButtonProps,
   FormControl,
   FormErrorMessage,
   FormHelperText,
   FormLabel,
   Heading,
   HStack,
-  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -24,31 +21,35 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { web3Inject } from "../../contracts";
 import erc20Contract from "../../contracts/erc20.contract";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
-import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import { selectSystem } from "../../store/systemSlice";
-import { convertToContractValue, getUrl, numeralFormat } from "../../utils/utils";
+import {
+  convertToContractValue,
+  getUrl,
+  numeralFormat,
+} from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import useSwal from "../../hooks/useSwal";
-import useYupValidationResolver from "../../hooks/useYupValidationResolver";
 import {
   useGetChainInfo,
   useGetCollectionInfo,
 } from "../../hooks/useGetSystemInfo";
+import useSwal from "../../hooks/useSwal";
+import useYupValidationResolver from "../../hooks/useYupValidationResolver";
+import { ImageWithFallback } from "../LazyImage";
 
 export default function OfferButton({
   nft,
@@ -200,11 +201,7 @@ export default function OfferButton({
                 </Text>
               </VStack>
               <Box py={3}>
-                <Image
-                  w="300px"
-                  src={getUrl(nft.image)}
-                  fallbackSrc={Images.Placeholder.src}
-                />
+                <ImageWithFallback w="300px" src={getUrl(nft.image, 600)} />
               </Box>
               <FormControl isInvalid={!!errors.price}>
                 <FormLabel>Price</FormLabel>

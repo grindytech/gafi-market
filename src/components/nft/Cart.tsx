@@ -13,7 +13,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Image,
   Link,
   StackProps,
   Text,
@@ -40,6 +39,7 @@ import { adds, remove, reset, selectBag } from "../../store/bagSlice";
 import { selectProfile } from "../../store/profileSlice";
 import { getUrl, numeralFormat } from "../../utils/utils";
 import { EmptyState } from "../EmptyState";
+import { ImageWithFallback } from "../LazyImage";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 import CartCheckoutButton from "./CartCheckoutButton";
 
@@ -285,10 +285,9 @@ export const NftItem = ({
   return (
     <HStack {...rest} w="full" justifyContent="space-between">
       <HStack>
-        <Image
-          src={getUrl(item.image)}
+        <ImageWithFallback
+          src={getUrl(item.image, 100)}
           rounded="md"
-          fallbackSrc={Images.Placeholder.src}
           w={16}
           h={16}
           objectFit="cover"

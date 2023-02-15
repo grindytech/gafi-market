@@ -13,14 +13,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { bg } from "date-fns/locale";
-import { useRef } from "react";
-import { BiPlay } from "react-icons/bi";
+import { useRef, useState } from "react";
+import { BiPause, BiPlay } from "react-icons/bi";
 import { BsBox } from "react-icons/bs";
 import { getUrl } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import FloatIconWithText from "../FloatIconWithText";
-import LazyImage from "../LazyImage";
+import LazyImage, { ImageWithFallback } from "../LazyImage";
 import Skeleton from "../Skeleton";
 
 type Props = {
@@ -58,6 +58,8 @@ export default function NftCard({
   const bgImageLink = getUrl(bgImage, 600);
   const nftImageLink = getUrl(image, bgImage ? 200 : 600);
   const videoLink = getUrl(videoUri);
+  const md = useBreakpointValue({ base: false, md: true });
+  const [videoPlaying, setVideoPlaying] = useState(false);
   return (
     <Box w="full">
       <Card
@@ -65,16 +67,8 @@ export default function NftCard({
         p={0}
         rounded="xl"
         __css={cardStyles}
-        borderColor={useColorModeValue("gray.200", "gray.700")}
+        borderColor={useColorModeValue("gray.50", "gray.800")}
         bg={bgColor}
-        onMouseEnter={() => {
-          if (!videoRef?.current) return;
-          videoRef.current.play();
-        }}
-        onMouseLeave={() => {
-          if (!videoRef?.current) return;
-          videoRef.current.load();
-        }}
         {...rest}
       >
         <CardBody>
@@ -100,7 +94,7 @@ export default function NftCard({
                   display="flex"
                 >
                   <Box>
-                    {showOnHover && !loading && (
+                    {showOnHover && md && !loading && (
                       <HStack
                         className={"hover-show"}
                         position="absolute"
@@ -116,9 +110,15 @@ export default function NftCard({
                     {videoUri && (
                       <>
                         <video
-                          className="hover-show"
+                          onPause={() => {
+                            setVideoPlaying(false);
+                          }}
+                          onPlay={() => {
+                            setVideoPlaying(true);
+                          }}
                           ref={videoRef}
                           height="280px"
+                          loop={true}
                         >
                           <source src={videoLink} />
                         </video>
@@ -134,10 +134,18 @@ export default function NftCard({
                           size="sm"
                           onClick={(e) => {
                             e.preventDefault();
-                            videoRef.current.play();
+                            if (!videoRef?.current) return;
+                            if (videoPlaying) {
+                              videoRef.current.pause();
+                            } else {
+                              videoRef.current.play();
+                            }
                           }}
                         >
-                          <Icon color="gray.300" as={BiPlay} />
+                          <Icon
+                            color="gray.300"
+                            as={videoPlaying ? BiPause : BiPlay}
+                          />
                         </IconButton>
                       </>
                     )}
@@ -177,23 +185,31 @@ export default function NftCard({
                           bgSize="cover"
                           filter={bgImage ? "blur(30px)" : "none"}
                         ></Box>
-                        <Image
-                          zIndex={3}
-                          objectFit="cover"
-                          src={nftImageLink}
+                        <Box
+                          zIndex={13}
+                          overflow="hidden"
                           w="100px"
                           h="100px"
                           rounded="full"
-                        />
+                        >
+                          <ImageWithFallback
+                            objectFit="cover"
+                            src={nftImageLink}
+                            w="100px"
+                            h="100px"
+                            rounded="full"
+                          />
+                        </Box>
                       </Box>
                     ) : (
-                      <LazyImage
-                        className={videoUri && "hover-hidden"}
-                        __css={imageStyles}
-                        src={nftImageLink}
-                        h="full"
-                        objectFit="contain"
-                      />
+                      !videoPlaying && (
+                        <LazyImage
+                          __css={imageStyles}
+                          src={nftImageLink}
+                          h="full"
+                          objectFit="contain"
+                        />
+                      )
                     )}
                   </Box>
                 </Box>

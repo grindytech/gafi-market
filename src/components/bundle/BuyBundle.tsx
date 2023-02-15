@@ -177,7 +177,7 @@ export default function BuyBundle({
                     return (
                       <Link href={`/nft/${nft.id}`} target="_blank">
                         <NftCard
-                          image={getUrl(nft.image)}
+                          image={getUrl(nft.image, 600)}
                           mask={mask ? mask({ nft: nft }) : <></>}
                         >
                           <HStack

@@ -145,7 +145,7 @@ export default function Detail({ id }: { id: string }) {
             >
               <Card p={0} h="full" overflow="hidden" display="flex" maxW="full">
                 <Skeleton h="full" w="full" isLoaded={!isLoading}>
-                  <CardBody h="full" w="full" minH={400}>
+                  <CardBody h="full" w="full">
                     {nft.image ? (
                       <NftViewer nft={nft} />
                     ) : (

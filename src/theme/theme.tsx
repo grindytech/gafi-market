@@ -159,7 +159,9 @@ const NFTCard: ComponentStyleConfig = {
     ".hover-show": {
       display: "none",
     },
-    _hover: nftCardActiveStyle,
+    _hover: {
+      md: nftCardActiveStyle,
+    },
     '[data-component-name="NFTImage"]': {
       transition: "all ease 0.5s",
     },

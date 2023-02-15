@@ -4,7 +4,6 @@ import {
   ButtonProps,
   Heading,
   HStack,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,12 +19,12 @@ import { useSelector } from "react-redux";
 import mpContract from "../../../contracts/marketplace.contract";
 import { useGetPaymentTokenInfo } from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
-import { Images } from "../../../images";
 import nftService from "../../../services/nft.service";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { SaleType } from "../../../services/types/enum";
 import { selectProfile } from "../../../store/profileSlice";
 import { convertToContractValue, getUrl } from "../../../utils/utils";
+import { ImageWithFallback } from "../../LazyImage";
 import PrimaryButton from "../../PrimaryButton";
 import SwitchNetworkButton from "../../SwitchNetworkButton";
 
@@ -112,11 +111,7 @@ export default function CancelOfferButton({
                 </Text>
               </VStack>
               <Box py={3}>
-                <Image
-                  w="300px"
-                  src={getUrl(offer.image)}
-                  fallbackSrc={Images.Placeholder.src}
-                />
+                <ImageWithFallback w="300px" src={getUrl(offer.image, 600)} />
               </Box>
             </VStack>
           </ModalBody>

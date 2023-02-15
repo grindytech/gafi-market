@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <W3Provider>
-                <Layout overflow="auto" w="100vw" h="100vh">
+                <Layout overflowY="auto" overflowX='hidden' w="100vw" h="100vh">
                   <SEO
                     image={Images.Placeholder.src}
                     description="Marketplace"

@@ -1,14 +1,11 @@
 import {
   Box,
   BoxProps,
-  Button,
-  ButtonProps,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
   HStack,
-  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -36,14 +33,14 @@ import {
 import useSwal from "../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import useYupValidationResolver from "../../hooks/useYupValidationResolver";
-import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue, getUrl, numeralFormat } from "../../utils/utils";
+import { getUrl, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
+import { ImageWithFallback } from "../LazyImage";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
 
@@ -176,11 +173,7 @@ export default function SaleButton({
                 </Text>
               </VStack>
               <Box py={3}>
-                <Image
-                  w="300px"
-                  src={getUrl(nft.image)}
-                  fallbackSrc={Images.Placeholder.src}
-                />
+                <ImageWithFallback w="300px" src={getUrl(nft.image, 600)} />
               </Box>
               <FormControl isInvalid={!!errors.price}>
                 <FormLabel>Price</FormLabel>

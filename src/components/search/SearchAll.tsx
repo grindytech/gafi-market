@@ -6,7 +6,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,12 +19,12 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useQuery } from "react-query";
-import { Images } from "../../images";
 import nftService from "../../services/nft.service";
 import { accountService } from "../../services/user.service";
 import useCustomColors from "../../theme/useCustomColors";
 import { getUrl, getUserName } from "../../utils/utils";
 import Avatar from "../Avatar";
+import { ImageWithFallback } from "../LazyImage";
 import SearchBox from "../SearchBox";
 
 export default function SearchAll() {
@@ -230,17 +229,16 @@ export default function SearchAll() {
                           }}
                           transition="all ease 0.1s"
                         >
-                          <Image
-                            src={getUrl(nft.image)}
-                            fallbackSrc={Images.Placeholder.src}
+                          <ImageWithFallback
+                            src={getUrl(nft.image, 100)}
                             w="40px"
                             h="40px"
-                            objectFit='cover'
+                            objectFit="cover"
                           />
                           <VStack
                             overflow="hidden"
                             spacing={0}
-                            w="full"
+                            // w="full"
                             alignItems="start"
                           >
                             <Text

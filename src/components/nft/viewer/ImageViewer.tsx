@@ -1,9 +1,9 @@
-import { Image } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
+import ImageView from "react-simple-image-viewer";
 import { Images } from "../../../images";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
-import ImageView from "react-simple-image-viewer";
 import { getUrl } from "../../../utils/utils";
+import { ImageWithFallback } from "../../LazyImage";
 
 export default function ImageViewer({ nft }: { nft: NftDto }) {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -16,10 +16,9 @@ export default function ImageViewer({ nft }: { nft: NftDto }) {
   };
   return (
     <>
-      <Image
+      <ImageWithFallback
         cursor="pointer"
         onClick={openImageViewer}
-        fallbackSrc={Images.Placeholder.src}
         w="100%"
         h="100%"
         objectFit="contain"
