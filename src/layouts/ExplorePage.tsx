@@ -18,8 +18,8 @@ export const EXPLORE_LINKS = [
   { href: "/explore/games", name: "Games" },
 ];
 export const MARKET_LINKS = [
-  { href: "/market", name: "NFTs" },
-  { href: "/market/bundles", name: "Bundles" },
+  { href: "/nft-market", name: "NFTs" },
+  { href: "/nft-market/bundles", name: "Bundles" },
 ];
 export default function TabPage({
   links,

@@ -467,15 +467,15 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Market",
-    href: "/market",
+    href: "/nft-market",
     children: [
       {
         label: "NFTs Market",
-        href: "/market",
+        href: "/nft-market",
       },
       {
         label: "Bundle Sale",
-        href: "/market/bundles",
+        href: "/nft-market/bundles",
       },
     ],
   },
@@ -515,15 +515,15 @@ const MOBILE_NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Market",
-    href: "/market",
+    href: "/nft-market",
     children: [
       {
         label: "NFTs Market",
-        href: "/market",
+        href: "/nft-market",
       },
       {
         label: "Bundle Sale",
-        href: "/market/bundles",
+        href: "/nft-market/bundles",
       },
     ],
   },
