@@ -37,7 +37,7 @@ import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { adds, remove, reset, selectBag } from "../../store/bagSlice";
 import { selectProfile } from "../../store/profileSlice";
-import { getUrl, numeralFormat } from "../../utils/utils";
+import { getNftImageLink, numeralFormat } from "../../utils/utils";
 import { EmptyState } from "../EmptyState";
 import { ImageWithFallback } from "../LazyImage";
 import SwitchNetworkButton from "../SwitchNetworkButton";
@@ -286,7 +286,7 @@ export const NftItem = ({
     <HStack {...rest} w="full" justifyContent="space-between">
       <HStack>
         <ImageWithFallback
-          src={getUrl(item.image, 100)}
+          src={getNftImageLink(item.id, 100)}
           rounded="md"
           w={16}
           h={16}

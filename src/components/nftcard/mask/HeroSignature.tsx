@@ -1,6 +1,5 @@
 import { Image, Text, VStack } from "@chakra-ui/react";
 import { get } from "lodash";
-import { getUrl } from "../../../utils/utils";
 
 export const tierColorMapping = {
   common: "#aaa",
@@ -23,7 +22,7 @@ export default function HeroSignature({ tier, signatureIcon, signatureLevel }) {
         position: "relative",
       }}
     >
-      <Image src={getUrl(signatureIcon, 100)} alt="signature icon" />
+      <Image src={signatureIcon} alt="signature icon" />
       <Text
         fontSize={["xs", "sm"]}
         fontWeight="bold"

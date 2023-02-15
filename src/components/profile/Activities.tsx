@@ -36,7 +36,7 @@ import nftService from "../../services/nft.service";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { HistoryType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import { getNftImageLink, getUserName, numeralFormat } from "../../utils/utils";
 import EmptyState, { ErrorState } from "../EmptyState";
 import { ImageWithFallback } from "../LazyImage";
 import Skeleton from "../Skeleton";
@@ -199,7 +199,7 @@ function HistoryItemDesktop({
         <Skeleton isLoaded={!loading}>
           <HStack w="full">
             <ImageWithFallback
-              src={getUrl(history?.image, 100)}
+              src={getNftImageLink(history?.nft?.id, 100)}
               rounded="md"
               w={14}
               h={14}
@@ -359,7 +359,7 @@ function HistoryListItem({
     >
       <HStack w="full">
         <ImageWithFallback
-          src={getUrl(history?.nft?.image, 100)}
+          src={getNftImageLink(history?.nft?.id, 100)}
           rounded="md"
           w={14}
           h={14}

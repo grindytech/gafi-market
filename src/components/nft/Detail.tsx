@@ -8,7 +8,6 @@ import {
   Avatar,
   Box,
   Button,
-  Container,
   Divider,
   Heading,
   HStack,
@@ -46,12 +45,7 @@ import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import { shorten } from "../../utils/string.util";
-import {
-  convertIpfsLink,
-  getUrl,
-  getUserName,
-  numeralFormat,
-} from "../../utils/utils";
+import { convertIpfsLink, getUserName, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import { EmptyState, ErrorState } from "../EmptyState";
@@ -65,10 +59,10 @@ import PrimaryButton from "../PrimaryButton";
 import ShareButton from "../ShareButton";
 import Skeleton from "../Skeleton";
 import NftHistory from "./NftHistory";
-import NftViewer from "./viewer/NftViewer";
 import NftOffers from "./offer/NftOffers";
 import RefreshMetadataButton from "./RefreshMetadataButton";
 import { STATS } from "./stats";
+import NftViewer from "./viewer/NftViewer";
 
 export default function Detail({ id }: { id: string }) {
   const [errorCode, setErrorCode] = useState(0);
@@ -134,16 +128,8 @@ export default function Detail({ id }: { id: string }) {
           spacing={5}
         >
           <VStack w="full" spacing={5}>
-            <Box
-              rounded="lg"
-              overflow="hidden"
-              boxShadow="sm"
-              w="full"
-              display="flex"
-              justifyContent="center"
-              borderWidth={1}
-            >
-              <Card p={0} h="full" overflow="hidden" display="flex" maxW="full">
+            <Box w="full" display="flex" justifyContent="center">
+              <Card p={0} h="full" display="flex" maxW="full">
                 <Skeleton h="full" w="full" isLoaded={!isLoading}>
                   <CardBody h="full" w="full">
                     {nft.image ? (
@@ -391,7 +377,7 @@ const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
             size="md"
             variant="link"
             as={Link}
-            href={getUrl(nft.tokenUrl)}
+            href={convertIpfsLink(nft.tokenUrl)}
           >
             {nft.tokenId}
           </Button>

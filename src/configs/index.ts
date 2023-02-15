@@ -18,6 +18,7 @@ export type Configs = {
   DOS_SYMBOL: string;
   DOS_FORWARDER_CONTRACT: string;
   DOS_GAS_LESS_URL: string;
+  ASSETS_SERVICE: string;
 };
 
 const envConfigs =

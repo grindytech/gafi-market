@@ -27,7 +27,13 @@ export default function NftViewer({ nft }: { nft: NftDto }) {
     : "";
   const viewer = Viewers[type] || Viewers.image;
   return (
-    <Box w="full" h="full">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignContent="center"
+      w="full"
+      h="full"
+    >
       {React.cloneElement(viewer({ nft: nft }))}
     </Box>
   );

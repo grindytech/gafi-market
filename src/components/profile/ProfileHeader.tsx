@@ -14,6 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import linkifyStr from "linkify-string";
+import { useMemo, useRef } from "react";
 import useCustomToast from "../../hooks/useCustomToast";
 import { Socials } from "../../services/types/dtos/Socials";
 import useCustomColors from "../../theme/useCustomColors";
@@ -45,6 +46,11 @@ export default function ProfileHeader({
   const toast = useCustomToast();
   const { isOpen: showDescription, onToggle: toggleDescription } =
     useDisclosure();
+  const descriptionRef = useRef(null);
+  const descHeight = useMemo(() => {
+    const h = Number(descriptionRef?.current?.clientHeight);
+    return h < 75 ? h : 75;
+  }, [descriptionRef?.current?.clientHeight]);
   return (
     <VStack w="full" position="relative">
       <Box
@@ -136,8 +142,8 @@ export default function ProfileHeader({
             </Stack>
             {description && (
               <>
-                <Collapse startingHeight={75} in={showDescription}>
-                  <VStack>
+                <Collapse startingHeight={descHeight} in={showDescription}>
+                  <VStack ref={descriptionRef}>
                     <Text
                       dangerouslySetInnerHTML={{
                         __html: linkifyStr(description),
@@ -147,14 +153,16 @@ export default function ProfileHeader({
                     ></Text>
                   </VStack>
                 </Collapse>
-                <Button
-                  variant="link"
-                  size="sm"
-                  onClick={toggleDescription}
-                  mt="1rem"
-                >
-                  {showDescription ? "Less" : "More"}
-                </Button>
+                {descHeight === 75 && (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={toggleDescription}
+                    mt="1rem"
+                  >
+                    {showDescription ? "Less" : "More"}
+                  </Button>
+                )}
               </>
             )}
           </VStack>

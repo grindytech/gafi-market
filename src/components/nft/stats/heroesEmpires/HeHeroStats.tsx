@@ -16,7 +16,7 @@ import {
 import { get } from "lodash";
 import { useEffect, useState } from "react";
 import { NftDto } from "../../../../services/types/dtos/Nft.dto";
-import { getUrl } from "../../../../utils/utils";
+import { getNftImageLink } from "../../../../utils/utils";
 import { ImageWithFallback } from "../../../LazyImage";
 import HeHeroBasicStat from "./HeHeroBasicStat";
 
@@ -63,7 +63,7 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
                 <HStack alignItems="start">
                   <ImageWithFallback
                     h="60px"
-                    src={getUrl(attributes?.Signature?.icon, 100)}
+                    src={attributes?.Signature?.icon}
                   />
                   <VStack spacing={0} fontSize="md" alignItems="start">
                     <HStack spacing={1}>
@@ -125,10 +125,7 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
                   <HStack alignItems="start" w="full">
                     <ImageWithFallback
                       h="60px"
-                      src={getUrl(
-                        get(attributes.Abilities, "Ability-1-Icon"),
-                        100
-                      )}
+                      src={get(attributes.Abilities, "Ability-1-Icon")}
                     />
                     <VStack spacing={0} fontSize="md" alignItems="start">
                       <Text>{get(attributes.Abilities, "Ability-1")}</Text>
@@ -161,10 +158,7 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
                   <HStack alignItems="start" w="full">
                     <ImageWithFallback
                       h="60px"
-                      src={getUrl(
-                        get(attributes.Abilities, "Ultimates-Icon"),
-                        100
-                      )}
+                      src={get(attributes.Abilities, "Ultimates-Icon")}
                     />
                     <VStack
                       spacing={0}

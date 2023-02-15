@@ -33,7 +33,7 @@ import { OfferStatus } from "../../services/types/enum";
 import { GetOffers } from "../../services/types/params/GetOffers";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import { getNftImageLink, getUserName, numeralFormat } from "../../utils/utils";
 import { EmptyState, ErrorState } from "../EmptyState";
 import { ImageWithFallback } from "../LazyImage";
 import AcceptOfferButton from "../nft/offer/AcceptOfferButton";
@@ -186,7 +186,7 @@ function OfferListItem({
         <Skeleton w="full" isLoaded={!loading}>
           <HStack w="full">
             <ImageWithFallback
-              src={getUrl(offer?.image, 100)}
+              src={getNftImageLink(offer?.nft?.id, 100)}
               rounded="md"
               w={14}
               h={14}

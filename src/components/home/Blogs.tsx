@@ -112,26 +112,26 @@ function Blog({
     >
       <CardBody p={0} m={0}>
         <VStack w="full" p={3}>
-          <Skeleton isLoaded={!isLoading}>
-            <Box
-              pos={"relative"}
-              overflow="hidden"
-              bg={useColorModeValue("gray.600", "gray.800")}
-              rounded="xl"
-              w={272}
-              h={178}
-              maxW="full"
-              border={"1px solid"}
-              borderColor={useColorModeValue("gray.200", "gray.700")}
-            >
+          <Box
+            pos={"relative"}
+            overflow="hidden"
+            bg={useColorModeValue("gray.600", "gray.800")}
+            rounded="xl"
+            w={272}
+            h={178}
+            maxW="full"
+            border={"1px solid"}
+            borderColor={useColorModeValue("gray.200", "gray.700")}
+          >
+            <Skeleton w={272} h={178} isLoaded={!isLoading}>
               <ImageWithFallback
                 h="full"
                 w="full"
                 src={image}
                 objectFit="fill"
               />
-            </Box>
-          </Skeleton>
+            </Skeleton>
+          </Box>
           <VStack w="full" overflow="hidden" alignItems="start">
             <Skeleton isLoaded={!isLoading}>
               <Text

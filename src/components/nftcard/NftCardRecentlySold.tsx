@@ -24,7 +24,12 @@ import Icons from "../../images";
 import { NftHistoryDto } from "../../services/types/dtos/NftHistory.dto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import {
+  getNftAnimationLink,
+  getNftImageLink,
+  getUserName,
+  numeralFormat,
+} from "../../utils/utils";
 import Skeleton from "../Skeleton";
 import { MASKS } from "./mask";
 import NftCard from "./NftCard";
@@ -50,11 +55,14 @@ export default function NftCardRecentlySold({
   });
   const mask = get(MASKS, collectionInfo?.key);
   const { borderColor } = useCustomColors();
+  const isVideo = history?.nft?.animationPlayType?.includes("video");
+
   return (
     <NftCard
       mask={mask ? mask({ nft: history?.nft }) : <></>}
       loading={loading}
-      image={history?.nft?.image}
+      image={getNftImageLink(history?.nft?.id, 600)}
+      videoUri={isVideo ? getNftAnimationLink(history?.nft?.id) : undefined}
     >
       <VStack w="full" alignItems="start" p={2} spacing={2}>
         <VStack p={1} w="full" alignItems="start" spacing={1}>

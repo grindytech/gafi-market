@@ -21,7 +21,7 @@ import { NotificationDto } from "../../services/types/dtos/Notification.dto";
 import { NotificationStatus } from "../../services/types/enum";
 import { accountService } from "../../services/user.service";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUrl } from "../../utils/utils";
+import { getNftImageLink } from "../../utils/utils";
 import EmptyState, { ErrorState } from "../EmptyState";
 import { ImageWithFallback } from "../LazyImage";
 import Skeleton from "../Skeleton";
@@ -254,7 +254,7 @@ function NotificationItem({
         >
           {notification?.nft && (
             <ImageWithFallback
-              src={getUrl(notification?.nft?.image, 100)}
+              src={getNftImageLink(notification?.nft?.id, 100)}
               rounded="md"
               w="50px"
               h="50px"

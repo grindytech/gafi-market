@@ -30,7 +30,7 @@ import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { selectProfile } from "../../../store/profileSlice";
 import {
   convertToContractValue,
-  getUrl,
+  getNftImageLink,
   numeralFormat,
 } from "../../../utils/utils";
 import { ImageWithFallback } from "../../LazyImage";
@@ -137,7 +137,7 @@ export default function AcceptOfferButton({
               <Box py={3}>
                 <ImageWithFallback
                   w="300px"
-                  src={getUrl(nft.image, 600)}
+                  src={getNftImageLink(nft.id, 600)}
                 />
               </Box>
 

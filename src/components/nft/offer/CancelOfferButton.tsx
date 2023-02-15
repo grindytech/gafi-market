@@ -23,7 +23,7 @@ import nftService from "../../../services/nft.service";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { SaleType } from "../../../services/types/enum";
 import { selectProfile } from "../../../store/profileSlice";
-import { convertToContractValue, getUrl } from "../../../utils/utils";
+import { convertToContractValue, getNftImageLink } from "../../../utils/utils";
 import { ImageWithFallback } from "../../LazyImage";
 import PrimaryButton from "../../PrimaryButton";
 import SwitchNetworkButton from "../../SwitchNetworkButton";
@@ -111,7 +111,10 @@ export default function CancelOfferButton({
                 </Text>
               </VStack>
               <Box py={3}>
-                <ImageWithFallback w="300px" src={getUrl(offer.image, 600)} />
+                <ImageWithFallback
+                  w="300px"
+                  src={getNftImageLink(offer.nft.id, 600)}
+                />
               </Box>
             </VStack>
           </ModalBody>

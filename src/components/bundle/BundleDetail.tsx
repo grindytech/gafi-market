@@ -35,7 +35,7 @@ import nftService from "../../services/nft.service";
 import { BundleStatus } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUrl, getUserName, numeralFormat } from "../../utils/utils";
+import { getNftImageLink, getUserName, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import EmptyState, { ErrorState } from "../EmptyState";
@@ -162,7 +162,7 @@ export default function BundleDetail({ id }: { id: string }) {
                         href={`/nft/${nft.id}`}
                       >
                         <NftCard
-                          image={getUrl(nft.image, 600)}
+                          image={getNftImageLink(nft.id, 600)}
                           mask={mask ? mask({ nft: nft }) : <></>}
                         >
                           <HStack
@@ -254,7 +254,7 @@ export default function BundleDetail({ id }: { id: string }) {
                           <Link target="_blank" href={`/nft/${nft.id}`}>
                             <Box py={3} pr={3} maxW="100%" w="250px">
                               <NftCard
-                                image={getUrl(nft.image, 600)}
+                                image={getNftImageLink(nft.id, 600)}
                                 mask={mask ? mask({ nft: nft }) : <></>}
                               >
                                 <HStack

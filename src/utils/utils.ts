@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { encodeBase64 } from "ethers";
 import { customAlphabet } from "nanoid";
 import numeral from "numeral";
+import configs from "../configs";
 import { UserDto } from "../services/types/dtos/UserDto";
 
 interface ContractValueParams {
@@ -248,8 +249,10 @@ export const wsCall = (wsUrl: string, dataSend: Object) =>
     };
   });
 
-export const getUrl = (url: string, w = 0) =>
-  url ? `/api/px?link=${Buffer.from(url).toString("base64")}&w=${w}` : url;
+export const getNftImageLink = (id: string, w = 0) =>
+  id ? `${configs.ASSETS_SERVICE}/nft-assets/image/${id}?w=${w}` : undefined;
+export const getNftAnimationLink = (id: string) =>
+  id ? `${configs.ASSETS_SERVICE}/nft-assets/animation/${id}` : undefined;
 
 const ipfsGateway = "https://cf-ipfs.com/ipfs/";
 export const convertIpfsLink = (link: string) =>

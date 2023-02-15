@@ -16,8 +16,7 @@ import {
 import { get } from "lodash";
 import NextLink from "next/link";
 import { useMemo } from "react";
-import { BiGift } from "react-icons/bi";
-import { BsBox, BsThreeDots } from "react-icons/bs";
+import { BsThreeDots } from "react-icons/bs";
 import { HiBadgeCheck } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import {
@@ -30,8 +29,11 @@ import Icons from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectBag } from "../../store/bagSlice";
 import { selectProfile } from "../../store/profileSlice";
-import { getUrl, numeralFormat } from "../../utils/utils";
-import FloatIconWithText from "../FloatIconWithText";
+import {
+  getNftAnimationLink,
+  getNftImageLink,
+  numeralFormat,
+} from "../../utils/utils";
 import RefreshMetadataButton from "../nft/RefreshMetadataButton";
 import PrimaryButton from "../PrimaryButton";
 import Skeleton from "../Skeleton";
@@ -91,8 +93,10 @@ export default function NftCardMarket({
         disabled={disabled}
         className={isInCart || selected ? "selected" : ""}
         loading={loading}
-        image={nft?.image || collectionInfo?.avatar}
-        videoUri={isVideo ? nft?.animationUrl : undefined}
+        image={
+          nft?.image ? getNftImageLink(nft.id, 600) : collectionInfo?.avatar
+        }
+        videoUri={isVideo ? getNftAnimationLink(nft?.id) : undefined}
         bgImage={
           !nft?.image
             ? collectionInfo?.featuredImage || collectionInfo?.cover

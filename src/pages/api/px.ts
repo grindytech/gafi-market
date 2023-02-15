@@ -30,7 +30,7 @@ export default async function handler(
       readStream.end(f);
       readStream.pipe(res);
     } else {
-      await downloadForward(url, header, res);
+      res.setHeader("location", url).status(301).end();
     }
   }
 }

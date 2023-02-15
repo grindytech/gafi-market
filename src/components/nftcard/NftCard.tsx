@@ -1,22 +1,18 @@
 import {
-  Avatar,
   Box,
   BoxProps,
   Button,
   HStack,
   Icon,
   IconButton,
-  Image,
   useBreakpointValue,
   useColorModeValue,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
-import { bg } from "date-fns/locale";
 import { useRef, useState } from "react";
 import { BiPause, BiPlay } from "react-icons/bi";
 import { BsBox } from "react-icons/bs";
-import { getUrl } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import FloatIconWithText from "../FloatIconWithText";
@@ -54,10 +50,6 @@ export default function NftCard({
   const videoRef = useRef<any>(null);
   const bgColor =
     cardStyle === "nftCard" ? useColorModeValue("white", "gray.800") : "none";
-
-  const bgImageLink = getUrl(bgImage, 600);
-  const nftImageLink = getUrl(image, bgImage ? 200 : 600);
-  const videoLink = getUrl(videoUri);
   const md = useBreakpointValue({ base: false, md: true });
   const [videoPlaying, setVideoPlaying] = useState(false);
   return (
@@ -120,7 +112,7 @@ export default function NftCard({
                           height="280px"
                           loop={true}
                         >
-                          <source src={videoLink} />
+                          <source src={videoUri} />
                         </video>
                         <IconButton
                           rounded="full"
@@ -180,7 +172,7 @@ export default function NftCard({
                           position="absolute"
                           w="full"
                           h="full"
-                          bgImage={bgImageLink}
+                          bgImage={bgImage}
                           bgPosition="center center"
                           bgSize="cover"
                           filter={bgImage ? "blur(30px)" : "none"}
@@ -194,7 +186,7 @@ export default function NftCard({
                         >
                           <ImageWithFallback
                             objectFit="cover"
-                            src={nftImageLink}
+                            src={image}
                             w="100px"
                             h="100px"
                             rounded="full"
@@ -205,7 +197,7 @@ export default function NftCard({
                       !videoPlaying && (
                         <LazyImage
                           __css={imageStyles}
-                          src={nftImageLink}
+                          src={image}
                           h="full"
                           objectFit="contain"
                         />

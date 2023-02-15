@@ -33,6 +33,7 @@ const CollectionItem = ({
   const { borderColor } = useCustomColors();
   return (
     <HStack
+      title={c?.name}
       {...rest}
       w="full"
       p={2}
@@ -49,7 +50,7 @@ const CollectionItem = ({
       alignItems="center"
       justifyContent="space-between"
     >
-      <HStack w="full">
+      <HStack w="full" alignItems="center">
         <Skeleton isLoaded={!loading}>
           <Avatar
             size="sm"
@@ -61,7 +62,7 @@ const CollectionItem = ({
           />
         </Skeleton>
         <Skeleton w="full" height="1em" isLoaded={!loading}>
-          <Text>{c?.name}</Text>
+          <Text noOfLines={1}>{c?.name}</Text>
         </Skeleton>
       </HStack>
       {children}

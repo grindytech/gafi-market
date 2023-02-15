@@ -38,7 +38,7 @@ import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { PaymentToken } from "../../services/types/dtos/PaymentToken.dto";
 import { SalePeriod, SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
-import { getUrl, numeralFormat } from "../../utils/utils";
+import { getNftImageLink, numeralFormat } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
 import { ImageWithFallback } from "../LazyImage";
 import PrimaryButton from "../PrimaryButton";
@@ -173,7 +173,10 @@ export default function SaleButton({
                 </Text>
               </VStack>
               <Box py={3}>
-                <ImageWithFallback w="300px" src={getUrl(nft.image, 600)} />
+                <ImageWithFallback
+                  w="300px"
+                  src={getNftImageLink(nft.id, 600)}
+                />
               </Box>
               <FormControl isInvalid={!!errors.price}>
                 <FormLabel>Price</FormLabel>

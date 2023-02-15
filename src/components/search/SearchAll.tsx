@@ -22,7 +22,7 @@ import { useQuery } from "react-query";
 import nftService from "../../services/nft.service";
 import { accountService } from "../../services/user.service";
 import useCustomColors from "../../theme/useCustomColors";
-import { getUrl, getUserName } from "../../utils/utils";
+import { getNftImageLink, getUserName } from "../../utils/utils";
 import Avatar from "../Avatar";
 import { ImageWithFallback } from "../LazyImage";
 import SearchBox from "../SearchBox";
@@ -230,7 +230,7 @@ export default function SearchAll() {
                           transition="all ease 0.1s"
                         >
                           <ImageWithFallback
-                            src={getUrl(nft.image, 100)}
+                            src={getNftImageLink(nft.id, 100)}
                             w="40px"
                             h="40px"
                             objectFit="cover"

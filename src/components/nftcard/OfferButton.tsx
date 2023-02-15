@@ -34,7 +34,7 @@ import { selectProfile } from "../../store/profileSlice";
 import { selectSystem } from "../../store/systemSlice";
 import {
   convertToContractValue,
-  getUrl,
+  getNftImageLink,
   numeralFormat,
 } from "../../utils/utils";
 import TokenSymbolToken from "../filters/TokenSymbolButton";
@@ -201,7 +201,10 @@ export default function OfferButton({
                 </Text>
               </VStack>
               <Box py={3}>
-                <ImageWithFallback w="300px" src={getUrl(nft.image, 600)} />
+                <ImageWithFallback
+                  w="300px"
+                  src={getNftImageLink(nft.id, 600)}
+                />
               </Box>
               <FormControl isInvalid={!!errors.price}>
                 <FormLabel>Price</FormLabel>

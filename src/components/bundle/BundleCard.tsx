@@ -20,7 +20,7 @@ import {
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import Icons from "../../images";
 import { BundleDto } from "../../services/types/dtos/BundleDto";
-import { getUrl, numeralFormat } from "../../utils/utils";
+import { getNftImageLink, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import CardHeader from "../card/CardHeader";
@@ -100,7 +100,7 @@ export default function BundleCard({ bundle }: { bundle: BundleDto }) {
                 <NftCard
                   mask={mask ? mask({ nft: nft }) : <></>}
                   cardStyle="unstyle"
-                  image={getUrl(nft.image, 600)}
+                  image={getNftImageLink(nft.id, 600)}
                 >
                   <VStack p={2} spacing={0} alignItems="start" w="full">
                     <HStack w="full" justifyContent="space-between">
