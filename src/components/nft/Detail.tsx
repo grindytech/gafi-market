@@ -129,7 +129,16 @@ export default function Detail({ id }: { id: string }) {
         >
           <VStack w="full" spacing={5}>
             <Box w="full" display="flex" justifyContent="center">
-              <Card p={0} h="full" display="flex" maxW="full">
+              <Card
+                overflow="hidden"
+                boxShadow="md"
+                borderWidth={1}
+                rounded="xl"
+                p={0}
+                h="full"
+                display="flex"
+                maxW="full"
+              >
                 <Skeleton h="full" w="full" isLoaded={!isLoading}>
                   <CardBody h="full" w="full">
                     {nft.image ? (
@@ -448,7 +457,13 @@ const Properties = ({ nft }: { nft: NftDto }) => {
                 <Text color="primary.100" fontSize="sm">
                   {attr.key}
                 </Text>
-                <Text fontSize="xl">{String(attr.value)}</Text>
+                <Text fontSize={["md", "xl"]}>
+                  {attr.value === true
+                    ? "Yes"
+                    : attr.value === false
+                    ? "No"
+                    : String(attr.value)}
+                </Text>
               </VStack>
             );
           })}
@@ -494,7 +509,7 @@ const PriceSection = ({
         <HStack>
           <ShareButton
             aria-label="share button"
-            title={`${nftCollection?.name} | ${nft.name}`}
+            title={`${nftCollection?.name} | ${nft?.name}`}
             link={window.location.href}
           />
           <RefreshMetadataButton nftId={nft.id}>

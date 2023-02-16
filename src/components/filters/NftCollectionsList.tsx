@@ -101,6 +101,8 @@ export default function NftCollectionsList({
           game,
           search,
           page: pageParam,
+          orderBy: "name",
+          desc: "desc",
         });
         return rs.data;
       } else {

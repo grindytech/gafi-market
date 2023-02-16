@@ -4,18 +4,16 @@ import { getNftAnimationLink, getNftImageLink } from "../../../utils/utils";
 
 export default function ModelViewer({ nft }: { nft: NftDto }) {
   return (
-    <Box w="full" h="full" overflow="hidden" rounded="lg" boxShadow="sm">
-      <model-viewer
-        alt={nft.name}
-        src={getNftAnimationLink(nft.id)}
-        poster={getNftImageLink(nft.id, 1000)}
-        shadow-intensity="1"
-        camera-controls
-        touch-action="pan-y"
-        generate-schema
-        autoPlay
-        allowFullScreen
-      ></model-viewer>
-    </Box>
+    <model-viewer
+      alt={nft.name}
+      src={getNftAnimationLink(nft.id)}
+      poster={getNftImageLink(nft.id, 1000)}
+      shadow-intensity="1"
+      camera-controls
+      touch-action="pan-y"
+      generate-schema
+      autoPlay
+      allowFullScreen
+    ></model-viewer>
   );
 }

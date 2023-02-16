@@ -16,7 +16,6 @@ import { Settings } from "react-slick";
 
 // Settings for the slider
 
-
 export default function HomeSlide() {
   const dotColor = useColorModeValue("gray.600", "gray.600");
   const settings: Settings = {
@@ -76,6 +75,7 @@ export default function HomeSlide() {
           backgroundRepeat="no-repeat"
           backgroundSize="cover"
           backgroundImage={`url(${card.image})`}
+          rounded="xl"
         >
           {/* This is the block you need to change, to customize the caption */}
           <Container size="container.xl" height="500px" position="relative">

@@ -15,7 +15,7 @@ export default function ImageViewer({ nft }: { nft: NftDto }) {
     setIsViewerOpen(false);
   };
   return (
-    <Box overflow="hidden" rounded="lg" p={2} boxShadow="md" borderWidth={1}>
+    <Box overflow="hidden" rounded="lg" p={2} >
       <ImageWithFallback
         overflow="hidden"
         rounded="lg"

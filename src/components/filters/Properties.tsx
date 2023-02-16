@@ -260,7 +260,7 @@ export default function Properties({ c }: { c: NftCollectionDto }) {
   const { query, setQuery } = useNftQueryParam();
   const filterOnChange = (attr: GetNftAttributes) => {
     const newAttrs = Array.from(query.attributes || []).filter(
-      (old: GetNftAttributes) => old.key !== attr.key
+      (old: GetNftAttributes) =>  old.key !== attr.key
     );
     if (!!attr.value || !!attr.minNumber) newAttrs.push(attr);
     setQuery({ ...query, attributes: newAttrs });

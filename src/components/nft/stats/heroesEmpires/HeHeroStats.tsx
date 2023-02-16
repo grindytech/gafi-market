@@ -61,10 +61,13 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
             <AccordionPanel pb={4}>
               <VStack alignItems="start">
                 <HStack alignItems="start">
-                  <ImageWithFallback
-                    h="60px"
-                    src={attributes?.Signature?.icon}
-                  />
+                  <Box h="60px" w="60px">
+                    <ImageWithFallback
+                      h="60px"
+                      w="60px"
+                      src={attributes?.Signature?.icon}
+                    />
+                  </Box>
                   <VStack spacing={0} fontSize="md" alignItems="start">
                     <HStack spacing={1}>
                       <Text>{attributes.Signature.name}</Text>
@@ -123,10 +126,13 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
               <VStack spacing={3}>
                 {get(attributes.Abilities || {}, "Ability-1") && (
                   <HStack alignItems="start" w="full">
-                    <ImageWithFallback
-                      h="60px"
-                      src={get(attributes.Abilities, "Ability-1-Icon")}
-                    />
+                    <Box h="60px" w="60px">
+                      <ImageWithFallback
+                        h="60px"
+                        w="60px"
+                        src={get(attributes.Abilities, "Ability-1-Icon")}
+                      />
+                    </Box>
                     <VStack spacing={0} fontSize="md" alignItems="start">
                       <Text>{get(attributes.Abilities, "Ability-1")}</Text>
                       <Collapse startingHeight={20} in={skill1Show}>
@@ -156,11 +162,15 @@ export default function HeHeroStats({ nft }: { nft: NftDto }) {
                 )}
                 {get(attributes.Abilities || {}, "Ultimates") && (
                   <HStack alignItems="start" w="full">
-                    <ImageWithFallback
-                      h="60px"
-                      src={get(attributes.Abilities, "Ultimates-Icon")}
-                    />
+                    <Box h="60px" w="60px">
+                      <ImageWithFallback
+                        h="60px"
+                        w="60px"
+                        src={get(attributes.Abilities, "Ultimates-Icon")}
+                      />
+                    </Box>
                     <VStack
+                      w="full"
                       spacing={0}
                       fontSize="md"
                       justifyContent="start"

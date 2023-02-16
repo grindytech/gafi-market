@@ -5,14 +5,7 @@ import { getNftAnimationLink } from "../../../utils/utils";
 
 export default function VideoViewer({ nft }: { nft: NftDto }) {
   return (
-    <Box
-      overflow="hidden"
-      rounded="lg"
-      boxShadow="sm"
-      w="full"
-      h="full"
-      position="relative"
-    >
+    <Box overflow="hidden" w="full" h="full" position="relative">
       <ReactPlayer
         url={getNftAnimationLink(nft.id)}
         width="100%"

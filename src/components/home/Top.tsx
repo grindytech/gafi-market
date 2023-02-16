@@ -39,7 +39,7 @@ const CustomTab = (props: any) => {
 };
 export default function Top() {
   return (
-    <Box w="full" bg={useColorModeValue("white", "black")} rounded="xl" p={5}>
+    <Box boxShadow='sm' w="full" bg={useColorModeValue("white", "black")} rounded="xl" p={5}>
       <Tabs variant="unstyled">
         <TabList>
           <CustomTab>TOP SELLERS</CustomTab>

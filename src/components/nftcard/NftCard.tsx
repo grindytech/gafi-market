@@ -57,11 +57,11 @@ export default function NftCard({
       <Card
         opacity={disabled ? 0.5 : 1}
         p={0}
-        rounded="xl"
         __css={cardStyles}
         borderColor={useColorModeValue("gray.50", "gray.800")}
         bg={bgColor}
         {...rest}
+        rounded="xl"
       >
         <CardBody>
           <VStack w="full" spacing={0}>
@@ -74,7 +74,6 @@ export default function NftCard({
               <Skeleton isLoaded={!loading}>
                 <Box
                   position="absolute"
-                  rounded="xl"
                   w="full"
                   h="full"
                   top={0}
@@ -101,19 +100,25 @@ export default function NftCard({
                     )}
                     {videoUri && (
                       <>
-                        <video
-                          onPause={() => {
-                            setVideoPlaying(false);
+                        <div
+                          style={{
+                            visibility: videoPlaying ? "visible" : "hidden",
                           }}
-                          onPlay={() => {
-                            setVideoPlaying(true);
-                          }}
-                          ref={videoRef}
-                          height="280px"
-                          loop={true}
                         >
-                          <source src={videoUri} />
-                        </video>
+                          <video
+                            onPause={() => {
+                              setVideoPlaying(false);
+                            }}
+                            onPlay={() => {
+                              setVideoPlaying(true);
+                            }}
+                            ref={videoRef}
+                            height="280px"
+                            loop={true}
+                          >
+                            <source src={videoUri} />
+                          </video>
+                        </div>
                         <IconButton
                           rounded="full"
                           aria-label="play"
@@ -178,7 +183,7 @@ export default function NftCard({
                           filter={bgImage ? "blur(30px)" : "none"}
                         ></Box>
                         <Box
-                          zIndex={13}
+                          zIndex={3}
                           overflow="hidden"
                           w="100px"
                           h="100px"
@@ -196,6 +201,7 @@ export default function NftCard({
                     ) : (
                       !videoPlaying && (
                         <LazyImage
+                          borderTopRadius="xl"
                           __css={imageStyles}
                           src={image}
                           h="full"

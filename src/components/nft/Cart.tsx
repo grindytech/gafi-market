@@ -150,7 +150,7 @@ export default function Cart() {
                   <EmptyState msg="Your bag is empty">
                     <Button
                       as={NextLink}
-                      href="/explore/nfts"
+                      href="/nft-market"
                       onClick={onClose}
                     >
                       Explore NFTs
