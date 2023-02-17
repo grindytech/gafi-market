@@ -5,7 +5,7 @@ import { NextSeo } from "next-seo";
 import BundleDetail from "../../components/bundle/BundleDetail";
 import configs from "../../configs";
 import { BundleDto } from "../../services/types/dtos/BundleDto";
-import { convertIpfsLink, getNftImageLink } from "../../utils/utils";
+import { getNftImageLink } from "../../utils/utils";
 
 export default function BundleDetailPage({ bundle }: { bundle: BundleDto }) {
   return (
@@ -15,7 +15,7 @@ export default function BundleDetailPage({ bundle }: { bundle: BundleDto }) {
         description={`Bundle ${bundle.name} | Overmint Marketplace`}
         openGraph={{
           images: bundle.items.map((nft) => ({
-            url: convertIpfsLink(nft.image),
+            url: getNftImageLink(nft.id, 800),
           })),
         }}
       />
