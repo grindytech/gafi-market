@@ -1,30 +1,28 @@
 import { Container } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useQuery } from "react-query";
+import axios from "axios";
+import { GetServerSidePropsContext } from "next";
+import { NextSeo } from "next-seo";
 import AddGame from "../../../components/game/AddGame";
-import nftService from "../../../services/nft.service";
+import configs from "../../../configs";
+import { GameDto } from "../../../services/types/dtos/GameDto";
 
-export default function GameEdit() {
-  const router = useRouter();
-  const { id } = router.query;
-  const { data: game, refetch } = useQuery(
-    [],
-    async () => {
-      const rs = await nftService.getGame(String(id));
-      return rs.data;
-    },
-    {
-      enabled: !!id,
-    }
-  );
+export default function GameEdit({ game }: { game: GameDto }) {
   return game ? (
     <Container maxW="container.sm">
+      <NextSeo
+        title={`Edit ${game.name} | Overmint Marketplace`}
+        description={`Edit ${game.name} | Overmint Marketplace`}
+        openGraph={{
+          images: [
+            {
+              url: game.featuredImage || game.cover,
+            },
+          ],
+        }}
+      />
       <AddGame
         key={`${game.id}-${game.updatedAt}`}
         title="Edit game"
-        onSuccess={() => {
-          refetch();
-        }}
         game={game}
         edit={true}
       />
@@ -32,4 +30,15 @@ export default function GameEdit() {
   ) : (
     <></>
   );
+}
+
+export async function getServerSideProps(
+  context: GetServerSidePropsContext
+): Promise<any> {
+  const id = context.params.id;
+  const game = (await axios.get(`${configs.API_URL}/market/api/games/${id}`))
+    .data;
+  return {
+    props: { game: game.data },
+  };
 }

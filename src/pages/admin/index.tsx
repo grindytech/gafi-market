@@ -1,5 +1,11 @@
+import { NextSeo } from "next-seo";
 import AdminPageLayout, { ADMIN_LINKS } from "../../layouts/AdminPageLayout";
 
 export default function AdminPage() {
-  return <AdminPageLayout links={ADMIN_LINKS} />;
+  return (
+    <>
+      <NextSeo title="Admin dashboard | Overmint Marketplace" />
+      <AdminPageLayout links={ADMIN_LINKS} />
+    </>
+  );
 }

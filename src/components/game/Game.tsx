@@ -5,42 +5,26 @@ import {
   IconButton,
   Link,
   SimpleGrid,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
   Text,
   useStyleConfig,
   VStack,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
-import nftService from "../../services/nft.service";
+import { GameDto } from "../../services/types/dtos/GameDto";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 import { Roles, Status } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
 import NftCollectionCard from "../collections/NftCollectionCard";
-import CustomTab from "../CustomTab";
 import ScrollSlide from "../hScroll/ScrollSlide";
 import Nfts from "../market/Nfts";
 import ProfileHeader from "../profile/ProfileHeader";
 
-export default function Game({ id }: { id: string }) {
+export default function Game({ game }: { game: GameDto }) {
   const [tab, setTab] = useQueryParam("tab", withDefault(StringParam, "nfts"));
   const { profile, isLoggedIn } = useSelector(selectProfile);
-  const { data: game, isLoading } = useQuery(
-    ["Game", id],
-    async () => {
-      const rs = await nftService.getGame(id);
-      return rs.data;
-    },
-    {
-      enabled: !!id,
-    }
-  );
 
   const TABS = [
     // {

@@ -75,7 +75,7 @@ export default function ChooseCollections({ onChange, selected }: Props) {
   }, [select, collections]);
   return (
     <VStack w="full">
-      <Box p={1}>
+      <Box w="full" p={1}>
         <SearchBox
           placeHolder="search..."
           value={search}
@@ -133,8 +133,8 @@ export default function ChooseCollections({ onChange, selected }: Props) {
                     />
 
                     <VStack spacing={0} alignItems="start">
-                      <Text>{c.name}</Text>
-                      <Text color="gray" fontSize="xs">
+                      <Text noOfLines={1}>{c.name}</Text>
+                      <Text noOfLines={1} color="gray" fontSize="xs">
                         {c.key}
                       </Text>
                     </VStack>

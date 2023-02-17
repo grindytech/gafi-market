@@ -144,11 +144,12 @@ export default function OfferListItem({
                   includeSeconds: false,
                   addSuffix: true,
                 })}
-                {" • Expires "}
-                {formatDistance(new Date(offer?.endTime || 0), Date.now(), {
-                  includeSeconds: false,
-                  addSuffix: true,
-                })}
+                {offer?.status === OfferStatus.pending && " • Expires "}
+                {offer?.status === OfferStatus.pending &&
+                  formatDistance(new Date(offer?.endTime || 0), Date.now(), {
+                    includeSeconds: false,
+                    addSuffix: true,
+                  })}
               </Text>
             </Box>
           </Skeleton>

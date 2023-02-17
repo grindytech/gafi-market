@@ -101,7 +101,7 @@ export default function AdminPageLayout({
         ) : (
           <>
             <Menu>
-              <MenuButton zIndex={99} position="fixed" top="135px" left="10px">
+              <MenuButton zIndex={99} position="fixed" top="135px" right="10px">
                 <IconButton bg={borderColor} aria-label="menu">
                   <Icon as={HamburgerIcon} />
                 </IconButton>

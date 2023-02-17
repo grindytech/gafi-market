@@ -25,6 +25,7 @@ import { AxiosResponse } from "axios";
 import linkifyStr from "linkify-string";
 import { get } from "lodash";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import Countdown from "react-countdown";
 import { FiClock, FiRefreshCw } from "react-icons/fi";
@@ -64,27 +65,7 @@ import RefreshMetadataButton from "./RefreshMetadataButton";
 import { STATS } from "./stats";
 import NftViewer from "./viewer/NftViewer";
 
-export default function Detail({ id }: { id: string }) {
-  const [errorCode, setErrorCode] = useState(0);
-  const {
-    data: nft,
-    isLoading,
-    isFetching,
-    refetch,
-    isError,
-  } = useQuery(
-    ["NftDetail", id],
-    async () => {
-      const rs = await nftService.getNft(id);
-      return rs.data;
-    },
-    {
-      enabled: !!id,
-      onError: (error: AxiosResponse) => {
-        setErrorCode(error?.status || 500);
-      },
-    }
-  );
+export default function Detail({ nft }: { nft: NftDto }) {
   const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: nft?.sale?.paymentToken,
@@ -98,115 +79,86 @@ export default function Detail({ id }: { id: string }) {
   const { borderColor } = useCustomColors();
   const md = useBreakpointValue({ base: false, md: true });
   const [loadOfferTime, setLoadOfferRime] = useState(Date.now());
-  return isLoading ? (
-    <LoadingPage />
-  ) : (
-    <>
-      {isError && errorCode === 404 && (
-        <Box w="full" py={100}>
-          <EmptyState msg="Item does not exist or has been burned" />
-        </Box>
-      )}
-      {isError && errorCode !== 404 && (
-        <Box w="full" py={100}>
-          <ErrorState>
-            <Button
-              onClick={() => {
-                refetch();
-              }}
-            >
-              Try again
-            </Button>
-          </ErrorState>
-        </Box>
-      )}
-      {nft && (
-        <Stack
-          position="relative"
-          direction={{ base: "column", md: "row" }}
-          w="full"
-          spacing={5}
-        >
-          <VStack w="full" spacing={5}>
-            <Box w="full" display="flex" justifyContent="center">
-              <Card
-                overflow="hidden"
-                boxShadow="md"
-                borderWidth={1}
-                rounded="xl"
-                p={0}
-                h="full"
-                display="flex"
-                maxW="full"
-              >
-                <Skeleton h="full" w="full" isLoaded={!isLoading}>
-                  <CardBody h="full" w="full">
-                    {nft.image ? (
-                      <NftViewer nft={nft} />
-                    ) : (
-                      <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        w="full"
-                        h="full"
-                        position="relative"
-                      >
-                        <Box
-                          position="absolute"
-                          w="full"
-                          h="full"
-                          bgImage={
-                            collectionInfo?.featuredImage ||
-                            collectionInfo?.cover
-                          }
-                          bgPosition="center center"
-                          bgSize="cover"
-                          filter="blur(30px)"
-                        ></Box>
-                        <Avatar size="2xl" src={collectionInfo?.avatar} />
-                      </Box>
-                    )}
-                  </CardBody>
-                </Skeleton>
-              </Card>
-            </Box>
-            {md && <NftDetailSection chain={chainInfo} nft={nft} />}
-            {md && <NftStatsSection nftCollection={collectionInfo} nft={nft} />}
-            {md && <NftHistorySection nft={nft} />}
-          </VStack>
-          <VStack
-            position="sticky"
-            height={{ base: "auto", md: "800px" }}
-            spacing={5}
-            pl={{ base: 0, md: 10 }}
-            w="full"
-            top="90px"
+  const route = useRouter();
+  return (
+    <Stack
+      position="relative"
+      direction={{ base: "column", md: "row" }}
+      w="full"
+      spacing={5}
+    >
+      <VStack w="full" spacing={5}>
+        <Box w="full" display="flex" justifyContent="center">
+          <Card
+            overflow="hidden"
+            boxShadow="md"
+            borderWidth={1}
+            rounded="xl"
+            p={0}
+            h="full"
+            display="flex"
+            maxW="full"
           >
-            <PriceSection
-              nftCollection={collectionInfo}
-              paymentToken={paymentInfo}
-              onMakeOffer={() => {
-                setLoadOfferRime(Date.now());
-              }}
-              isOwner={isOwner}
-              nft={nft}
-              refetch={refetch}
-            />
-            {!md && <NftDetailSection chain={chainInfo} nft={nft} />}
-            {!md && (
-              <NftStatsSection nftCollection={collectionInfo} nft={nft} />
-            )}
+            <CardBody h="full" w="full">
+              {nft.image ? (
+                <NftViewer nft={nft} />
+              ) : (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  w="full"
+                  h="full"
+                  position="relative"
+                >
+                  <Box
+                    position="absolute"
+                    w="full"
+                    h="full"
+                    bgImage={
+                      collectionInfo?.featuredImage || collectionInfo?.cover
+                    }
+                    bgPosition="center center"
+                    bgSize="cover"
+                    filter="blur(30px)"
+                  ></Box>
+                  <Avatar size="2xl" src={collectionInfo?.avatar} />
+                </Box>
+              )}
+            </CardBody>
+          </Card>
+        </Box>
+        {md && <NftDetailSection chain={chainInfo} nft={nft} />}
+        {md && <NftStatsSection nftCollection={collectionInfo} nft={nft} />}
+        {md && <NftHistorySection nft={nft} />}
+      </VStack>
+      <VStack
+        position="sticky"
+        height={{ base: "auto", md: "800px" }}
+        spacing={5}
+        pl={{ base: 0, md: 10 }}
+        w="full"
+        top="90px"
+      >
+        <PriceSection
+          nftCollection={collectionInfo}
+          paymentToken={paymentInfo}
+          onMakeOffer={() => {
+            setLoadOfferRime(Date.now());
+          }}
+          isOwner={isOwner}
+          nft={nft}
+          refetch={() => {
+            route.replace(window.location.href);
+          }}
+        />
+        {!md && <NftDetailSection chain={chainInfo} nft={nft} />}
+        {!md && <NftStatsSection nftCollection={collectionInfo} nft={nft} />}
 
-            <NftOfferSection
-              key={`NftOfferSection-${loadOfferTime}`}
-              nft={nft}
-            />
-            {!md && <NftHistorySection nft={nft} />}
-          </VStack>
-        </Stack>
-      )}
-    </>
+        <NftOfferSection key={`NftOfferSection-${loadOfferTime}`} nft={nft} />
+        {!md && <NftHistorySection nft={nft} />}
+      </VStack>
+    </Stack>
   );
 }
 const NftHistorySection = ({ nft }: { nft: NftDto }) => {
@@ -571,7 +523,6 @@ const PriceSection = ({
                     <CancelBtn
                       w="full"
                       onSuccess={async () => {
-                        await nftService.cancelSale(nft.id);
                         refetch();
                       }}
                       nft={nft}

@@ -1,32 +1,27 @@
 import {
   Box,
-  Heading,
-  Tab,
   TabList,
   TabPanel,
   TabPanels,
-  TabProps,
   Tabs,
-  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
+import { UserDto } from "../../services/types/dtos/UserDto";
 import { accountService } from "../../services/user.service";
 import { selectProfile } from "../../store/profileSlice";
 import { shorten } from "../../utils/string.util";
-import ConnectWalletButton from "../connectWalletButton/ConnectWalletButton";
 import CustomTab from "../CustomTab";
-import { EmptyState } from "../EmptyState";
 import Nfts from "../market/Nfts";
 import UserActivities from "./Activities";
 import OfferMade from "./OfferMade";
 import ProfileHeader from "./ProfileHeader";
-import SyncNfts from "./syncNfts/SyncNfts";
 
-export default function Profile({ address }: { address?: string }) {
+export default function Profile({ account }: { account?: UserDto }) {
+  const address = account?.address;
   const { user } = useSelector(selectProfile);
   const [tab, setTab] = useQueryParam("tab", withDefault(StringParam, "nfts"));
   const viewAccount = useMemo(
@@ -36,6 +31,7 @@ export default function Profile({ address }: { address?: string }) {
   const { data: viewProfile, isLoading } = useQuery(
     ["Profile", viewAccount],
     async () => {
+      if (account) return account;
       const rs = await accountService.profileByAddress(viewAccount);
       return rs.data;
     },

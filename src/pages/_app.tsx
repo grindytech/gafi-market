@@ -14,13 +14,12 @@ import { QueryParamProvider } from "use-query-params";
 import "../../node_modules/slick-carousel/slick/slick-theme.css";
 import "../../node_modules/slick-carousel/slick/slick.css";
 
-import SEO from "../components/Seo";
-import { Images } from "../images";
 import "../styles/styles.scss";
 
 import Router from "next/router";
 import NProgress from "nprogress"; //nprogress module
 import Script from "next/script";
+import { DefaultSeo } from "next-seo";
 // import "nprogress/nprogress.css"; //styles of nprogress
 //Route Events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -43,11 +42,26 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <W3Provider>
-                <Layout overflowY="auto" overflowX='hidden' w="100vw" h="100vh">
-                  <SEO
-                    image={Images.Placeholder.src}
-                    description="Marketplace"
-                    title="Marketplace"
+                <Layout overflowY="auto" overflowX="hidden" w="100vw" h="100vh">
+                  <DefaultSeo
+                    title="Overmint - Nft Marketplace"
+                    description="Overmint - Nft Marketplace"
+                    openGraph={{
+                      type: "website",
+                      locale: "en_IE",
+                      url: "https://overmint.io",
+                      siteName: "Overmint",
+                      images: [
+                        {
+                          url: "/og.png",
+                        },
+                      ],
+                    }}
+                    twitter={{
+                      handle: "@handle",
+                      site: "@site",
+                      cardType: "summary_large_image",
+                    }}
                   />
                   <Component {...pageProps} />
                   <Script

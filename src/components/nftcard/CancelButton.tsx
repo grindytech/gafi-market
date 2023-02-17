@@ -64,11 +64,11 @@ export default function CancelBtn({
         tokenId: Number(nft.tokenId),
       };
       await mpContract.cancelMessage(param, chainInfo?.mpContract, user);
-      try {
-        await nftService.cancelSale(nft.id);
-      } catch (error) {
-        console.error(error);
-      }
+      // try {
+      //   await nftService.cancelSale(nft.id);
+      // } catch (error) {
+      //   console.error(error);
+      // }
       onClose();
       onSuccess && onSuccess();
       swAlert({

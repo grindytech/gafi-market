@@ -110,6 +110,7 @@ const validationSchema = yup.object({
     }),
   website: yup.string().max(200).url(),
   status: yup.string().oneOf(Object.values(Status)),
+  verified: yup.boolean().notRequired(),
 });
 export default function AddCollection({
   collection,
@@ -148,6 +149,7 @@ export default function AddCollection({
       description: collection?.description,
       owner: collection?.owners ? collection?.owners[0] : undefined,
       status: collection?.status,
+      verified: collection?.verified,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -170,6 +172,7 @@ export default function AddCollection({
     description,
     owner,
     status,
+    verified
   }) => {
     try {
       setLoading(true);
@@ -191,6 +194,7 @@ export default function AddCollection({
         lockTransfer,
         description,
         owners: [owner],
+        verified,
       };
       if (!edit) {
         await nftService.createNftCollection(body);
@@ -436,7 +440,13 @@ export default function AddCollection({
           {errors.paymentTokens?.message?.toString()}
         </FormErrorMessage>
       </FormControl>
-
+      <FormControl isInvalid={!!errors.verified}>
+        <FormLabel>Verified</FormLabel>
+        <Checkbox checked={collection?.verified} {...register("verified")} />
+        <FormErrorMessage>
+          {errors.verified?.message?.toString()}
+        </FormErrorMessage>
+      </FormControl>
       <FormControl isInvalid={!!errors.autoDetect}>
         <FormLabel>Auto detect</FormLabel>
         <Checkbox

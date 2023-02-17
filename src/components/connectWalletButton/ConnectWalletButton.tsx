@@ -1,19 +1,21 @@
 import {
-  Button,
   ButtonProps,
+  HStack,
   Icon,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  StackProps,
+  Text,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
 import { useConnectWallet, Wallet } from "../../connectWallet/useWallet";
+import { ERROR_CODE } from "../../constants";
 import { Icons } from "../../images";
 import PrimaryButton from "../PrimaryButton";
 import RequireWalletPopup from "../requireWalletPopup/RequireWalletPopup";
@@ -31,44 +33,48 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
       <PrimaryButton onClick={onOpen} {...rest}>
         Connect to wallet
       </PrimaryButton>
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
+      <Modal
+        size="sm"
+        isOpen={isOpen}
+        onClose={onClose}
+        closeOnOverlayClick={false}
+      >
         <ModalOverlay />
         <ModalContent mx={3} textAlign="center">
           <ModalHeader>Connect wallet</ModalHeader>
           <ModalCloseButton />
           <ModalBody py="5">
-            <VStack>
-              <Button
-                variant="outline"
+            <HStack w="full" justifyContent="center">
+              <ConnectButton
                 onClick={async () => {
                   onClose();
-                  await connect(Wallet.METAMASK);
+                  try {
+                    await connect(Wallet.METAMASK);
+                  } catch (error) {
+                    console.log(error);
+                    if (error.code === ERROR_CODE.WEB3_PROVIDER_NOTFOUND) {
+                      onOpenRequireWallet();
+                    }
+                  }
                 }}
-                w="full"
-                leftIcon={
-                  <Icon w="32px" h="32px">
-                    <Icons.Metamask />
-                  </Icon>
-                }
               >
-                Metamask
-              </Button>
-              <Button
-                variant="outline"
+                <Icon w="62px" h="62px">
+                  <Icons.Metamask />
+                </Icon>
+                <Text fontWeight="semibold">Metamask</Text>
+              </ConnectButton>
+              <ConnectButton
                 onClick={async () => {
                   onClose();
                   await connect(Wallet.WALLET_CONNECT);
                 }}
-                w="full"
-                leftIcon={
-                  <Icon w="32px" h="32px">
-                    <Icons.Walletconnect />
-                  </Icon>
-                }
               >
-                Walletconnect
-              </Button>
-            </VStack>
+                <Icon w="62px" h="62px">
+                  <Icons.Walletconnect />
+                </Icon>
+                <Text fontWeight="semibold">Walletconnect</Text>
+              </ConnectButton>
+            </HStack>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -77,6 +83,23 @@ const ConnectWalletButton: React.FC<ButtonProps> = (props) => {
         onClose={onCloseRequireWallet}
       />
     </>
+  );
+};
+
+const ConnectButton = ({ children, ...rest }: StackProps) => {
+  return (
+    <VStack
+      {...rest}
+      transition="all ease 0.5s"
+      w="full"
+      p={3}
+      cursor="pointer"
+      _hover={{
+        boxShadow: "md",
+      }}
+    >
+      {children}
+    </VStack>
   );
 };
 

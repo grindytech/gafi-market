@@ -17,4 +17,5 @@ export class AddCollectionDto {
   description?: string;
   owners?: string[];
   status: Status;
+  verified?: boolean;
 }

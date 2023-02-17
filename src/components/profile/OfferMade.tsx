@@ -185,12 +185,14 @@ function OfferListItem({
       <Td>
         <Skeleton w="full" isLoaded={!loading}>
           <HStack w="full">
-            <ImageWithFallback
-              src={getNftImageLink(offer?.nft?.id, 100)}
-              rounded="md"
-              w={14}
-              h={14}
-            />
+            <Box w={14} h={14}>
+              <ImageWithFallback
+                src={getNftImageLink(offer?.nft?.id, 100)}
+                rounded="md"
+                w={14}
+                h={14}
+              />
+            </Box>
             <VStack
               overflow="hidden"
               minW={200}

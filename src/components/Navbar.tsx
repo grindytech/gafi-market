@@ -3,7 +3,7 @@ import {
   ChevronRightIcon,
   CloseIcon,
   CopyIcon,
-  HamburgerIcon
+  HamburgerIcon,
 } from "@chakra-ui/icons";
 import {
   Box,
@@ -34,7 +34,7 @@ import {
   Stack,
   Text,
   useBreakpointValue,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";

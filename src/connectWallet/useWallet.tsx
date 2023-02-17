@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import Web3 from "web3";
 import { AbstractProvider } from "web3-core";
+import { ERROR_CODE } from "../constants";
 import { web3Inject } from "../contracts";
 import { chainName, chainStringId } from "./connectors";
 import { getWalletConnectProvider } from "./WalletConnectProvider";
@@ -118,8 +119,18 @@ function useWallet({
   const connect = useCallback(
     async (walletType: string, requestConnect = true) => {
       try {
+        if (wallet === Wallet.WALLET_CONNECT) {
+          try {
+            await(ethereum as any as WalletConnectProvider).disconnect();
+          } catch (error) {}
+        }
         const provider = await getProvider(walletType as Wallet);
-        if (!provider) return;
+        if (!provider) {
+          throw {
+            message: "Provider notfound",
+            code: ERROR_CODE.WEB3_PROVIDER_NOTFOUND,
+          };
+        }
         const web3 = new Web3(provider);
         setWeb3Injected(web3);
         let user = "";
@@ -129,7 +140,9 @@ function useWallet({
           if (walletType === Wallet.WALLET_CONNECT) {
             try {
               accounts = await (provider as WalletConnectProvider).enable();
-            } catch (error) {}
+            } catch (error) {
+              console.log(error);
+            }
           } else {
             accounts = await web3.eth.requestAccounts();
           }
@@ -148,6 +161,7 @@ function useWallet({
         user && onConnect && (await onConnect(account, web3));
       } catch (error) {
         console.error(error);
+        throw error;
       } finally {
         setWaitToConnect(false);
       }

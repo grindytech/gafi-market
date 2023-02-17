@@ -30,20 +30,25 @@ import NextLink from "next/link";
 import { useGetCollectionStatistic } from "../../hooks/useGetSystemInfo";
 import { useMemo } from "react";
 import numeral from "numeral";
+import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
 
-export default function Collection({ id }: { id: string }) {
+export default function Collection({
+  collection,
+}: {
+  collection: NftCollectionDto;
+}) {
   const [tab, setTab] = useQueryParam("tab", withDefault(StringParam, "nfts"));
   const { profile, isLoggedIn } = useSelector(selectProfile);
-  const { data: collection, isLoading } = useQuery(
-    ["Collection", id],
-    async () => {
-      const rs = await nftService.getNftCollection(id);
-      return rs.data;
-    },
-    {
-      enabled: !!id,
-    }
-  );
+  // const { data: collection, isLoading } = useQuery(
+  //   ["Collection", id],
+  //   async () => {
+  //     const rs = await nftService.getNftCollection(id);
+  //     return rs.data;
+  //   },
+  //   {
+  //     enabled: !!id,
+  //   }
+  // );
 
   const TABS = [
     {
