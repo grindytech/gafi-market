@@ -462,7 +462,7 @@ const PriceSection = ({
           <ShareButton
             aria-label="share button"
             title={`${nftCollection?.name} | ${nft?.name}`}
-            link={window.location.href}
+            link={typeof window !== "undefined" ? window?.location.href : "#"}
           />
           <RefreshMetadataButton nftId={nft.id}>
             <Tooltip label="Refresh metadata">

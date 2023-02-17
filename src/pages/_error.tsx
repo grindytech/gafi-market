@@ -18,7 +18,11 @@ function Error({ statusCode, statusMessage }) {
         {statusMessage}
       </Text>
       <Text color={"gray.500"} mb={6}>
-        Please <Link href={window.location.href}>try again</Link>!
+        Please{" "}
+        <Link href={typeof window !== "undefined" ? window.location.href : ""}>
+          try again
+        </Link>
+        !
       </Text>
     </Box>
   );

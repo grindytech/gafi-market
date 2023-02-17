@@ -172,7 +172,7 @@ export default function AddCollection({
     description,
     owner,
     status,
-    verified
+    verified,
   }) => {
     try {
       setLoading(true);
@@ -324,7 +324,8 @@ export default function AddCollection({
           <InputLeftElement ref={shortLinkLeftRef} w="fit-content">
             <Text>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              {`${window.location.protocol}//${window.location.host}/collection/`}
+              {typeof window !== "undefined" &&
+                `${window.location.protocol}//${window.location.host}/collection/`}
             </Text>
           </InputLeftElement>
           <Input

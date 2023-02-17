@@ -276,7 +276,7 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
             <InputLeftElement ref={shortLinkLeftRef} w="fit-content">
               <Text>
                 &nbsp;&nbsp;&nbsp;&nbsp;
-                {`${window.location.protocol}//${window.location.host}/game/`}
+                {`${window?.location.protocol}//${window?.location.host}/game/`}
               </Text>
             </InputLeftElement>
             <Input

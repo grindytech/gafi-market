@@ -88,7 +88,9 @@ export default function ProfileHeader({
                   size="sm"
                   aria-label="share"
                   title={name}
-                  link={window.location.href}
+                  link={
+                    typeof window !== "undefined" ? window.location.href : ""
+                  }
                 />
               </HStack>
             </HStack>
