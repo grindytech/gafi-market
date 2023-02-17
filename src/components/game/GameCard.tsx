@@ -20,9 +20,11 @@ import Skeleton from "../Skeleton";
 export default function GameCard({
   game,
   isLoading,
+  top,
 }: {
   game?: GameDto;
   isLoading?: boolean;
+  top?: number;
 }) {
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
