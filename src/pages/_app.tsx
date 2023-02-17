@@ -16,10 +16,10 @@ import "../../node_modules/slick-carousel/slick/slick.css";
 
 import "../styles/styles.scss";
 
-import Router from "next/router";
-import NProgress from "nprogress"; //nprogress module
-import Script from "next/script";
 import { DefaultSeo } from "next-seo";
+import Router from "next/router";
+import Script from "next/script";
+import NProgress from "nprogress"; //nprogress module
 // import "nprogress/nprogress.css"; //styles of nprogress
 //Route Events.
 Router.events.on("routeChangeStart", () => NProgress.start());
@@ -34,13 +34,24 @@ const queryClient = new QueryClient({
     },
   },
 });
+const DataPersistGate = ({ children }) => {
+  return typeof window !== "undefined" ? (
+    <>
+      <PersistGate loading={null} persistor={persistor}>
+        {children}
+      </PersistGate>
+    </>
+  ) : (
+    <>{children}</>
+  );
+};
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={theme}>
         <QueryParamProvider adapter={NextAdapter}>
           <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
+            <DataPersistGate>
               <W3Provider>
                 <Layout overflowY="auto" overflowX="hidden" w="100vw" h="100vh">
                   <DefaultSeo
@@ -72,7 +83,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   />
                 </Layout>
               </W3Provider>
-            </PersistGate>
+            </DataPersistGate>
           </Provider>
         </QueryParamProvider>
       </ChakraProvider>
