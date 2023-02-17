@@ -38,28 +38,27 @@ export default function NftCollectionCard({
 }) {
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
-  const { borderColor } = useCustomColors();
   const { chainInfo } = useGetChainInfo({
     chainId: Array.isArray(collection?.chain)
       ? collection?.chain[0]
       : collection?.chain,
   });
+  const { cardBg } = useCustomColors();
   return (
     <Box w="full" h="full">
       <Card
+        borderColor={cardBg}
+        bg={cardBg}
         h="full"
         w="full"
-        p={1}
         __css={cardStyles}
-        border="1px solid"
-        borderColor={borderColor}
+        p={0}
       >
         <CardBody w="full">
-          <VStack spacing={0} pb={1} w="full">
+          <VStack spacing={0} w="full">
             <Box
               pos={"relative"}
               overflow="hidden"
-              rounded="xl"
               w="full"
               paddingTop="75%"
               maxW="full"
@@ -88,9 +87,7 @@ export default function NftCollectionCard({
               </Skeleton>
             </Box>
             <HStack
-              pt={3}
-              pb={1}
-              px={1}
+              p={2}
               justifyContent="space-between"
               position="relative"
               w="full"
@@ -113,19 +110,23 @@ export default function NftCollectionCard({
                     )}
                   </HStack>
                 </Skeleton>
-                <HStack spacing={1} fontSize="xs" fontWeight="500">
+                <HStack fontSize="sm" fontWeight="500">
                   {/* <Text>{collection?.key} </Text> */}
                   {vol && (
-                    <>
-                      <Text color="gray.400">Vol:</Text>
+                    <HStack spacing={1}>
+                      <Text fontWeight="semibold" color="gray.400">
+                        Vol:
+                      </Text>
                       <Text color="gray.400">${numeralFormat(vol)}</Text>
-                    </>
+                    </HStack>
                   )}
                   {floor && (
-                    <>
-                      <Text color="gray.400">Floor:</Text>
+                    <HStack spacing={1}>
+                      <Text fontWeight="semibold" color="gray.400">
+                        Floor:
+                      </Text>
                       <Text color="gray.400">${numeralFormat(floor)}</Text>
-                    </>
+                    </HStack>
                   )}
                 </HStack>
               </VStack>

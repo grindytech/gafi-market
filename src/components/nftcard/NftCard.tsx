@@ -58,7 +58,7 @@ export default function NftCard({
         opacity={disabled ? 0.5 : 1}
         p={0}
         __css={cardStyles}
-        borderColor={useColorModeValue("gray.50", "gray.800")}
+        borderColor={bgColor}
         bg={bgColor}
         {...rest}
         rounded="xl"

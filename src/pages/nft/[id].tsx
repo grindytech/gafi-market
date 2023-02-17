@@ -17,7 +17,7 @@ export default function NftDetail({ nft }: { nft: NftDto }) {
         openGraph={{
           images: [
             {
-              url: getNftImageLink(nft.image, 800),
+              url: getNftImageLink(nft.id, 800),
             },
           ],
         }}

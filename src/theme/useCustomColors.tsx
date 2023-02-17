@@ -13,8 +13,9 @@ export default function useCustomColors() {
   const swalText = useColorModeValue("#000", "#fff");
   const bgColor = useColorModeValue("gray.50", "gray.900");
   const textColor = useColorModeValue("gray.900", "gray.50");
-
+  const cardBg = useColorModeValue("white", "gray.800");
   return {
+    cardBg,
     bgColor,
     textColor,
     swalBg,

@@ -96,7 +96,7 @@ function Blog({
   image?: string;
   isLoading?: boolean;
 }) {
-  const { borderColor } = useCustomColors();
+  const { cardBg } = useCustomColors();
 
   return (
     <Card
@@ -108,7 +108,8 @@ function Blog({
       rounded="xl"
       boxShadow="sm"
       border="1px solid"
-      borderColor={borderColor}
+      borderColor={cardBg}
+      bg={cardBg}
     >
       <CardBody p={0} m={0}>
         <VStack w="full" p={3}>

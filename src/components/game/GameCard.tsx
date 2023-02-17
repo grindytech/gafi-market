@@ -26,23 +26,23 @@ export default function GameCard({
 }) {
   const cardStyles = useStyleConfig("NFTCard");
   const imageStyles = useStyleConfig("NFTCardImage");
-  const { borderColor } = useCustomColors();
+  const { cardBg } = useCustomColors();
+
   return (
     <Box w="full" h="full">
       <Card
         h="full"
         w="full"
-        p={1}
+        p={0}
         __css={cardStyles}
-        border="1px solid"
-        borderColor={borderColor}
+        borderColor={cardBg}
+        bg={cardBg}
       >
         <CardBody w="full">
           <VStack spacing={0} pb={1} w="full">
             <Box
               pos={"relative"}
               overflow="hidden"
-              rounded="xl"
               w="full"
               paddingTop="75%"
               maxW="full"
@@ -75,9 +75,7 @@ export default function GameCard({
               </Skeleton>
             </Box>
             <HStack
-              pt={3}
-              pb={1}
-              px={1}
+              p={2}
               justifyContent="space-between"
               position="relative"
               w="full"

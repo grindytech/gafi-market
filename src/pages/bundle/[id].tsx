@@ -15,7 +15,7 @@ export default function BundleDetailPage({ bundle }: { bundle: BundleDto }) {
         description={`Bundle ${bundle.name} | Overmint Marketplace`}
         openGraph={{
           images: bundle.items.map((nft) => ({
-            url: getNftImageLink(nft.image, 800),
+            url: getNftImageLink(nft.id, 800),
           })),
         }}
       />
