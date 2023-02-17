@@ -2,11 +2,10 @@ import { Box } from "@chakra-ui/react";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { NextSeo } from "next-seo";
-import { useRouter } from "next/router";
 import Detail from "../../components/nft/Detail";
 import configs from "../../configs";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
-import { getNftImageLink } from "../../utils/utils";
+import { convertIpfsLink } from "../../utils/utils";
 
 export default function NftDetail({ nft }: { nft: NftDto }) {
   return (
@@ -17,7 +16,7 @@ export default function NftDetail({ nft }: { nft: NftDto }) {
         openGraph={{
           images: [
             {
-              url: getNftImageLink(nft.id, 800),
+              url: convertIpfsLink(nft.image),
             },
           ],
         }}
