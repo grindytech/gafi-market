@@ -110,6 +110,7 @@ export default function Detail({ nft }: { nft: NftDto }) {
                   w="full"
                   h="full"
                   position="relative"
+                  minH={300}
                 >
                   <Box
                     position="absolute"

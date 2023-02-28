@@ -256,4 +256,4 @@ export const getNftAnimationLink = (id: string) =>
 
 const ipfsGateway = "https://cf-ipfs.com/ipfs/";
 export const convertIpfsLink = (link: string) =>
-  link.replace("ipfs://", ipfsGateway);
+  link?.replace("ipfs://", ipfsGateway);
