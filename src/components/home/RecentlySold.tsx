@@ -16,35 +16,38 @@ export default function RecentlySold() {
     return rs.data;
   });
   return (
-    <VStack w="full">
-      <HStack
-        mb={3}
-        w="full"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Heading w="full" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }}>
-          <HStack justifyContent="space-between" w="full">
-            <HStack alignItems="center">
-              <>Recently Sold&nbsp;</>
+    data?.items &&
+    data?.items.length > 0 && (
+      <VStack w="full">
+        <HStack
+          mb={3}
+          w="full"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Heading w="full" fontSize={{ base: "2xl", md: "3xl", lg: "4xl" }}>
+            <HStack justifyContent="space-between" w="full">
+              <HStack alignItems="center">
+                <>Recently Sold&nbsp;</>
+              </HStack>
             </HStack>
-          </HStack>
-        </Heading>
-      </HStack>
-      <Box w="full" position="relative">
-        <ScrollSlide>
-          {data?.items.map((item, k) => (
-            <Link
-              key={`nft-sold-${item.id}`}
-              href={`/nft/${item.nftContract}:${item.tokenId}`}
-            >
-              <Box w={250} pr={3} pb={5}>
-                <NftCardRecentlySold history={item} />
-              </Box>
-            </Link>
-          ))}
-        </ScrollSlide>
-      </Box>
-    </VStack>
+          </Heading>
+        </HStack>
+        <Box w="full" position="relative">
+          <ScrollSlide>
+            {data?.items.map((item, k) => (
+              <Link
+                key={`nft-sold-${item.id}`}
+                href={`/nft/${item.nftContract}:${item.tokenId}`}
+              >
+                <Box w={250} pr={3} pb={5}>
+                  <NftCardRecentlySold history={item} />
+                </Box>
+              </Link>
+            ))}
+          </ScrollSlide>
+        </Box>
+      </VStack>
+    )
   );
 }
