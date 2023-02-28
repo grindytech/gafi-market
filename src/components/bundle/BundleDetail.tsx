@@ -163,11 +163,13 @@ export default function BundleDetail({ bundle }: { bundle: BundleDto }) {
               </Text>
             </NextLink>
             <HStack>
-              <ShareButton
-                aria-label="share button"
-                title={bundleName}
-                link={window?.location.href}
-              />
+              {typeof window !== "undefined" && (
+                <ShareButton
+                  aria-label="share button"
+                  title={bundleName}
+                  link={window?.location.href}
+                />
+              )}
             </HStack>
           </HStack>
           <Heading>{bundleName}</Heading>

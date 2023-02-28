@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import mpContract from "../../../contracts/marketplace.contract";
-import { useGetPaymentTokenInfo } from "../../../hooks/useGetSystemInfo";
+import { useGetChainInfo, useGetPaymentTokenInfo } from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
 import nftService from "../../../services/nft.service";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
@@ -44,6 +44,7 @@ export default function CancelOfferButton({
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(selectProfile);
   const { swAlert } = useSwal();
+  const { chainInfo} = useGetChainInfo({chainId: offer?.chain})
   const cancelSale = async () => {
     try {
       setLoading(true);
@@ -124,8 +125,8 @@ export default function CancelOfferButton({
                 Close
               </Button>
               <SwitchNetworkButton
-                symbol={offer.chain?.symbol}
-                name={offer.chain?.name}
+                symbol={chainInfo?.symbol}
+                name={chainInfo?.name}
               >
                 <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
                   Confirm

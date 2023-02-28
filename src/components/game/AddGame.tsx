@@ -273,12 +273,14 @@ export default function AddGame({ game, title, edit, onSuccess }: Props) {
         <FormControl isRequired isInvalid={!!errors.alias}>
           <FormLabel>Short link</FormLabel>
           <InputGroup>
-            <InputLeftElement ref={shortLinkLeftRef} w="fit-content">
-              <Text>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                {`${window?.location.protocol}//${window?.location.host}/game/`}
-              </Text>
-            </InputLeftElement>
+            {typeof window !== "undefined" && (
+              <InputLeftElement ref={shortLinkLeftRef} w="fit-content">
+                <Text>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  {`${window?.location.protocol}//${window?.location.host}/game/`}
+                </Text>
+              </InputLeftElement>
+            )}
             <Input
               pl={`${shortLinkLeftRef.current?.offsetWidth + 2 || 100}px`}
               {...register("alias")}
