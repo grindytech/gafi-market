@@ -53,7 +53,7 @@ export default function NftCardRecentlySold({
     enabled: true,
     paymentSymbol: paymentInfo?.symbol,
   });
-  const mask = get(MASKS, collectionInfo?.key);
+  const mask = MASKS(collectionInfo?.nftContract.toLowerCase());
   const { borderColor } = useCustomColors();
   const isVideo = history?.nft?.animationPlayType?.includes("video");
 

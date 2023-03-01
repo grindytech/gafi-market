@@ -126,7 +126,7 @@ export default function BuyBundle({
       setLoading(false);
     }
   };
-  const mask = get(MASKS, collectionInfo?.key);
+  const mask = MASKS(collectionInfo?.nftContract.toLowerCase());
   const { bgColor } = useCustomColors();
   return (
     <>

@@ -66,7 +66,7 @@ export default function BundleDetail({ bundle }: { bundle: BundleDto }) {
   );
   const md = useBreakpointValue({ base: false, md: true });
   const { bgColor, borderColor } = useCustomColors();
-  const mask = get(MASKS, collectionInfo?.key);
+  const mask = MASKS(collectionInfo?.nftContract.toLowerCase());
   const bundleName = bundle?.name || `${collectionInfo?.name} bundle`;
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     paymentSymbol: paymentInfo?.symbol,

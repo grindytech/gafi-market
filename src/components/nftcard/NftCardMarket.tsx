@@ -84,7 +84,7 @@ export default function NftCardMarket({
     [items, nft]
   );
 
-  const mask = get(MASKS, collectionInfo?.key);
+  const mask = MASKS(collectionInfo?.nftContract.toLowerCase());
   const isVideo = nft?.animationPlayType?.includes("video");
 
   return (

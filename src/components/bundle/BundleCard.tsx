@@ -48,7 +48,7 @@ export default function BundleCard({ bundle }: { bundle: BundleDto }) {
     paymentId: bundle.paymentToken,
   });
   const cardStyles = useStyleConfig("NFTCard");
-  const mask = get(MASKS, collectionInfo?.key);
+  const mask = MASKS(collectionInfo?.nftContract.toLowerCase());
   const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
     enabled: !!bundle.price,
     paymentSymbol: paymentInfo?.symbol,
