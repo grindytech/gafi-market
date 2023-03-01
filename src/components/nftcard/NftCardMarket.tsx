@@ -226,7 +226,7 @@ export default function NftCardMarket({
               >
                 <VStack spacing={0} alignItems="start">
                   <Text noOfLines={1} fontSize="md" fontWeight="semibold">
-                    {nft?.name || <>&nbsp;</>}
+                    {nft?.name || collectionInfo?.name || <>&nbsp;</>}
                   </Text>
                   <Text
                     noOfLines={1}

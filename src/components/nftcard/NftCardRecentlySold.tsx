@@ -100,7 +100,7 @@ export default function NftCardRecentlySold({
             >
               <HStack w="full" justifyContent="space-between">
                 <Text noOfLines={1} fontSize="md" fontWeight="semibold">
-                  {history?.name || <>&nbsp;</>}
+                  {history?.name || collectionInfo?.name || <>&nbsp;</>}
                 </Text>
                 <Tooltip label={chainInfo?.name}>
                   <Icon blur="xl" w={5} h={5}>

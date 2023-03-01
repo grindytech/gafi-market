@@ -8,4 +8,6 @@ export class ChainDto extends BaseDocumentDto {
   explore: string;
   mpContract: string;
   bundleContract: string;
+  redeemHeroContract: string;
+  redeemGearContract: string;
 }

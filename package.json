@@ -4,7 +4,9 @@
     "dev": "next",
     "build": "next build",
     "build-static": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "dev:mainnet": "REACT_APP_ENV=mainnet next",
+    "build:mainnet": "REACT_APP_ENV=mainnet next build"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",

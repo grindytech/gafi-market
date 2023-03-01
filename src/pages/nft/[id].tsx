@@ -2,18 +2,18 @@ import { Box } from "@chakra-ui/react";
 import axios from "axios";
 import { GetServerSidePropsContext } from "next";
 import { NextSeo } from "next-seo";
-import { useRouter } from "next/router";
 import Detail from "../../components/nft/Detail";
 import configs from "../../configs";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { getNftImageLink } from "../../utils/utils";
 
 export default function NftDetail({ nft }: { nft: NftDto }) {
+  const nftName = nft?.name || "#" + nft?.tokenId;
   return (
     <Box id="main" w="full">
       <NextSeo
-        title={`${nft.name} | Overmint Marketplace`}
-        description={`${nft.name} | Overmint Marketplace`}
+        title={`${nftName} | Overmint Marketplace`}
+        description={`${nftName} | Overmint Marketplace`}
         openGraph={{
           images: [
             {

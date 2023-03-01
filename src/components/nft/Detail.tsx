@@ -50,6 +50,7 @@ import { convertIpfsLink, getUserName, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
 import { EmptyState, ErrorState } from "../EmptyState";
+import RedeemButton from "../he/RedeemButton";
 import LoadingPage from "../LoadingPage";
 import { AddToCartButton } from "../nftcard/AddToCartButton";
 import BuyButton from "../nftcard/BuyButton";
@@ -549,6 +550,16 @@ const PriceSection = ({
                       Put on sale
                     </SaleButton>
                   )}
+                  <RedeemButton
+                    w="full"
+                    onSuccess={() => {
+                      refetch();
+                    }}
+                    nft={nft}
+                    as={Button}
+                  >
+                    Redeem
+                  </RedeemButton>
                 </>
               )}
               {!isOwner && (
