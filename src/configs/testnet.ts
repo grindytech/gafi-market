@@ -15,7 +15,7 @@ const configs: Configs = {
     },
     DOS: {
       chainId: Web3.utils.numberToHex(1311),
-      rpcUrls: ["https://test.doschain.com/jsonrpc"],
+      rpcUrls: ["https://test.doschain.com"],
       chainName: "DOS",
       blockExplorerUrls: ["https://test-explorer.doschain.com/"],
       nativeCurrency: {
