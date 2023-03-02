@@ -24,7 +24,6 @@ import {
 } from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
 import { useTokenUSDPrice } from "../../../hooks/useTokenUSDPrice";
-import { Images } from "../../../images";
 import { NftDto } from "../../../services/types/dtos/Nft.dto";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
 import { selectProfile } from "../../../store/profileSlice";
@@ -63,8 +62,7 @@ export default function AcceptOfferButton({
       await erc721Contract.approveForAll(
         nft.nftContract,
         user,
-        chainInfo?.mpContract,
-        chainInfo.symbol
+        chainInfo?.mpContract
       );
       const approvePrice = convertToContractValue({
         amount: offer.offerPrice,

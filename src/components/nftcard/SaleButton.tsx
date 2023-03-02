@@ -90,8 +90,7 @@ export default function SaleButton({
       await erc721Contract.approveForAll(
         nft.nftContract,
         user,
-        chainInfo?.mpContract,
-        chainInfo.symbol
+        chainInfo?.mpContract
       );
       // const priceContractValue = convertToContractValue({
       //   amount: Number(price),

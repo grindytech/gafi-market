@@ -1,11 +1,8 @@
 import {
   Box,
   BoxProps,
-  Button,
-  ButtonProps,
   Heading,
   HStack,
-  Image,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,17 +17,14 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Countdown from "react-countdown";
 import { useSelector } from "react-redux";
-import configs from "../../configs";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
 import {
   useGetChainInfo,
-  useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
-import { Images } from "../../images";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectProfile } from "../../store/profileSlice";
 import { convertToContractValue, getNftImageLink } from "../../utils/utils";
@@ -75,8 +69,7 @@ export default function BuyButton({
       const allowance = await erc20Contract.getAllowance(
         paymentInfo?.contractAddress,
         chainInfo?.mpContract,
-        user,
-        chainInfo.symbol
+        user
       );
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(

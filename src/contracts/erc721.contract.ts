@@ -4,19 +4,16 @@ import { web3Inject } from ".";
 import configs from "../configs";
 import { default as erc721ContractAbi } from "./abi/erc721.abi.json";
 
-const erc721 = (address: string, provider: any) => {
-  const web3 = new Web3(provider);
+const erc721 = (address: string, web3 = web3Inject) => {
   return new web3.eth.Contract(erc721ContractAbi as AbiItem[], address);
 };
 
 const isApproveForAll = async (
   nftContractAddress: string,
   user: string,
-  marketplaceAddress: string,
-  chainSymbol: string
+  marketplaceAddress: string
 ) => {
-  const provider = configs.NETWORKS[chainSymbol].rpcUrls[0];
-  const isApprovedForAll = await erc721(nftContractAddress, provider)
+  const isApprovedForAll = await erc721(nftContractAddress)
     .methods.isApprovedForAll(user, marketplaceAddress)
     .call();
   return isApprovedForAll;
@@ -24,17 +21,15 @@ const isApproveForAll = async (
 const approveForAll = async (
   nftContractAddress: string,
   user: string,
-  marketplaceAddress: string,
-  chainSymbol: string
+  marketplaceAddress: string
 ) => {
   const approved = await isApproveForAll(
     nftContractAddress,
     user,
-    marketplaceAddress,
-    chainSymbol
+    marketplaceAddress
   );
   if (!approved)
-    await erc721(nftContractAddress, web3Inject)
+    await erc721(nftContractAddress)
       .methods.setApprovalForAll(marketplaceAddress, true)
       .send({ from: user });
 };

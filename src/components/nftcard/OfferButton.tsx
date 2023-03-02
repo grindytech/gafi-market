@@ -113,8 +113,7 @@ export default function OfferButton({
       const allowance = await erc20Contract.getAllowance(
         paymentToken.contractAddress,
         chain?.mpContract,
-        user,
-        chain.symbol
+        user
       );
       if (Number(allowance) < Number(priceContractValue)) {
         await erc20Contract.approve(

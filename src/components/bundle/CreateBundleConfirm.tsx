@@ -94,8 +94,7 @@ export default function CreateBundleConfirm({
       await erc721Contract.approveForAll(
         nftCollection.nftContract,
         user,
-        chain.bundleContract,
-        chain.symbol
+        chain.bundleContract
       );
       const priceContractValue = convertToContractValue({
         amount: Number(price),

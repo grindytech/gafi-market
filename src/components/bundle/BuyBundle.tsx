@@ -78,8 +78,7 @@ export default function BuyBundle({
       const allowance = await erc20Contract.getAllowance(
         paymentInfo?.contractAddress,
         chainInfo?.bundleContract,
-        user,
-        chainInfo.symbol
+        user
       );
       if (Number(allowance) < Number(approvePrice)) {
         await erc20Contract.approve(
