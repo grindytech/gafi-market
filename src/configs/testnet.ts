@@ -28,7 +28,7 @@ const configs: Configs = {
   API_URL: "https://test-v1.overmint.io",
   DOS_SYMBOL: "DOS",
   DOS_FORWARDER_CONTRACT: "0x337c38208357D61Ce83E613F1E561fA67741E3cF",
-  DOS_GAS_LESS_URL: "ws://13.214.143.14:8999/",
-  ASSETS_SERVICE: "https://test-v1-assets.overmint.io",
+  DOS_GAS_LESS_URL: "wss://test-gasless.doschain.com",
+  ASSETS_SERVICE: "http://115.79.142.60:8087",
 };
 export default configs;

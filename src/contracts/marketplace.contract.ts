@@ -17,14 +17,14 @@ const marketplaceContract = (address: string, provider: any) => {
 };
 
 const getMPContract = (address: string) => {
-  let currentProvider = new ethers.BrowserProvider(
+  let currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
   return new ethers.Contract(address, mpContractAbi, currentProvider);
 };
 
 const getForwarderContract = (address: string) => {
-  let currentProvider = new ethers.BrowserProvider(
+  let currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
   return new ethers.Contract(address, forwarderAbi, currentProvider);
@@ -74,7 +74,7 @@ const cancelMessageDOS = async (
   mpContractAddress: string,
   user: string
 ): Promise<any> => {
-  let currentProvider = new ethers.BrowserProvider(
+  let currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
   const mpContract = getMPContract(mpContractAddress);
@@ -98,7 +98,7 @@ const cancelMessageDOS = async (
     data,
   });
   const apiCall = {
-    event: "gas-less-tx",
+    event: "gasless",
     data: result,
   };
   await wsCall(configs.DOS_GAS_LESS_URL, apiCall);
@@ -164,7 +164,8 @@ const matchTransactionDOS = async (
   user: string,
   mpContractAddress: string
 ) => {
-  let currentProvider = new ethers.BrowserProvider(
+  debugger;
+  let currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
   const mpContract = getMPContract(mpContractAddress);
@@ -178,11 +179,11 @@ const matchTransactionDOS = async (
   ]);
   const result = await signMetaTxRequest(currentProvider, forwarderContract, {
     to: mpContractAddress,
-    user,
+    from: user,
     data,
   });
   const apiCall = {
-    event: "gas-less-tx",
+    event: "gasless",
     data: result,
   };
   await wsCall(configs.DOS_GAS_LESS_URL, apiCall);
@@ -219,7 +220,7 @@ const matchBagDOS = async (
   mpContractAddress: string,
   paymentToken: PaymentToken
 ) => {
-  const currentProvider = new ethers.BrowserProvider(
+  const currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
   const mpContract = getMPContract(mpContractAddress);
@@ -244,7 +245,7 @@ const matchBagDOS = async (
     data,
   });
   const apiCall = {
-    event: "gas-less-tx",
+    event: "gasless",
     data: result,
   };
   await wsCall(configs.DOS_GAS_LESS_URL, apiCall);
@@ -276,7 +277,7 @@ const matchOfferDOS = async (
   user: string,
   mpContractAddress: string
 ) => {
-  const currentProvider = new ethers.BrowserProvider(
+  const currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
   const mpContract = getMPContract(mpContractAddress);
@@ -295,7 +296,7 @@ const matchOfferDOS = async (
     data,
   });
   const apiCall = {
-    event: "gas-less-tx",
+    event: "gasless",
     data: result,
   };
   await wsCall(configs.DOS_GAS_LESS_URL, apiCall);

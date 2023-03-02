@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { encodeBase64 } from "ethers";
 import { customAlphabet } from "nanoid";
 import numeral from "numeral";
 import configs from "../configs";
@@ -237,10 +236,10 @@ export const wsCall = (wsUrl: string, dataSend: Object) =>
     ws.onmessage = function (event) {
       ws.close();
       const data = JSON.parse(event.data);
-      if (data.success == undefined) {
-        reject(data);
+      if (!data?.response?.success) {
+        reject(data?.response);
       } else {
-        resolve(data);
+        resolve(data?.response);
       }
     };
     ws.onerror = (ev) => {
