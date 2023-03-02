@@ -41,6 +41,10 @@ const configs = {
     "0x08473a63b0f0cbabbdd3c846806531ec2c3c7371",
     "0x280da039b15e7ff9c2e2624c85e8376a1c46c184",
   ],
+  HE_SKIN_CONTRACTS: [
+    "0x909ec2fc55f8574b845005724d3f56375a329438",
+    "0x2e18e0c4010e213db4ce05afc5fab3506c922b7f",
+  ],
   HE_HERO_CHEST_CONTRACTS: [
     "0xe1f8ed3ff5690d1cfe3abcac1626f7ccb7c87c7c",
     "0x7a953f8189567be4c31c0c266f0535c5b62c1791",

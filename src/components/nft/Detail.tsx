@@ -230,7 +230,7 @@ const NftStatsSection = ({
   nft: NftDto;
   nftCollection: NftCollectionDto;
 }) => {
-  const stats = get(STATS, nftCollection?.key);
+  const stats = STATS(nftCollection?.nftContract.toLowerCase());
   return stats ? stats({ nft }) : <></>;
 };
 const NftDetailSection = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
