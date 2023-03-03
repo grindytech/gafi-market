@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Text,
   useDisclosure,
@@ -18,10 +17,10 @@ import { useSelector } from "react-redux";
 import mpContract from "../../contracts/marketplace.contract";
 import {
   useGetChainInfo,
+  useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
-import nftService from "../../services/nft.service";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { SaleType } from "../../services/types/enum";
 import { selectProfile } from "../../store/profileSlice";
@@ -61,13 +60,24 @@ export default function CancelBtn({
     </>
   );
 }
-const CancelPopup = ({ nft, onClose, onSuccess }) => {
+const CancelPopup = ({
+  nft,
+  onClose,
+  onSuccess,
+}: {
+  nft: NftDto;
+  onClose: () => void;
+  onSuccess: () => void;
+}) => {
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(selectProfile);
   const { swAlert } = useSwal();
   const { chainInfo } = useGetChainInfo({ chainId: nft.chain });
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: nft.sale.paymentToken,
+  });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
   });
 
   const cancelSale = async () => {
@@ -126,12 +136,16 @@ const CancelPopup = ({ nft, onClose, onSuccess }) => {
         </Text>
       </VStack>
       <Box py={3}>
-        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
+        <ImageWithFallback
+          w="300px"
+          src={
+            nft.image ? getNftImageLink(nft.id, 600) : collectionInfo?.avatar
+          }
+        />
       </Box>
       <HStack w="full" justifyContent="center">
         <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
           <PrimaryButton
-            colorScheme="red"
             w="full"
             isLoading={loading}
             onClick={cancelSale}

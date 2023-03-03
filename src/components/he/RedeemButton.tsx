@@ -132,7 +132,7 @@ export default function RedeemButton({
                     src={
                       nft.image
                         ? getNftImageLink(nft.id, 600)
-                        : collectionInfo.avatar
+                        : collectionInfo?.avatar
                     }
                   />
                 </Box>

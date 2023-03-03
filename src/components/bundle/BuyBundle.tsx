@@ -31,10 +31,15 @@ import {
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { BundleDto } from "../../services/types/dtos/BundleDto";
 import { selectProfile } from "../../store/profileSlice";
 import useCustomColors from "../../theme/useCustomColors";
-import { convertToContractValue, getNftImageLink } from "../../utils/utils";
+import {
+  convertToContractValue,
+  getNftImageLink,
+  numeralFormat,
+} from "../../utils/utils";
 import { MASKS } from "../nftcard/mask";
 import NftCard from "../nftcard/NftCard";
 import PrimaryButton from "../PrimaryButton";
@@ -76,7 +81,7 @@ export default function BuyBundle({
           );
         }}
       />
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal size={'xl'} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent bg={bgColor}>
           <ModalCloseButton />
@@ -174,6 +179,10 @@ const BuyBundlePopup = ({ bundle, onClose, onSuccess }) => {
       setLoading(false);
     }
   };
+  const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
+    enabled: !!paymentInfo,
+    paymentSymbol: paymentInfo?.symbol,
+  });
   const mask = MASKS(collectionInfo?.nftContract.toLowerCase());
   return (
     <VStack pt={5} px={5} w="full">
@@ -223,11 +232,17 @@ const BuyBundlePopup = ({ bundle, onClose, onSuccess }) => {
         </SimpleGrid>
       </Box>
       <VStack spacing={2} p={1} w="full" fontWeight="semibold">
-        <HStack w="full" justifyContent="space-between">
+        <HStack alignItems={"start"} w="full" justifyContent="space-between">
           <Text>Price</Text>
-          <Text>
-            {bundle.price} {paymentInfo?.symbol}
-          </Text>
+          <VStack spacing={0} alignItems="end">
+            <Text>
+              {bundle.price} {paymentInfo?.symbol}
+            </Text>
+            <Text textAlign="right" fontSize="xs" color="gray.500">
+              ~{prefix}
+              {numeralFormat(Number(bundle.price) * priceAsUsd)}
+            </Text>
+          </VStack>
         </HStack>
       </VStack>
       <HStack w="full" justifyContent="center">

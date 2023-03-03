@@ -214,7 +214,12 @@ const OfferPopup = ({ nft, onSuccess, onClose }) => {
         </Text>
       </VStack>
       <Box py={3}>
-        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
+        <ImageWithFallback
+          w="300px"
+          src={
+            nft.image ? getNftImageLink(nft.id, 600) : collectionInfo?.avatar
+          }
+        />
       </Box>
       <FormControl isInvalid={!!errors.price}>
         <FormLabel>Price</FormLabel>

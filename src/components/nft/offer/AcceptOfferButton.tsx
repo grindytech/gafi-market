@@ -20,6 +20,7 @@ import erc721Contract from "../../../contracts/erc721.contract";
 import mpContract from "../../../contracts/marketplace.contract";
 import {
   useGetChainInfo,
+  useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
@@ -94,6 +95,9 @@ const AcceptOfferPopup = ({
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: offer.paymentToken,
   });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
+  });
   const { data: buyerBalance, isLoading: loadingBalance } = useBalanceOf({
     chainSymbol: chainInfo?.symbol,
     isNative: paymentInfo?.isNative,
@@ -166,7 +170,12 @@ const AcceptOfferPopup = ({
         </Text>
       </HStack>
       <Box py={3}>
-        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
+        <ImageWithFallback
+          w="300px"
+          src={
+            nft.image ? getNftImageLink(nft.id, 600) : collectionInfo?.avatar
+          }
+        />
       </Box>
 
       <VStack spacing={2} p={1} w="full" fontWeight="semibold">

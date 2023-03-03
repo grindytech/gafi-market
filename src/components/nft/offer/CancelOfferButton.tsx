@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import mpContract from "../../../contracts/marketplace.contract";
 import {
   useGetChainInfo,
+  useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
@@ -69,7 +70,15 @@ export default function CancelOfferButton({
   );
 }
 
-const CancelOfferPopup = ({ offer, onClose, onSuccess }) => {
+const CancelOfferPopup = ({
+  offer,
+  onClose,
+  onSuccess,
+}: {
+  offer: OfferDto;
+  onClose: () => void;
+  onSuccess: () => void;
+}) => {
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: offer?.paymentToken,
   });
@@ -77,6 +86,9 @@ const CancelOfferPopup = ({ offer, onClose, onSuccess }) => {
   const { user } = useSelector(selectProfile);
   const { swAlert } = useSwal();
   const { chainInfo } = useGetChainInfo({ chainId: offer?.chain });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: offer?.nftCollection,
+  });
   const cancelSale = async () => {
     try {
       setLoading(true);
@@ -129,7 +141,14 @@ const CancelOfferPopup = ({ offer, onClose, onSuccess }) => {
         </Text>
       </VStack>
       <Box py={3}>
-        <ImageWithFallback w="300px" src={getNftImageLink(offer.nft.id, 600)} />
+        <ImageWithFallback
+          w="300px"
+          src={
+            offer.nft.image
+              ? getNftImageLink(offer.nft.id, 600)
+              : collectionInfo?.avatar
+          }
+        />
       </Box>
       <HStack w="full" justifyContent="center">
         <Button w="50%" onClick={onClose}>

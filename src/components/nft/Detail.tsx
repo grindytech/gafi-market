@@ -21,16 +21,13 @@ import {
   useBreakpointValue,
   VStack,
 } from "@chakra-ui/react";
-import { AxiosResponse } from "axios";
 import linkifyStr from "linkify-string";
-import { get } from "lodash";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import Countdown from "react-countdown";
 import { FiClock, FiRefreshCw } from "react-icons/fi";
 import { HiBadgeCheck } from "react-icons/hi";
-import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import {
   useGetChainInfo,
@@ -38,7 +35,6 @@ import {
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
-import nftService from "../../services/nft.service";
 import { ChainDto } from "../../services/types/dtos/ChainDto";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { NftCollectionDto } from "../../services/types/dtos/NftCollectionDto";
@@ -49,9 +45,7 @@ import { shorten } from "../../utils/string.util";
 import { convertIpfsLink, getUserName, numeralFormat } from "../../utils/utils";
 import Card from "../card/Card";
 import CardBody from "../card/CardBody";
-import { EmptyState, ErrorState } from "../EmptyState";
 import RedeemButton from "../he/RedeemButton";
-import LoadingPage from "../LoadingPage";
 import { AddToCartButton } from "../nftcard/AddToCartButton";
 import BuyButton from "../nftcard/BuyButton";
 import CancelBtn from "../nftcard/CancelButton";
@@ -131,7 +125,11 @@ export default function Detail({ nft }: { nft: NftDto }) {
           </Card>
         </Box>
         {md && <NftDetailSection chain={chainInfo} nft={nft} />}
-        {md && <NftStatsSection nftCollection={collectionInfo} nft={nft} />}
+        {md &&
+          (nft.description ||
+            (nft.attributes && nft.attributes.length > 0)) && (
+            <NftStatsSection nftCollection={collectionInfo} nft={nft} />
+          )}
         {md && <NftHistorySection nft={nft} />}
       </VStack>
       <VStack
@@ -155,8 +153,11 @@ export default function Detail({ nft }: { nft: NftDto }) {
           }}
         />
         {!md && <NftDetailSection chain={chainInfo} nft={nft} />}
-        {!md && <NftStatsSection nftCollection={collectionInfo} nft={nft} />}
-
+        {!md &&
+          (nft.description ||
+            (nft.attributes && nft.attributes.length > 0)) && (
+            <NftStatsSection nftCollection={collectionInfo} nft={nft} />
+          )}
         <NftOfferSection key={`NftOfferSection-${loadOfferTime}`} nft={nft} />
         {!md && <NftHistorySection nft={nft} />}
       </VStack>
@@ -305,6 +306,11 @@ const NftDetailSection = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
 };
 
 const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
+  const originLink = convertIpfsLink(
+    (String(nft.animationPlayType).includes("video") && nft.animationUrl) ||
+      nft.originImage ||
+      nft.image
+  );
   return (
     <VStack alignItems="start" w="full">
       <VStack
@@ -353,40 +359,41 @@ const NftDetail = ({ nft, chain }: { nft: NftDto; chain: ChainDto }) => {
           <Text fontSize="md">Token standard</Text>
           <Text fontSize="md">ERC-721</Text>
         </HStack>
-        <Box w="full" py={2}>
-          <Divider />
-        </Box>
-        <HStack w="full" justifyContent="end">
-          <Button
-            size="sm"
-            fontWeight="normal"
-            variant="link"
-            as={Link}
-            target="_blank"
-            href={convertIpfsLink(
-              (String(nft.animationPlayType).includes("video") &&
-                nft.animationUrl) ||
-                nft.originImage ||
-                nft.image
-            )}
-          >
-            Open origin&nbsp;
-            <ExternalLinkIcon />
-          </Button>
-          {nft.externalUrl && (
-            <Button
-              size="sm"
-              variant="link"
-              fontWeight="normal"
-              as={Link}
-              target="_blank"
-              href={nft.externalUrl}
-            >
-              External link&nbsp;
-              <ExternalLinkIcon />
-            </Button>
-          )}
-        </HStack>
+        {(nft.externalUrl || originLink) && (
+          <>
+            <Box w="full" py={2}>
+              <Divider />
+            </Box>
+            <HStack w="full" justifyContent="end">
+              {originLink && (
+                <Button
+                  size="sm"
+                  fontWeight="normal"
+                  variant="link"
+                  as={Link}
+                  target="_blank"
+                  href={originLink}
+                >
+                  Open origin&nbsp;
+                  <ExternalLinkIcon />
+                </Button>
+              )}
+              {nft.externalUrl && (
+                <Button
+                  size="sm"
+                  variant="link"
+                  fontWeight="normal"
+                  as={Link}
+                  target="_blank"
+                  href={nft.externalUrl}
+                >
+                  External link&nbsp;
+                  <ExternalLinkIcon />
+                </Button>
+              )}
+            </HStack>
+          </>
+        )}
       </VStack>
     </VStack>
   );

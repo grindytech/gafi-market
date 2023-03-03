@@ -101,7 +101,7 @@ export default function Notifications({
       alignItems="start"
     >
       <Box w="full">
-        <VStack maxH="90%" h={600} ref={containerRef} w="full">
+        <VStack maxH="90%"  ref={containerRef} w="full">
           <HStack py={2} px={4} w="full" justifyContent="space-between">
             <HStack>
               <Button

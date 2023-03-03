@@ -22,12 +22,18 @@ import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
 import {
   useGetChainInfo,
+  useGetCollectionInfo,
   useGetPaymentTokenInfo,
 } from "../../hooks/useGetSystemInfo";
 import useSwal from "../../hooks/useSwal";
+import { useTokenUSDPrice } from "../../hooks/useTokenUSDPrice";
 import { NftDto } from "../../services/types/dtos/Nft.dto";
 import { selectProfile } from "../../store/profileSlice";
-import { convertToContractValue, getNftImageLink } from "../../utils/utils";
+import {
+  convertToContractValue,
+  getNftImageLink,
+  numeralFormat,
+} from "../../utils/utils";
 import { ImageWithFallback } from "../LazyImage";
 import PrimaryButton from "../PrimaryButton";
 import SwitchNetworkButton from "../SwitchNetworkButton";
@@ -81,7 +87,15 @@ export default function BuyButton({
   );
 }
 
-const BuyPopup = ({ nft, onSuccess, onClose }) => {
+const BuyPopup = ({
+  nft,
+  onSuccess,
+  onClose,
+}: {
+  nft: NftDto;
+  onClose: () => void;
+  onSuccess: () => void;
+}) => {
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const { swAlert } = useSwal();
@@ -89,6 +103,9 @@ const BuyPopup = ({ nft, onSuccess, onClose }) => {
   const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: nft.sale.paymentToken,
+  });
+  const { collectionInfo } = useGetCollectionInfo({
+    collectionId: nft?.nftCollection,
   });
   const {
     data: balance,
@@ -164,6 +181,10 @@ const BuyPopup = ({ nft, onSuccess, onClose }) => {
       setLoading(false);
     }
   };
+  const { isPriceAsUsdLoading, prefix, priceAsUsd } = useTokenUSDPrice({
+    enabled: !!paymentInfo,
+    paymentSymbol: paymentInfo?.symbol,
+  });
   return (
     <VStack pt={5} px={5} w="full">
       <Heading fontSize="2xl">BUY NFT</Heading>
@@ -176,15 +197,26 @@ const BuyPopup = ({ nft, onSuccess, onClose }) => {
         </Text>
       </HStack>
       <Box py={3}>
-        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
+        <ImageWithFallback
+          w="300px"
+          src={
+            nft.image ? getNftImageLink(nft.id, 600) : collectionInfo?.avatar
+          }
+        />
       </Box>
 
       <VStack spacing={2} p={1} w="full" fontWeight="semibold">
-        <HStack w="full" justifyContent="space-between">
+        <HStack alignItems="start" w="full" justifyContent="space-between">
           <Text>Price</Text>
-          <Text>
-            {nft.sale.price} {paymentInfo?.symbol}
-          </Text>
+          <VStack spacing={0} alignItems="end">
+            <Text w="full">
+              {nft.sale.price} {paymentInfo?.symbol}
+            </Text>
+            <Text textAlign="right" fontSize="xs" color="gray.500">
+              ~{prefix}
+              {numeralFormat(Number(nft.sale.price) * priceAsUsd)}
+            </Text>
+          </VStack>
         </HStack>
       </VStack>
       <HStack w="full" justifyContent="center">
