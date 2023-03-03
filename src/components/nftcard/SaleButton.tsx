@@ -122,7 +122,7 @@ const SalePopup = ({ nft, onClose, onSuccess }) => {
       //   decimal: paymentToken.decimals,
       // });
       const {
-        data: { hashMessage },
+        data: { hashMessage, saltNonce },
       } = await nftService.getNftHashMessage(nft.id, {
         id: nft.id,
         option: SaleType.Sale,
@@ -149,6 +149,7 @@ const SalePopup = ({ nft, onClose, onSuccess }) => {
         period,
         price: Number(price),
         signedSignature: sign,
+        saltNonce: Number(saltNonce),
       });
       // toast.success("Listing successfully.");
       onClose();

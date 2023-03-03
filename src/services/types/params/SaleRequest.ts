@@ -5,4 +5,5 @@ export class SaleRequest {
   paymentTokenId: string;
   price: number;
   period: SalePeriod;
+  saltNonce: number;
 }

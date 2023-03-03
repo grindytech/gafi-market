@@ -5,4 +5,5 @@ export class CreateOfferParams {
   period: SalePeriod;
   paymentTokenId: string;
   signedSignature: string;
+  saltNonce: number;
 }

@@ -153,7 +153,7 @@ const OfferPopup = ({ nft, onSuccess, onClose }) => {
         );
       }
       const {
-        data: { hashMessage },
+        data: { hashMessage,saltNonce },
       } = await nftService.getNftHashMessage(nft.id, {
         id: nft.id,
         option: SaleType.MakeOffer,
@@ -180,6 +180,7 @@ const OfferPopup = ({ nft, onSuccess, onClose }) => {
         period,
         signedSignature: sign,
         offerPrice: Number(price),
+        saltNonce: Number(saltNonce),
       });
       onClose();
       onSuccess && onSuccess();
