@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Text,
   useDisclosure,
@@ -18,6 +17,7 @@ import { useState } from "react";
 import Countdown from "react-countdown";
 import { useSelector } from "react-redux";
 import { useBalanceOf } from "../../connectWallet/useBalanceof";
+import { MAX_CONTRACT_INT } from "../../constants";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
 import {
@@ -39,6 +39,49 @@ export default function BuyButton({
   ...rest
 }: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
+
+  return (
+    <>
+      <Countdown
+        date={nft.sale.startTime}
+        renderer={({ hours, minutes, seconds, completed }) => {
+          if (completed) {
+            return (
+              <Box
+                onClick={(e) => {
+                  e.preventDefault();
+                  onOpen();
+                }}
+                {...rest}
+              >
+                {children}
+              </Box>
+            );
+          }
+          return (
+            <Box {...rest}>
+              Listing {hours ? hours : ""}:
+              {minutes < 10 ? `0${minutes}` : minutes}:
+              {seconds < 10 ? `0${seconds}` : seconds}
+            </Box>
+          );
+        }}
+      />
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <BuyPopup nft={nft} onClose={onClose} onSuccess={onSuccess} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+const BuyPopup = ({ nft, onSuccess, onClose }) => {
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const { swAlert } = useSwal();
@@ -57,6 +100,7 @@ export default function BuyButton({
     chainSymbol: chainInfo?.symbol,
     tokenAddress: paymentInfo?.contractAddress,
     isNative: paymentInfo?.isNative,
+    decimal: paymentInfo?.decimals,
   });
 
   const buyNftHandle = async () => {
@@ -76,7 +120,7 @@ export default function BuyButton({
           paymentInfo.contractAddress,
           chainInfo?.mpContract,
           user,
-          approvePrice
+          MAX_CONTRACT_INT
         );
       }
       await mpContract.matchTransaction(
@@ -121,85 +165,40 @@ export default function BuyButton({
     }
   };
   return (
-    <>
-      <Countdown
-        date={nft.sale.startTime}
-        renderer={({ hours, minutes, seconds, completed }) => {
-          if (completed) {
-            return (
-              <Box
-                onClick={(e) => {
-                  e.preventDefault();
-                  onOpen();
-                }}
-                {...rest}
-              >
-                {children}
-              </Box>
-            );
-          }
-          return (
-            <Box {...rest}>
-              Listing {hours ? hours : ""}:
-              {minutes < 10 ? `0${minutes}` : minutes}:
-              {seconds < 10 ? `0${seconds}` : seconds}
-            </Box>
-          );
-        }}
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack pt={5} px={5} w="full">
-              <Heading fontSize="2xl">BUY NFT</Heading>
-              <HStack justifyContent="center" spacing={0}>
-                <Text w="full" textAlign="center">
-                  You are about buy{" "}
-                  <b>
-                    {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
-                  </b>
-                </Text>
-              </HStack>
-              <Box py={3}>
-                <ImageWithFallback
-                  w="300px"
-                  src={getNftImageLink(nft.id, 600)}
-                />
-              </Box>
+    <VStack pt={5} px={5} w="full">
+      <Heading fontSize="2xl">BUY NFT</Heading>
+      <HStack justifyContent="center" spacing={0}>
+        <Text w="full" textAlign="center">
+          You are about buy{" "}
+          <b>
+            {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+          </b>
+        </Text>
+      </HStack>
+      <Box py={3}>
+        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
+      </Box>
 
-              <VStack spacing={2} p={1} w="full" fontWeight="semibold">
-                <HStack w="full" justifyContent="space-between">
-                  <Text>Price</Text>
-                  <Text>
-                    {nft.sale.price} {paymentInfo?.symbol}
-                  </Text>
-                </HStack>
-              </VStack>
-            </VStack>
-          </ModalBody>
-          <ModalFooter w="full">
-            <HStack w="full" justifyContent="center" px={5}>
-              <SwitchNetworkButton
-                symbol={chainInfo?.symbol}
-                name={chainInfo?.name}
-              >
-                <PrimaryButton
-                  disabled={loading || balance < nft.sale.price}
-                  isLoading={loading}
-                  onClick={buyNftHandle}
-                  w="full"
-                >
-                  {balance < nft.sale.price
-                    ? "Insufficient balance"
-                    : "Confirm"}
-                </PrimaryButton>
-              </SwitchNetworkButton>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+      <VStack spacing={2} p={1} w="full" fontWeight="semibold">
+        <HStack w="full" justifyContent="space-between">
+          <Text>Price</Text>
+          <Text>
+            {nft.sale.price} {paymentInfo?.symbol}
+          </Text>
+        </HStack>
+      </VStack>
+      <HStack w="full" justifyContent="center">
+        <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
+          <PrimaryButton
+            disabled={loading || balance < nft.sale.price}
+            isLoading={loading}
+            onClick={buyNftHandle}
+            w="full"
+          >
+            {balance < nft.sale.price ? "Insufficient balance" : "Confirm"}
+          </PrimaryButton>
+        </SwitchNetworkButton>
+      </HStack>
+    </VStack>
   );
-}
+};

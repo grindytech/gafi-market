@@ -88,6 +88,7 @@ export default function Cart() {
     chainSymbol: chain?.symbol,
     tokenAddress: paymentInfo?.contractAddress,
     isNative: paymentInfo?.isNative,
+    decimal: paymentInfo?.decimals,
   });
 
   const total = useMemo(() => {

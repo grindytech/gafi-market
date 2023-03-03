@@ -35,6 +35,35 @@ export default function CancelBundle({
   ...rest
 }: BoxProps & { bundle: BundleDto; onSuccess: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
+
+  return (
+    <>
+      <Box
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
+        {children}
+      </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <CancelBundlePopup
+              bundle={bundle}
+              onClose={onClose}
+              onSuccess={onSuccess}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+const CancelBundlePopup = ({ bundle, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(selectProfile);
   const { swAlert } = useSwal();
@@ -86,45 +115,19 @@ export default function CancelBundle({
     }
   };
   return (
-    <>
-      <Box
-        onClick={(e) => {
-          e.preventDefault();
-          onOpen();
-        }}
-        {...rest}
-      >
-        {children}
-      </Box>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack pt={5} px={5} w="full">
-              <Heading fontSize="2xl">CANCEL BUNDLE SALE</Heading>
-              <VStack spacing={0}>
-                <Text>You are about cancel sell your&nbsp;</Text>
-                <Text color="gray">
-                  {bundle.name || `Bundle #${bundle.bundleId}`}
-                </Text>
-              </VStack>
-            </VStack>
-          </ModalBody>
-          <ModalFooter w="full">
-            <HStack w="full" justifyContent="center" px={5}>
-              <SwitchNetworkButton
-                symbol={chainInfo?.symbol}
-                name={chainInfo?.name}
-              >
-                <PrimaryButton w="full" isLoading={loading} onClick={cancel}>
-                  Confirm
-                </PrimaryButton>
-              </SwitchNetworkButton>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+    <VStack pt={5} px={5} w="full">
+      <Heading fontSize="2xl">CANCEL BUNDLE SALE</Heading>
+      <VStack spacing={0}>
+        <Text>You are about cancel sell your&nbsp;</Text>
+        <Text color="gray">{bundle.name || `Bundle #${bundle.bundleId}`}</Text>
+      </VStack>
+      <HStack w="full" justifyContent="center">
+        <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
+          <PrimaryButton w="full" isLoading={loading} onClick={cancel}>
+            Confirm
+          </PrimaryButton>
+        </SwitchNetworkButton>
+      </HStack>
+    </VStack>
   );
-}
+};

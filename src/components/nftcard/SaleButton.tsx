@@ -59,6 +59,32 @@ export default function SaleButton({
   onSuccess,
   ...rest
 }: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
+  return (
+    <>
+      <Box
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
+        {children}
+      </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <SalePopup nft={nft} onClose={onClose} onSuccess={onSuccess} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+const SalePopup = ({ nft, onClose, onSuccess }) => {
   const resolver = useYupValidationResolver(validationSchema);
   const {
     handleSubmit,
@@ -72,7 +98,6 @@ export default function SaleButton({
   const { collectionInfo } = useGetCollectionInfo({
     collectionId: nft?.nftCollection,
   });
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const [paymentToken, setPaymentToken] = useState<PaymentToken>();
   const [marketFee, setMarketFee] = useState(0.05);
   const [collectionOwnerFee, setCollectionOwnerFee] = useState(0.0);
@@ -148,151 +173,118 @@ export default function SaleButton({
   const receive = () =>
     Number(price) - Number(price) * (marketFee + collectionOwnerFee);
   return (
-    <>
-      <Box
-        onClick={(e) => {
-          e.preventDefault();
-          onOpen();
-        }}
-        {...rest}
-      >
-        {children}
+    <VStack spacing={3} pt={5} px={5} w="full">
+      <Heading fontSize="2xl">PUT ON SALE</Heading>
+      <VStack spacing={0}>
+        <Text>You are about sell your&nbsp;</Text>
+        <Text color="gray">
+          {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+        </Text>
+      </VStack>
+      <Box py={3}>
+        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
       </Box>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={3} pt={5} px={5} w="full">
-              <Heading fontSize="2xl">PUT ON SALE</Heading>
-              <VStack spacing={0}>
-                <Text>You are about sell your&nbsp;</Text>
-                <Text color="gray">
-                  {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
-                </Text>
-              </VStack>
-              <Box py={3}>
-                <ImageWithFallback
-                  w="300px"
-                  src={getNftImageLink(nft.id, 600)}
+      <FormControl isInvalid={!!errors.price}>
+        <FormLabel>Price</FormLabel>
+        <InputGroup size="lg">
+          <InputRightElement
+            w="fit-content"
+            children={
+              <Box w="full">
+                <TokenSymbolToken
+                  disabled={loading}
+                  chain={chainInfo?.id}
+                  mr={2}
+                  size="sm"
+                  onChangeToken={(p) => {
+                    setPaymentToken(p);
+                  }}
+                  idList={collectionInfo?.paymentTokens.map((c) =>
+                    typeof c === "string" ? c : c.id
+                  )}
                 />
               </Box>
-              <FormControl isInvalid={!!errors.price}>
-                <FormLabel>Price</FormLabel>
-                <InputGroup size="lg">
-                  <InputRightElement
-                    w="fit-content"
-                    children={
-                      <Box w="full">
-                        <TokenSymbolToken
-                          disabled={loading}
-                          chain={chainInfo?.id}
-                          mr={2}
-                          size="sm"
-                          onChangeToken={(p) => {
-                            setPaymentToken(p);
-                          }}
-                          idList={collectionInfo?.paymentTokens.map((c) =>
-                            typeof c === "string" ? c : c.id
-                          )}
-                        />
-                      </Box>
-                    }
-                  />
-                  <Input
-                    disabled={loading}
-                    {...register("price")}
-                    type="number"
-                    variant="filled"
-                    placeholder={"0.0"}
-                    _focusVisible={{
-                      borderColor: "primary.300",
-                      borderWidth: "1px",
-                    }}
-                  />
-                </InputGroup>
-                <FormErrorMessage>
-                  {errors.price?.message?.toString()}
-                </FormErrorMessage>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Sale period</FormLabel>
-                <InputGroup size="lg">
-                  <Select
-                    disabled={loading}
-                    variant="filled"
-                    defaultValue={SalePeriod.Week}
-                    _focusVisible={{
-                      borderColor: "primary.300",
-                      borderWidth: "1px",
-                    }}
-                    onChange={(e) => {
-                      setPeriod(Number(e.target.value));
-                    }}
-                  >
-                    <option value={SalePeriod.Week}>7 days</option>
-                    <option value={SalePeriod.TwoWeek}>14 days</option>
-                    <option value={SalePeriod.Month}>1 month</option>
-                  </Select>
-                </InputGroup>
-              </FormControl>
-              <VStack
-                color="gray"
-                spacing={2}
-                py={1}
-                w="full"
-                fontWeight="semibold"
-                fontSize="sm"
-              >
-                <HStack w="full" justifyContent="space-between">
-                  <Text>Marketplace fee:</Text>
-                  <Text>{marketFee * 100} %</Text>
-                </HStack>
-                {/* <HStack w="full" justifyContent="space-between">
+            }
+          />
+          <Input
+            disabled={loading}
+            {...register("price")}
+            type="number"
+            variant="filled"
+            placeholder={"0.0"}
+            _focusVisible={{
+              borderColor: "primary.300",
+              borderWidth: "1px",
+            }}
+          />
+        </InputGroup>
+        <FormErrorMessage>{errors.price?.message?.toString()}</FormErrorMessage>
+      </FormControl>
+      <FormControl>
+        <FormLabel>Sale period</FormLabel>
+        <InputGroup size="lg">
+          <Select
+            disabled={loading}
+            variant="filled"
+            defaultValue={SalePeriod.Week}
+            _focusVisible={{
+              borderColor: "primary.300",
+              borderWidth: "1px",
+            }}
+            onChange={(e) => {
+              setPeriod(Number(e.target.value));
+            }}
+          >
+            <option value={SalePeriod.Week}>7 days</option>
+            <option value={SalePeriod.TwoWeek}>14 days</option>
+            <option value={SalePeriod.Month}>1 month</option>
+          </Select>
+        </InputGroup>
+      </FormControl>
+      <VStack
+        color="gray"
+        spacing={2}
+        py={1}
+        w="full"
+        fontWeight="semibold"
+        fontSize="sm"
+      >
+        <HStack w="full" justifyContent="space-between">
+          <Text>Marketplace fee:</Text>
+          <Text>{marketFee * 100} %</Text>
+        </HStack>
+        {/* <HStack w="full" justifyContent="space-between">
                   <Text>Collection owner fee:</Text>
                   <Text>{collectionOwnerFee * 100} %</Text>
                 </HStack> */}
-                <HStack
-                  alignItems="start"
-                  w="full"
-                  justifyContent="space-between"
-                >
-                  <Text>You will receive:</Text>
-                  <VStack spacing={0} alignItems="end">
-                    <Text color="gray">
-                      {receive() || "--"}
-                      &nbsp;
-                      {paymentToken?.symbol}
-                    </Text>
-                    {priceAsUsd && price && (
-                      <Text fontSize="xs" color="gray.500">
-                        ~{prefix}
-                        {numeralFormat(receive() * priceAsUsd)}
-                      </Text>
-                    )}
-                  </VStack>
-                </HStack>
-              </VStack>
-            </VStack>
-          </ModalBody>
-          <ModalFooter w="full">
-            <HStack w="full" justifyContent="center" px={5}>
-              <SwitchNetworkButton
-                symbol={chainInfo?.symbol}
-                name={chainInfo?.name}
-              >
-                <PrimaryButton
-                  isLoading={loading}
-                  onClick={handleSubmit(createSale)}
-                  w="full"
-                >
-                  Confirm
-                </PrimaryButton>
-              </SwitchNetworkButton>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+        <HStack alignItems="start" w="full" justifyContent="space-between">
+          <Text>You will receive:</Text>
+          <VStack spacing={0} alignItems="end">
+            <Text color="gray">
+              {receive() || "--"}
+              &nbsp;
+              {paymentToken?.symbol}
+            </Text>
+            {priceAsUsd && price && (
+              <Text fontSize="xs" color="gray.500">
+                ~{prefix}
+                {numeralFormat(receive() * priceAsUsd)}
+              </Text>
+            )}
+          </VStack>
+        </HStack>
+      </VStack>
+      <HStack w="full" justifyContent="center">
+        <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
+          <PrimaryButton
+            isLoading={loading}
+            onClick={handleSubmit(createSale)}
+            w="full"
+          >
+            Confirm
+          </PrimaryButton>
+        </SwitchNetworkButton>
+      </HStack>
+    </VStack>
   );
-}
+};

@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import configs from "../../configs";
+import { MAX_CONTRACT_INT } from "../../constants";
 import erc20Contract from "../../contracts/erc20.contract";
 import mpContract from "../../contracts/marketplace.contract";
 import {
@@ -78,7 +79,7 @@ export default function CartCheckoutButton({
           paymentInfo?.contractAddress,
           chainInfo?.mpContract,
           user,
-          approvePrice
+          MAX_CONTRACT_INT
         );
       }
       await mpContract.matchBag(nfts, user, chainInfo?.mpContract, paymentInfo);

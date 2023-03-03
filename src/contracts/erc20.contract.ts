@@ -10,11 +10,9 @@ const erc20Contract = (address: string, web3 = web3Inject) => {
 const getErc20Balance = async (
   account: string,
   contractAddress: string,
-  chainSymbol: string,
+  web3 = web3Inject,
   decimal = 18
 ) => {
-  const provider = configs.NETWORKS[chainSymbol].rpcUrls[0];
-  const web3 = new Web3(provider);
   const contract = erc20Contract(contractAddress, web3);
   let balance = await contract.methods.balanceOf(account).call();
   return safeAmount({ str: balance, decimal });

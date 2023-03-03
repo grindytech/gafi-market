@@ -14,7 +14,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Select,
   Text,
@@ -43,6 +42,8 @@ import SwitchNetworkButton from "../SwitchNetworkButton";
 
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { useBalanceOf } from "../../connectWallet/useBalanceof";
+import { MAX_CONTRACT_INT } from "../../constants";
 import {
   useGetChainInfo,
   useGetCollectionInfo,
@@ -58,10 +59,33 @@ export default function OfferButton({
   ...rest
 }: BoxProps & { nft: NftDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [errorMsg, setErrorMsg] = useState<string>();
-  const [isFirst, setIsFirst] = useState(true);
+
+  return (
+    <>
+      <Box
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
+        {children}
+      </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <OfferPopup nft={nft} onClose={onClose} onSuccess={onSuccess} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+const OfferPopup = ({ nft, onSuccess, onClose }) => {
   const [paymentToken, setPaymentToken] = useState<PaymentToken>();
-  const { chains } = useSelector(selectSystem);
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const [period, setPeriod] = useState(SalePeriod.Week);
@@ -72,6 +96,19 @@ export default function OfferButton({
   const { collectionInfo } = useGetCollectionInfo({
     collectionId: nft?.nftCollection,
   });
+  const {
+    data: balance,
+    refetch: refetchBalance,
+    isLoading: loadingBalance,
+    isFetching: fetchingBalance,
+  } = useBalanceOf({
+    account: user,
+    chainSymbol: chain?.symbol,
+    tokenAddress: paymentToken?.contractAddress,
+    isNative: paymentToken?.isNative,
+    decimal: paymentToken?.decimals,
+  });
+
   const validationSchema = yup.object({
     price: yup
       .number()
@@ -80,15 +117,7 @@ export default function OfferButton({
       .moreThan(0)
       .max(999999999)
       .test("isValidBalance", "Insufficient balance", async (value) => {
-        const balance =
-          chain && user
-            ? await erc20Contract.getErc20Balance(
-                user,
-                paymentToken.contractAddress,
-                chain?.symbol.toUpperCase(),
-                paymentToken.decimals
-              )
-            : 0;
+        debugger
         if (balance < Number(value)) {
           return false;
         }
@@ -120,7 +149,7 @@ export default function OfferButton({
           paymentToken.contractAddress,
           chain?.mpContract,
           user,
-          priceContractValue
+          MAX_CONTRACT_INT
         );
       }
       const {
@@ -176,140 +205,107 @@ export default function OfferButton({
   });
   const price = watch("price");
   return (
-    <>
-      <Box
-        onClick={(e) => {
-          e.preventDefault();
-          onOpen();
-        }}
-        {...rest}
-      >
-        {children}
+    <VStack spacing={3} pt={5} px={5} w="full">
+      <Heading fontSize="2xl">MAKE OFFER</Heading>
+      <VStack spacing={0}>
+        <Text>You are about make offer for&nbsp;</Text>
+        <Text color="gray">
+          {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+        </Text>
+      </VStack>
+      <Box py={3}>
+        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
       </Box>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={3} pt={5} px={5} w="full">
-              <Heading fontSize="2xl">MAKE OFFER</Heading>
-              <VStack spacing={0}>
-                <Text>You are about make offer for&nbsp;</Text>
-                <Text color="gray">
-                  {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
-                </Text>
-              </VStack>
-              <Box py={3}>
-                <ImageWithFallback
-                  w="300px"
-                  src={getNftImageLink(nft.id, 600)}
+      <FormControl isInvalid={!!errors.price}>
+        <FormLabel>Price</FormLabel>
+        <InputGroup size="lg">
+          <InputRightElement
+            w="fit-content"
+            children={
+              <Box w="full">
+                <TokenSymbolToken
+                  disabled={loading}
+                  chain={chain?.id}
+                  mr={2}
+                  size="sm"
+                  onChangeToken={(p) => {
+                    setPaymentToken(p);
+                  }}
+                  idList={collectionInfo?.paymentTokens.map((c) =>
+                    typeof c === "string" ? c : c.id
+                  )}
                 />
               </Box>
-              <FormControl isInvalid={!!errors.price}>
-                <FormLabel>Price</FormLabel>
-                <InputGroup size="lg">
-                  <InputRightElement
-                    w="fit-content"
-                    children={
-                      <Box w="full">
-                        <TokenSymbolToken
-                          disabled={loading}
-                          chain={chain?.id}
-                          mr={2}
-                          size="sm"
-                          onChangeToken={(p) => {
-                            setPaymentToken(p);
-                          }}
-                          idList={collectionInfo?.paymentTokens.map((c) =>
-                            typeof c === "string" ? c : c.id
-                          )}
-                        />
-                      </Box>
-                    }
-                  />
-                  <Input
-                    disabled={loading}
-                    {...register("price")}
-                    type="number"
-                    variant="filled"
-                    placeholder={"0.0"}
-                    _focusVisible={{
-                      borderColor: "primary.300",
-                      borderWidth: "1px",
-                    }}
-                  />
-                </InputGroup>
-                {!errors.price ? (
-                  priceAsUsd &&
-                  price && (
-                    <FormHelperText>
-                      <Text
-                        w="full"
-                        textAlign="right"
-                        fontSize="xs"
-                        color="gray.500"
-                      >
-                        ~{prefix}
-                        {numeralFormat(Number(price) * priceAsUsd)}
-                      </Text>
-                    </FormHelperText>
-                  )
-                ) : (
-                  <FormErrorMessage>
-                    {errors.price?.message?.toString()}
-                  </FormErrorMessage>
-                )}
-              </FormControl>
-              <FormControl>
-                <FormLabel>Duration</FormLabel>
-                <InputGroup size="lg">
-                  <Select
-                    disabled={loading}
-                    variant="filled"
-                    defaultValue={SalePeriod.Week}
-                    _focusVisible={{
-                      borderColor: "primary.300",
-                      borderWidth: "1px",
-                    }}
-                    onChange={(e) => {
-                      setPeriod(Number(e.target.value));
-                    }}
-                  >
-                    <option value={SalePeriod.Week}>7 days</option>
-                    <option value={SalePeriod.TwoWeek}>14 days</option>
-                    <option value={SalePeriod.Month}>1 month</option>
-                  </Select>
-                </InputGroup>
-              </FormControl>
-              <VStack
-                color="gray"
-                spacing={2}
-                py={1}
-                w="full"
-                fontWeight="semibold"
-                fontSize="sm"
-              ></VStack>
-            </VStack>
-          </ModalBody>
-          <ModalFooter w="full">
-            <HStack w="full" justifyContent="center" px={5}>
-              <SwitchNetworkButton
-                symbol={chain?.symbol}
-                name={chain?.name}
-                w="full"
-              >
-                <PrimaryButton
-                  isLoading={loading}
-                  onClick={handleSubmit(createSale)}
-                  w="full"
-                >
-                  Confirm
-                </PrimaryButton>
-              </SwitchNetworkButton>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+            }
+          />
+          <Input
+            disabled={loading}
+            {...register("price")}
+            type="number"
+            variant="filled"
+            placeholder={"0.0"}
+            _focusVisible={{
+              borderColor: "primary.300",
+              borderWidth: "1px",
+            }}
+          />
+        </InputGroup>
+        {!errors.price ? (
+          priceAsUsd &&
+          price && (
+            <FormHelperText>
+              <Text w="full" textAlign="right" fontSize="xs" color="gray.500">
+                ~{prefix}
+                {numeralFormat(Number(price) * priceAsUsd)}
+              </Text>
+            </FormHelperText>
+          )
+        ) : (
+          <FormErrorMessage>
+            {errors.price?.message?.toString()}
+          </FormErrorMessage>
+        )}
+      </FormControl>
+      <FormControl>
+        <FormLabel>Duration</FormLabel>
+        <InputGroup size="lg">
+          <Select
+            disabled={loading}
+            variant="filled"
+            defaultValue={SalePeriod.Week}
+            _focusVisible={{
+              borderColor: "primary.300",
+              borderWidth: "1px",
+            }}
+            onChange={(e) => {
+              setPeriod(Number(e.target.value));
+            }}
+          >
+            <option value={SalePeriod.Week}>7 days</option>
+            <option value={SalePeriod.TwoWeek}>14 days</option>
+            <option value={SalePeriod.Month}>1 month</option>
+          </Select>
+        </InputGroup>
+      </FormControl>
+      <VStack
+        color="gray"
+        spacing={2}
+        py={1}
+        w="full"
+        fontWeight="semibold"
+        fontSize="sm"
+      ></VStack>
+      <HStack w="full" justifyContent="center">
+        <SwitchNetworkButton symbol={chain?.symbol} name={chain?.name} w="full">
+          <PrimaryButton
+            isLoading={loading}
+            onClick={handleSubmit(createSale)}
+            w="full"
+          >
+            Confirm
+          </PrimaryButton>
+        </SwitchNetworkButton>
+      </HStack>
+    </VStack>
   );
-}
+};

@@ -25,9 +25,11 @@ export const safeAmount = ({
   return parseInt(trimmedStr) / 10 ** significant;
 };
 
-export const getNativeBalance = async (account: string, chainSymbol: string) => {
-  const provider = configs.NETWORKS[chainSymbol].rpcUrls[0];
-  const web3Http = new Web3(provider);
-  const bnbBalance = await web3Http.eth.getBalance(account);
-  return safeAmount({ str: bnbBalance, decimal: 18 });
+export const getNativeBalance = async (
+  account: string,
+  web3 = web3Inject,
+  decimal = 18
+) => {
+  const bnbBalance = await web3.eth.getBalance(account);
+  return safeAmount({ str: bnbBalance, decimal });
 };
