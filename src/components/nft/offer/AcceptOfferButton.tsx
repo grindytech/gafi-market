@@ -8,7 +8,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Text,
   useDisclosure,
@@ -16,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useBalanceOf } from "../../../connectWallet/useBalanceof";
 import erc721Contract from "../../../contracts/erc721.contract";
 import mpContract from "../../../contracts/marketplace.contract";
 import {
@@ -44,6 +44,47 @@ export default function AcceptOfferButton({
   ...rest
 }: ButtonProps & { nft: NftDto; offer: OfferDto; onSuccess?: () => void }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
+
+  return (
+    <>
+      <Button
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
+        {children}
+      </Button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <AcceptOfferPopup
+              nft={nft}
+              offer={offer}
+              onClose={onClose}
+              onSuccess={onSuccess}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+const AcceptOfferPopup = ({
+  offer,
+  nft,
+  onClose,
+  onSuccess,
+}: {
+  offer: OfferDto;
+  nft: NftDto;
+  onClose: () => void;
+  onSuccess: () => void;
+}) => {
   const { user } = useSelector(selectProfile);
   const [loading, setLoading] = useState(false);
   const { swAlert } = useSwal();
@@ -52,6 +93,13 @@ export default function AcceptOfferButton({
   const { chainInfo } = useGetChainInfo({ chainId: nft?.chain });
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: offer.paymentToken,
+  });
+  const { data: buyerBalance, isLoading: loadingBalance } = useBalanceOf({
+    chainSymbol: chainInfo?.symbol,
+    isNative: paymentInfo?.isNative,
+    account: offer?.buyer?.address,
+    decimal: paymentInfo?.decimals,
+    tokenAddress: paymentInfo?.contractAddress,
   });
   const receive = () =>
     Number(offer.offerPrice) -
@@ -109,78 +157,50 @@ export default function AcceptOfferButton({
     paymentSymbol: paymentInfo?.symbol,
   });
   return (
-    <>
-      <Button
-        onClick={(e) => {
-          e.preventDefault();
-          onOpen();
-        }}
-        {...rest}
-      >
-        {children}
-      </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack pt={5} px={5} w="full">
-              <Heading fontSize="2xl">SELL NFT</Heading>
-              <HStack spacing={0}>
-                <Text>You are about sell your&nbsp;</Text>
-                <Text color="gray">
-                  {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
-                </Text>
-              </HStack>
-              <Box py={3}>
-                <ImageWithFallback
-                  w="300px"
-                  src={getNftImageLink(nft.id, 600)}
-                />
-              </Box>
+    <VStack pt={5} px={5} w="full">
+      <Heading fontSize="2xl">SELL NFT</Heading>
+      <HStack spacing={0}>
+        <Text>You are about sell your&nbsp;</Text>
+        <Text color="gray">
+          {nft.name} {nft.tokenId ? `#${nft.tokenId}` : ""}
+        </Text>
+      </HStack>
+      <Box py={3}>
+        <ImageWithFallback w="300px" src={getNftImageLink(nft.id, 600)} />
+      </Box>
 
-              <VStack spacing={2} p={1} w="full" fontWeight="semibold">
-                <HStack
-                  alignItems="start"
-                  w="full"
-                  justifyContent="space-between"
-                >
-                  <Text>You will receive</Text>
-                  <VStack spacing={0} alignItems="end">
-                    <Text color="gray">
-                      {receive() || "--"}
-                      &nbsp;
-                      {paymentInfo?.symbol}
-                    </Text>
-                    {priceAsUsd && offer.offerPrice && (
-                      <Text fontSize="xs" color="gray.500">
-                        ~{prefix}
-                        {numeralFormat(receive() * priceAsUsd)}
-                      </Text>
-                    )}
-                  </VStack>
-                </HStack>
-              </VStack>
-            </VStack>
-          </ModalBody>
-          <ModalFooter w="full">
-            <HStack w="full" justifyContent="center" px={5}>
-              <SwitchNetworkButton
-                symbol={chainInfo?.symbol}
-                name={chainInfo?.name}
-              >
-                <PrimaryButton
-                  isLoading={loading}
-                  onClick={acceptHandle}
-                  w="full"
-                >
-                  Confirm
-                </PrimaryButton>
-              </SwitchNetworkButton>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+      <VStack spacing={2} p={1} w="full" fontWeight="semibold">
+        <HStack alignItems="start" w="full" justifyContent="space-between">
+          <Text>You will receive</Text>
+          <VStack spacing={0} alignItems="end">
+            <Text color="gray">
+              {receive() || "--"}
+              &nbsp;
+              {paymentInfo?.symbol}
+            </Text>
+            {priceAsUsd && offer.offerPrice && (
+              <Text fontSize="xs" color="gray.500">
+                ~{prefix}
+                {numeralFormat(receive() * priceAsUsd)}
+              </Text>
+            )}
+          </VStack>
+        </HStack>
+      </VStack>
+      <HStack w="full" justifyContent="center">
+        <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
+          <PrimaryButton
+            disabled={buyerBalance < offer.offerPrice || loadingBalance}
+            isLoading={loading}
+            onClick={acceptHandle}
+            w="full"
+          >
+            {buyerBalance < offer.offerPrice
+              ? "The buyer's account does not have sufficient funds to make an offer"
+              : "Confirm"}
+          </PrimaryButton>
+        </SwitchNetworkButton>
+      </HStack>
+    </VStack>
   );
-}
+};

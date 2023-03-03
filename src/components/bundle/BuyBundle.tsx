@@ -233,7 +233,7 @@ const BuyBundlePopup = ({ bundle, onClose, onSuccess }) => {
       <HStack w="full" justifyContent="center">
         <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
           <PrimaryButton
-            disabled={loading || balance < bundle.price}
+            disabled={loading || balance < bundle.price || loadingBalance}
             isLoading={loading}
             onClick={buyNftHandle}
             w="full"

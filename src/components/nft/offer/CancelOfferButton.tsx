@@ -8,7 +8,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Text,
   useDisclosure,
@@ -17,7 +16,10 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import mpContract from "../../../contracts/marketplace.contract";
-import { useGetChainInfo, useGetPaymentTokenInfo } from "../../../hooks/useGetSystemInfo";
+import {
+  useGetChainInfo,
+  useGetPaymentTokenInfo,
+} from "../../../hooks/useGetSystemInfo";
 import useSwal from "../../../hooks/useSwal";
 import nftService from "../../../services/nft.service";
 import { OfferDto } from "../../../services/types/dtos/Offer.dto";
@@ -37,14 +39,44 @@ export default function CancelOfferButton({
   offer: OfferDto;
   onSuccess: () => void;
 }) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
+  return (
+    <>
+      <Button
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+        {...rest}
+      >
+        {children}
+      </Button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody>
+            <CancelOfferPopup
+              offer={offer}
+              onClose={onClose}
+              onSuccess={onSuccess}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+const CancelOfferPopup = ({ offer, onClose, onSuccess }) => {
   const { paymentInfo } = useGetPaymentTokenInfo({
     paymentId: offer?.paymentToken,
   });
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(selectProfile);
   const { swAlert } = useSwal();
-  const { chainInfo} = useGetChainInfo({chainId: offer?.chain})
+  const { chainInfo } = useGetChainInfo({ chainId: offer?.chain });
   const cancelSale = async () => {
     try {
       setLoading(true);
@@ -88,54 +120,27 @@ export default function CancelOfferButton({
     }
   };
   return (
-    <>
-      <Button
-        onClick={(e) => {
-          e.preventDefault();
-          onOpen();
-        }}
-        {...rest}
-      >
-        {children}
-      </Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack pt={5} px={5} w="full">
-              <Heading fontSize="2xl">CANCEL OFFER</Heading>
-              <VStack spacing={0}>
-                <Text>Cancel offer for&nbsp;</Text>
-                <Text color="gray">
-                  {offer.name} {offer.tokenId ? `#${offer.tokenId}` : ""}
-                </Text>
-              </VStack>
-              <Box py={3}>
-                <ImageWithFallback
-                  w="300px"
-                  src={getNftImageLink(offer.nft.id, 600)}
-                />
-              </Box>
-            </VStack>
-          </ModalBody>
-          <ModalFooter w="full">
-            <HStack w="full" justifyContent="center" px={5}>
-              <Button w="50%" onClick={onClose}>
-                Close
-              </Button>
-              <SwitchNetworkButton
-                symbol={chainInfo?.symbol}
-                name={chainInfo?.name}
-              >
-                <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
-                  Confirm
-                </PrimaryButton>
-              </SwitchNetworkButton>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+    <VStack pt={5} px={5} w="full">
+      <Heading fontSize="2xl">CANCEL OFFER</Heading>
+      <VStack spacing={0}>
+        <Text>Cancel offer for&nbsp;</Text>
+        <Text color="gray">
+          {offer.name} {offer.tokenId ? `#${offer.tokenId}` : ""}
+        </Text>
+      </VStack>
+      <Box py={3}>
+        <ImageWithFallback w="300px" src={getNftImageLink(offer.nft.id, 600)} />
+      </Box>
+      <HStack w="full" justifyContent="center">
+        <Button w="50%" onClick={onClose}>
+          Close
+        </Button>
+        <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
+          <PrimaryButton w="50%" isLoading={loading} onClick={cancelSale}>
+            Confirm
+          </PrimaryButton>
+        </SwitchNetworkButton>
+      </HStack>
+    </VStack>
   );
-}
+};

@@ -190,7 +190,7 @@ const BuyPopup = ({ nft, onSuccess, onClose }) => {
       <HStack w="full" justifyContent="center">
         <SwitchNetworkButton symbol={chainInfo?.symbol} name={chainInfo?.name}>
           <PrimaryButton
-            disabled={loading || balance < nft.sale.price}
+            disabled={loading || balance < nft.sale.price || loadingBalance}
             isLoading={loading}
             onClick={buyNftHandle}
             w="full"
