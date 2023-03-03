@@ -23,11 +23,15 @@ export default function W3Provider(props: any) {
       ? JSON.parse(localProfile)
       : {};
     if (user === account) {
-      const payload: { exp: number } = jwtDecode(accessToken);
-      if (payload.exp - 3600 * 0.1 > Date.now() / 1000) {
-        dispatch(login({ accessToken, user }));
-      } else {
-        dispatch(logout())
+      try {
+        const payload: { exp: number } = jwtDecode(accessToken);
+        if (payload.exp - 3600 * 0.1 > Date.now() / 1000) {
+          dispatch(login({ accessToken, user }));
+        } else {
+          dispatch(logout());
+        }
+      } catch (error) {
+        dispatch(logout());
       }
     } else {
       const { data: sign } = await accountService.nonce({

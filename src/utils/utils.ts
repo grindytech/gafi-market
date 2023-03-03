@@ -193,12 +193,12 @@ export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function getUserName(user: UserDto, you?: string) {
+export function getUserName(user: UserDto, you?: string, head = 6, tail = 4) {
   return you && user?.address === you
     ? "you"
     : user?.username && user?.username !== user?.address
     ? user?.username
-    : shorten(user?.address || "", 6, 4);
+    : shorten(user?.address || "", head, tail);
 }
 
 export const toFindDuplicates = (arr: any[]) =>

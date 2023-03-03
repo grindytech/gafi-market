@@ -23,7 +23,7 @@ const getMPContract = (address: string) => {
   return new ethers.Contract(address, mpContractAbi, currentProvider);
 };
 
-const getForwarderContract = (address: string) => {
+export const getForwarderContract = (address: string) => {
   let currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
@@ -47,30 +47,31 @@ const cancelMessage = async (
   user: string
 ) => {
   const chainId = await web3Inject.eth.getChainId();
-  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
-    const rs = await cancelMessageDOS(params, mpContract, user);
+  const contractParams = [
+    [params.ownerAddress, params.nftContract, params.paymentContract],
+    [
+      params.tokenId,
+      params.contractPrice,
+      params.saltNonce,
+      params.period,
+      params.saleOption,
+    ],
+    params.signature,
+  ];
+  if (chainId === Number(configs.NETWORKS[configs.DOS_SYMBOL]?.chainId)) {
+    const rs = await cancelMessageDOS(contractParams, mpContract, user);
     return rs;
   } else {
     const contract = marketplaceContract(mpContract, web3Inject);
     const rs = await contract.methods
-      .cancelMessage(
-        [params.ownerAddress, params.nftContract, params.paymentContract],
-        [
-          params.tokenId,
-          params.contractPrice,
-          params.saltNonce,
-          params.period,
-          params.saleOption,
-        ],
-        params.signature
-      )
+      .cancelMessage(...contractParams)
       .send({ from: user });
     return rs;
   }
 };
 
 const cancelMessageDOS = async (
-  params: CancelMessageParam,
+  params: any[],
   mpContractAddress: string,
   user: string
 ): Promise<any> => {
@@ -81,20 +82,10 @@ const cancelMessageDOS = async (
   const forwarderContract = getForwarderContract(
     configs.DOS_FORWARDER_CONTRACT
   );
-  const data = mpContract.interface.encodeFunctionData("cancelMessage", [
-    [params.ownerAddress, params.nftContract, params.paymentContract],
-    [
-      params.tokenId,
-      params.contractPrice,
-      params.saltNonce,
-      params.period,
-      params.saleOption,
-    ],
-    params.signature,
-  ]);
+  const data = mpContract.interface.encodeFunctionData("cancelMessage", params);
   const result = await signMetaTxRequest(currentProvider, forwarderContract, {
     to: mpContractAddress,
-    user,
+    from: user,
     data,
   });
   const apiCall = {
@@ -145,26 +136,26 @@ const matchTransaction = async (
   mpContract: string
 ) => {
   const chainId = await web3Inject.eth.getChainId();
-  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
-    await matchTransactionDOS(param, user, mpContract);
+  const contractParams = [
+    [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
+    [param.tokenId, param.price, param.saltNonce, param.period],
+    param.signature,
+  ];
+  if (chainId === Number(configs.NETWORKS[configs.DOS_SYMBOL]?.chainId)) {
+    await matchTransactionDOS(contractParams, user, mpContract);
   } else {
     const contract = marketplaceContract(mpContract, web3Inject);
     await contract.methods
-      .matchTransaction(
-        [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
-        [param.tokenId, param.price, param.saltNonce, param.period],
-        param.signature
-      )
+      .matchTransaction(...contractParams)
       .send({ from: user });
   }
 };
 
 const matchTransactionDOS = async (
-  param: MatchTransactionParam,
+  contractParams: any[],
   user: string,
   mpContractAddress: string
 ) => {
-  debugger;
   let currentProvider = new ethers.providers.Web3Provider(
     web3Inject.currentProvider as any
   );
@@ -172,11 +163,10 @@ const matchTransactionDOS = async (
   const forwarderContract = getForwarderContract(
     configs.DOS_FORWARDER_CONTRACT
   );
-  const data = mpContract.interface.encodeFunctionData("matchTransaction", [
-    [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
-    [param.tokenId, param.price, param.saltNonce, param.period],
-    param.signature,
-  ]);
+  const data = mpContract.interface.encodeFunctionData(
+    "matchTransaction",
+    contractParams
+  );
   const result = await signMetaTxRequest(currentProvider, forwarderContract, {
     to: mpContractAddress,
     from: user,
@@ -194,39 +184,6 @@ const matchBag = async (
   mpContract: string,
   paymentToken: PaymentToken
 ) => {
-  const chainId = await web3Inject.eth.getChainId();
-  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
-    const rs = await matchBagDOS(nfts, user, mpContract, paymentToken);
-    return rs;
-  } else {
-    const params = nfts.map((nft) => {
-      const approvePrice = convertToContractValue({
-        amount: nft.sale.price,
-        decimal: paymentToken.decimals,
-      });
-      return [
-        [nft.owner.address, nft.nftContract, paymentToken.contractAddress],
-        [nft.tokenId, approvePrice, nft.sale.saltNonce, nft.sale.period],
-        nft.sale.signedSignature,
-      ];
-    });
-    const contract = marketplaceContract(mpContract, web3Inject);
-    return await contract.methods.bag(params).send({ from: user });
-  }
-};
-const matchBagDOS = async (
-  nfts: NftDto[],
-  user: string,
-  mpContractAddress: string,
-  paymentToken: PaymentToken
-) => {
-  const currentProvider = new ethers.providers.Web3Provider(
-    web3Inject.currentProvider as any
-  );
-  const mpContract = getMPContract(mpContractAddress);
-  const forwarderContract = getForwarderContract(
-    configs.DOS_FORWARDER_CONTRACT
-  );
   const params = nfts.map((nft) => {
     const approvePrice = convertToContractValue({
       amount: nft.sale.price,
@@ -238,10 +195,31 @@ const matchBagDOS = async (
       nft.sale.signedSignature,
     ];
   });
-  const data = mpContract.interface.encodeFunctionData("bag", params);
+  const chainId = await web3Inject.eth.getChainId();
+  if (chainId === Number(configs.NETWORKS[configs.DOS_SYMBOL]?.chainId)) {
+    const rs = await matchBagDOS(params, user, mpContract);
+    return rs;
+  } else {
+    const contract = marketplaceContract(mpContract, web3Inject);
+    return await contract.methods.bag(params).send({ from: user });
+  }
+};
+const matchBagDOS = async (
+  params: any[],
+  user: string,
+  mpContractAddress: string
+) => {
+  const currentProvider = new ethers.providers.Web3Provider(
+    web3Inject.currentProvider as any
+  );
+  const mpContract = getMPContract(mpContractAddress);
+  const forwarderContract = getForwarderContract(
+    configs.DOS_FORWARDER_CONTRACT
+  );
+  const data = mpContract.interface.encodeFunctionData("bag", [params]);
   const result = await signMetaTxRequest(currentProvider, forwarderContract, {
     to: mpContractAddress,
-    user,
+    from: user,
     data,
   });
   const apiCall = {
@@ -256,24 +234,25 @@ const matchOffer = async (
   mpContract: string
 ) => {
   const chainId = await web3Inject.eth.getChainId();
-  if (chainId === Number(configs.NETWORKS["DOS"]?.chainId)) {
-    const rs = await matchOfferDOS(param, user, mpContract);
+  const params = [
+    [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
+    [param.tokenId, param.price, param.saltNonce, param.period],
+    param.signature,
+  ];
+  if (chainId === Number(configs.NETWORKS[configs.DOS_SYMBOL]?.chainId)) {
+    const rs = await matchOfferDOS(params, user, mpContract);
     return rs;
   } else {
     const contract = marketplaceContract(mpContract, web3Inject);
     const rs = await contract.methods
-      .matchOffer(
-        [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
-        [param.tokenId, param.price, param.saltNonce, param.period],
-        param.signature
-      )
+      .matchOffer(...params)
       .send({ from: user });
     return rs;
   }
 };
 
 const matchOfferDOS = async (
-  param: MatchTransactionParam,
+  params: any[],
   user: string,
   mpContractAddress: string
 ) => {
@@ -285,14 +264,10 @@ const matchOfferDOS = async (
     configs.DOS_FORWARDER_CONTRACT
   );
 
-  const data = mpContract.interface.encodeFunctionData("matchOffer", [
-    [param.ownerAddress, param.nftContract, param.paymentTokenAddress],
-    [param.tokenId, param.price, param.saltNonce, param.period],
-    param.signature,
-  ]);
+  const data = mpContract.interface.encodeFunctionData("matchOffer", params);
   const result = await signMetaTxRequest(currentProvider, forwarderContract, {
     to: mpContractAddress,
-    user,
+    from: user,
     data,
   });
   const apiCall = {

@@ -63,7 +63,7 @@ export default function CancelOfferButton({
         signature: offer.signature,
         tokenId: Number(offer.tokenId),
       };
-      await mpContract.cancelMessage(param, offer.chain?.mpContract, user);
+      await mpContract.cancelMessage(param, chainInfo?.mpContract, user);
       await nftService.cancelOffer(offer.id);
       swAlert({
         title: "COMPLETE",

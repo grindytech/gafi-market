@@ -210,7 +210,7 @@ export default function NftCardRecentlySold({
                 title={String(history.from.address)}
                 href={`/profile/${history.from.address}`}
               >
-                {getUserName(history.from, user)}
+                {getUserName(history.from, user, 10, 4)}
               </Link>
             </VStack>
             <VStack w="50%" spacing={0} alignItems="start">
@@ -229,7 +229,7 @@ export default function NftCardRecentlySold({
                 color="gray"
                 title={String(history.to.address)}
               >
-                {getUserName(history.to, user)}
+                {getUserName(history.to, user, 10, 4)}
               </Link>
             </VStack>
           </HStack>
