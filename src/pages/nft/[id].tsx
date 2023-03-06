@@ -31,8 +31,16 @@ export async function getServerSideProps(
   context: GetServerSidePropsContext
 ): Promise<any> {
   const id = context.params.id;
-  const nft = (await axios.get(`${configs.API_URL}/market/api/nft/${id}`)).data;
-  return {
-    props: { nft: nft.data },
-  };
+  try {
+    const nft = (await axios.get(`${configs.API_URL}/market/api/nft/${id}`))
+      .data;
+    return {
+      props: { nft: nft.data },
+    };
+  } catch (err) {
+    if (err.response.status === 404) {
+      return { notFound: true };
+    }
+    throw err;
+  }
 }

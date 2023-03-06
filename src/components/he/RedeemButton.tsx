@@ -59,11 +59,11 @@ export default function RedeemButton({
       const nftContract = nft?.nftContract.toLowerCase();
       if (configs.HE_HERO_CONTRACTS.includes(nftContract)) {
         await heCustomizeContract
-          .redeemHeros(chainInfo.redeemHeroContract, [nft.tokenId])
+          .redeemNFTs(chainInfo.redeemContract, nftContract, [nft.tokenId])
           .send({ from: user });
       } else if (configs.HE_GEAR_CONTRACTS.includes(nftContract)) {
         await heCustomizeContract
-          .redeemGears(chainInfo.redeemGearContract, [nft.tokenId])
+          .redeemNFTs(chainInfo.redeemContract, nftContract, [nft.tokenId])
           .send({ from: user });
       } else if (configs.HE_HERO_CHEST_CONTRACTS.includes(nftContract)) {
         await heCustomizeContract

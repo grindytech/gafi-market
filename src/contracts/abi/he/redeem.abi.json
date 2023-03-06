@@ -3,11 +3,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_gearNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_blacklist",
         "type": "address"
       }
@@ -96,6 +91,12 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "Owner",
         "type": "address"
       },
@@ -112,7 +113,7 @@
         "type": "uint256"
       }
     ],
-    "name": "redeemgear",
+    "name": "redeemasset",
     "type": "event"
   },
   {
@@ -134,32 +135,6 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gear",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gearNFT",
-    "outputs": [
-      {
-        "internalType": "contract IERC721",
         "name": "",
         "type": "address"
       }
@@ -229,14 +204,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "hea",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
       {
         "internalType": "uint256[]",
         "name": "tokenId",
         "type": "uint256[]"
       }
     ],
-    "name": "redeemGear",
+    "name": "redeemAsset",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

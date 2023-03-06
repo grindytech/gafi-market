@@ -129,7 +129,7 @@ function Blog({
                 h="full"
                 w="full"
                 src={image}
-                objectFit="fill"
+                objectFit="cover"
               />
             </Skeleton>
           </Box>
